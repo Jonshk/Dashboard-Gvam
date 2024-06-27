@@ -7,7 +7,7 @@
     Eliminar
   </button>
   <form [formGroup]="applyPolicyForm" (ngSubmit)="applyPolicy()">
-    <select name="name" formControlName="name" [value]="device().policyName">
+    <select name="name" formControlName="name">
       @for (policy of policies(); track policy.name) {
         <option [value]="policy.name">
           {{ policy.name }}
@@ -16,6 +16,19 @@
     </select>
     <button type="submit" [disabled]="loadingService.isLoading()">
       Aplicar política
+    </button>
+  </form>
+
+  <form [formGroup]="sendCommandForm" (ngSubmit)="sendCommand()">
+    <select name="command" formControlName="command">
+      @for (deviceCommand of deviceCommandKeys; track deviceCommand) {
+        <option [value]="DeviceCommand[deviceCommand]">
+          {{ deviceCommand }}
+        </option>
+      }
+    </select>
+    <button type="submit" [disabled]="loadingService.isLoading()">
+      Enviar comando
     </button>
   </form>
 </div>

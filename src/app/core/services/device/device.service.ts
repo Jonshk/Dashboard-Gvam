@@ -11,6 +11,7 @@ import { RegisterDevice } from '../../models/response/register-device.model';
 import { SuccessResponse } from '../../models/response/success-response.model';
 import { ApplyDevicePolicyRequest } from '../../models/request/apply-device-policy-request.model';
 import { Device } from '../../models/response/device.model';
+import { DeviceCommandRequest } from '../../models/request/device-command-request.model';
 
 @Injectable({
   providedIn: 'root',
@@ -82,6 +83,17 @@ export class DeviceService {
     return this.http.post<Response<SuccessResponse>>(
       this.url(groupId, deviceId),
       devicePolicyRequest,
+    );
+  }
+
+  sendCommand(
+    groupId: number,
+    deviceId: number,
+    deviceCommandRequest: DeviceCommandRequest,
+  ): Observable<Response<SuccessResponse>> {
+    return this.http.post<Response<SuccessResponse>>(
+      this.url(groupId, deviceId + '/command'),
+      deviceCommandRequest,
     );
   }
 }
