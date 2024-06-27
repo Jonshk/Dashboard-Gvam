@@ -1,0 +1,15 @@
+<div>
+  {{ policy().name }}
+  <button [disabled]="loadingService.isLoading()" (click)="editPolicy()">
+    Editar
+  </button>
+  <button [disabled]="loadingService.isLoading()" (click)="deletePolicy()">
+    Eliminar
+  </button>
+  <button
+    [disabled]="loadingService.isLoading()"
+    (click)="applyPolicyToGroup()"
+  >
+    Aplicar al grupo
+  </button>
+</div>

@@ -1,0 +1,22 @@
+<h1>Políticas</h1>
+
+<button (click)="createMode()">Crear nueva política</button>
+
+<app-policy-form
+  [groupId]="groupId()"
+  [editPolicy]="policyToEdit"
+  (policy)="addPolicy($event)"
+></app-policy-form>
+
+<ul>
+  @for (policy of policies; track policy.name) {
+    <li>
+      <app-policy-list-item
+        [groupId]="groupId()"
+        [policy]="policy"
+        (onEditPolicy)="editPolicy($event)"
+        (onDeletePolicy)="deletePolicy($event)"
+      ></app-policy-list-item>
+    </li>
+  }
+</ul>

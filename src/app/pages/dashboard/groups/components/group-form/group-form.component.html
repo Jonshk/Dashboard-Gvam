@@ -1,0 +1,17 @@
+<form [formGroup]="groupForm" (ngSubmit)="onSubmit()">
+  <label>
+    Nombre del grupo
+    <input type="text" name="name" formControlName="name" />
+  </label>
+
+  <button
+    type="submit"
+    [disabled]="groupForm.invalid || loadingService.isLoading()"
+  >
+    @if (editGroup()) {
+      Editar grupo
+    } @else {
+      Crear grupo
+    }
+  </button>
+</form>

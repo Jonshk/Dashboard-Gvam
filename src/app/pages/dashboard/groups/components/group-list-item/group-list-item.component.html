@@ -1,0 +1,11 @@
+<div>
+  {{ group().groupName }}
+  <a [routerLink]="[group().groupId, 'policies']">Ver políticas</a>
+  <a [routerLink]="[group().groupId, 'devices']">Ver dispositivos</a>
+  <button (click)="editGroup()" [disabled]="loadingService.isLoading()">
+    Editar
+  </button>
+  <button (click)="deleteGroup()" [disabled]="loadingService.isLoading()">
+    Eliminar
+  </button>
+</div>

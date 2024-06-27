@@ -1,0 +1,6 @@
+export enum PermissionPolicy {
+  UNSPECIFIED = 'PERMISSION_POLICY_UNSPECIFIED',
+  PROMPT = 'PROMPT',
+  GRANT = 'GRANT',
+  DENY = 'DENY',
+}

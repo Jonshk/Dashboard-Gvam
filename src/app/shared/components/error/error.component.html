@@ -1,0 +1,4 @@
+<dialog [open]="errorService.error().show">
+  <p>{{ errorService.error().message }}</p>
+  <button (click)="errorService.dismissError()">Aceptar</button>
+</dialog>

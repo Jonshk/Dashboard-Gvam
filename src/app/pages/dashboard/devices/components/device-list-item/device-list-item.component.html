@@ -1,0 +1,21 @@
+<div>
+  {{ device().deviceName }}
+  <button [disabled]="loadingService.isLoading()" (click)="editDevice()">
+    Editar
+  </button>
+  <button [disabled]="loadingService.isLoading()" (click)="deleteDevice()">
+    Eliminar
+  </button>
+  <form [formGroup]="applyPolicyForm" (ngSubmit)="applyPolicy()">
+    <select name="name" formControlName="name" [value]="device().policyName">
+      @for (policy of policies(); track policy.name) {
+        <option [value]="policy.name">
+          {{ policy.name }}
+        </option>
+      }
+    </select>
+    <button type="submit" [disabled]="loadingService.isLoading()">
+      Aplicar política
+    </button>
+  </form>
+</div>

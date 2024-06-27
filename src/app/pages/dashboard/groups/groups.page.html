@@ -1,0 +1,20 @@
+<h1>Grupos</h1>
+
+<button (click)="createMode()">Crear nuevo grupo</button>
+
+<app-group-form
+  [editGroup]="groupToEdit"
+  (group)="addGroup($event)"
+></app-group-form>
+
+<ul>
+  @for (group of groups; track group.groupId) {
+    <li>
+      <app-group-list-item
+      [group]="group"
+      (onEditGroup)="editGroup($event)"
+      (onDeleteGroup)="deleteGroup($event)"
+      ></app-group-list-item>
+    </li>
+  }
+</ul>

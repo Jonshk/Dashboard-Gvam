@@ -1,0 +1,31 @@
+<h1>Dispositivos</h1>
+
+<button (click)="createMode()">Crear dispositivo</button>
+<button [disabled]="loadingService.isLoading()" (click)="registerDevices()">
+  Registrar dispositivos
+</button>
+@if (registeredDevices) {
+  <p>
+    Nuevos dispositivos registrados: {{ registeredDevices.registeredDevices }}
+  </p>
+}
+
+<app-device-form
+  [groupId]="groupId()"
+  [editDevice]="deviceToEdit"
+  (device)="updateDevice($event)"
+></app-device-form>
+
+<ul>
+  @for (device of devices; track device.deviceId) {
+    <li>
+      <app-device-list-item
+        [groupId]="groupId()"
+        [device]="device"
+        [policies]="policies"
+        (onEditDevice)="editDevice($event)"
+        (onDeleteDevice)="deleteDevice($event)"
+      ></app-device-list-item>
+    </li>
+  }
+</ul>

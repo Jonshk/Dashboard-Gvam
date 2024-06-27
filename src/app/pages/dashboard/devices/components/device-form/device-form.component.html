@@ -1,0 +1,21 @@
+<form [formGroup]="deviceForm" (ngSubmit)="onSubmit()">
+  <label>
+    Nombre del dispositivo
+    <input type="text" name="name" formControlName="name" />
+  </label>
+
+  <button
+    type="submit"
+    [disabled]="deviceForm.invalid || loadingService.isLoading()"
+  >
+    @if (editDevice()) {
+      Editar dispositivo
+    } @else {
+      Crear dispositivo
+    }
+  </button>
+</form>
+
+@if (registerQr) {
+  <img [src]="registerQr" alt="Código QR de registro" />
+}
