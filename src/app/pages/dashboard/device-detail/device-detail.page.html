@@ -1,0 +1,29 @@
+@if (device) {
+  <div>
+    <p>Nombre: {{ device.deviceName }}</p>
+    <p>Version de android: {{ device.androidVersion }}</p>
+
+    @if (device.batteryLevel) {
+      <p>Nivel de batería: {{ device.batteryLevel }}</p>
+    }
+
+    @if (device.installedApps && device.installedApps.length > 0) {
+      <p>Aplicaciones instaladas:</p>
+      <ul>
+        @for (installedApp of device.installedApps; track installedApp) {
+          <li>{{ installedApp }}</li>
+        }
+      </ul>
+    }
+
+    @if (device.policyName) {
+      <p>Política aplicada: {{ device.policyName }}</p>
+    }
+
+    <p>Número de serie: {{ device.serialNumber }}</p>
+
+    @if (device.location) {
+      <p>Ubicación: {{ device.location }}</p>
+    }
+  </div>
+}

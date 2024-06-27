@@ -14,11 +14,12 @@ import { ApplyDevicePolicyRequest } from '../../../../../core/models/request/app
 import { LoadingService } from '../../../../../core/services/loading/loading.service';
 import { DeviceCommand } from '../../../../../core/enums/device-command';
 import { DeviceCommandRequest } from '../../../../../core/models/request/device-command-request.model';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-device-list-item',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterModule],
   templateUrl: './device-list-item.component.html',
   styleUrl: './device-list-item.component.css',
 })

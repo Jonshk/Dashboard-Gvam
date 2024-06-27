@@ -1,5 +1,5 @@
 <div>
-  {{ device().deviceName }}
+  <a [routerLink]="device().deviceId.toString()">{{ device().deviceName }}</a>
   <button [disabled]="loadingService.isLoading()" (click)="editDevice()">
     Editar
   </button>

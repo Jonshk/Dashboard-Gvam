@@ -22,6 +22,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 };
 
 function isApiError(apiError: Response<null>): apiError is Response<null> {
+  if (!apiError) {
+    return false;
+  }
+
   if (apiError.code && apiError.message && apiError.data === null) {
     return true;
   }
