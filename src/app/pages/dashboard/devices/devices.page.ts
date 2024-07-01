@@ -1,4 +1,4 @@
-import { Component, effect, input } from '@angular/core';
+import { Component, effect, input, signal } from '@angular/core';
 import { DeviceService } from '../../../core/services/device/device.service';
 import { Response } from '../../../core/models/response/response.model';
 import { RegisterDevice } from '../../../core/models/response/register-device.model';
@@ -8,12 +8,13 @@ import { Device } from '../../../core/models/response/device.model';
 import { DeviceFormComponent } from './components/device-form/device-form.component';
 import { DeviceListItemComponent } from './components/device-list-item/device-list-item.component';
 import { LoadingService } from '../../../core/services/loading/loading.service';
-import { asapScheduler, forkJoin } from 'rxjs';
+import { forkJoin } from 'rxjs';
+import { DialogComponent } from '../../../shared/components/dialog/dialog.component';
 
 @Component({
   selector: 'app-devices',
   standalone: true,
-  imports: [DeviceFormComponent, DeviceListItemComponent],
+  imports: [DeviceFormComponent, DeviceListItemComponent, DialogComponent],
   templateUrl: './devices.page.html',
   styleUrl: './devices.page.css',
 })
@@ -25,6 +26,9 @@ export class DevicesPage {
   devices: Device[] = [];
   registeredDevices?: RegisterDevice;
   policies: Policy[] = [];
+
+  private _showDialog = signal(false);
+  showDialog = this._showDialog.asReadonly();
 
   constructor(
     private deviceService: DeviceService,
@@ -58,8 +62,13 @@ export class DevicesPage {
     });
   }
 
-  createMode() {
+  hideDialog() {
+    this._showDialog.set(false);
     this.deviceToEdit = null;
+  }
+
+  createMode() {
+    this._showDialog.set(true);
   }
 
   registerDevices() {
@@ -82,6 +91,7 @@ export class DevicesPage {
 
   editDevice(device: Device) {
     this.deviceToEdit = device;
+    this._showDialog.set(true);
   }
 
   updateDevice(device: Device) {
@@ -89,8 +99,11 @@ export class DevicesPage {
 
     if (index !== -1) {
       this.devices[index].deviceName = device.deviceName;
+      this.hideDialog();
       return;
     }
+
+    this.hideDialog();
   }
 
   deleteDevice(deviceId: number) {

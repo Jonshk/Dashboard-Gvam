@@ -5,10 +5,12 @@
     Crear nuevo grupo
   </button>
 
-  <app-group-form
-    [editGroup]="groupToEdit"
-    (group)="addGroup($event)"
-  ></app-group-form>
+  <app-dialog [open]="showDialog()" (openChange)="hideDialog()">
+    <app-group-form
+      [editGroup]="groupToEdit"
+      (group)="addGroup($event)"
+    ></app-group-form>
+  </app-dialog>
 
   <ul class="list-group my-2">
     @for (group of groups; track group.groupId) {

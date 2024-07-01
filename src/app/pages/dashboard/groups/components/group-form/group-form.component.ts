@@ -62,6 +62,7 @@ export class GroupFormComponent {
     this.groupService.create(newGroup).subscribe({
       next: ({ data }: Response<Group>) => {
         this.group.emit(data);
+        this.resetForm();
         this.loadingService.dismissLoading();
       },
       error: (err: any) => {

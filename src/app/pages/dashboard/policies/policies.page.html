@@ -5,11 +5,13 @@
     Crear nueva política
   </button>
 
-  <app-policy-form
-    [groupId]="groupId()"
-    [editPolicy]="policyToEdit"
-    (policy)="addPolicy($event)"
-  ></app-policy-form>
+  <app-dialog [open]="showDialog()" (openChange)="hideDialog()">
+    <app-policy-form
+      [groupId]="groupId()"
+      [editPolicy]="policyToEdit"
+      (policy)="addPolicy($event)"
+    ></app-policy-form>
+  </app-dialog>
 
   <ul class="list-group my-2">
     @for (policy of policies; track policy.name) {

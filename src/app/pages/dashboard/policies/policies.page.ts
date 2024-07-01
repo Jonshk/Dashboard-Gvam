@@ -1,15 +1,16 @@
-import { Component, effect, inject, input } from '@angular/core';
+import { Component, effect, input, signal } from '@angular/core';
 import { Policy } from '../../../core/models/response/policy.model';
 import { PolicyService } from '../../../core/services/policy/policy.service';
 import { Response } from '../../../core/models/response/response.model';
 import { PolicyFormComponent } from './components/policy-form/policy-form.component';
 import { PolicyListItemComponent } from './components/policy-list-item/policy-list-item.component';
 import { LoadingService } from '../../../core/services/loading/loading.service';
+import { DialogComponent } from '../../../shared/components/dialog/dialog.component';
 
 @Component({
   selector: 'app-policies',
   standalone: true,
-  imports: [PolicyFormComponent, PolicyListItemComponent],
+  imports: [PolicyFormComponent, PolicyListItemComponent, DialogComponent],
   templateUrl: './policies.page.html',
   styleUrl: './policies.page.css',
 })
@@ -19,6 +20,9 @@ export class PoliciesPage {
   policies: Policy[] = [];
 
   policyToEdit: Policy | null = null;
+
+  private _showDialog = signal(false);
+  showDialog = this._showDialog.asReadonly();
 
   constructor(
     private policyService: PolicyService,
@@ -46,12 +50,18 @@ export class PoliciesPage {
     });
   }
 
-  createMode() {
+  hideDialog() {
+    this._showDialog.set(false);
     this.policyToEdit = null;
+  }
+
+  createMode() {
+    this._showDialog.set(true);
   }
 
   editPolicy(editPolicy: Policy) {
     this.policyToEdit = editPolicy;
+    this._showDialog.set(true);
   }
 
   addPolicy(policy: Policy) {
@@ -59,16 +69,15 @@ export class PoliciesPage {
 
     if (index !== -1) {
       this.policies[index] = policy;
+      this.hideDialog();
       return;
     }
 
     this.policies.push(policy);
+    this.hideDialog();
   }
 
   deletePolicy(name: string) {
     this.policies = this.policies.filter((policy) => policy.name !== name);
-    if (this.policyToEdit !== null && this.policyToEdit.name === name) {
-      this.createMode();
-    }
   }
 }

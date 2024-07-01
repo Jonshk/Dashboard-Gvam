@@ -17,11 +17,13 @@
     </p>
   }
 
-  <app-device-form
-    [groupId]="groupId()"
-    [editDevice]="deviceToEdit"
-    (device)="updateDevice($event)"
-  ></app-device-form>
+  <app-dialog [open]="showDialog()" (openChange)="hideDialog()">
+    <app-device-form
+      [groupId]="groupId()"
+      [editDevice]="deviceToEdit"
+      (device)="updateDevice($event)"
+    ></app-device-form>
+  </app-dialog>
 
   <ul class="list-group my-2">
     @for (device of devices; track device.deviceId) {
