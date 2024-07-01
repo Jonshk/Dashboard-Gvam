@@ -21,7 +21,6 @@ import { LoadingService } from '../../../core/services/loading/loading.service';
   styleUrl: './enterprise.page.css',
 })
 export class EnterprisePage {
-  enterprises: Enterprise[] = [];
   signUpUrl: string = '';
   enterpriseRegisterForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
@@ -32,20 +31,7 @@ export class EnterprisePage {
     private enterpriseService: EnterpriseService,
     private router: Router,
     readonly loadingService: LoadingService,
-  ) {
-    // this.list();
-  }
-
-  private list() {
-    this.enterpriseService.list().subscribe({
-      next: ({ data }: Response<Enterprise[]>) => {
-        this.enterprises = data;
-      },
-      error: (err: any) => {
-        console.error('error:', err);
-      },
-    });
-  }
+  ) {}
 
   signUp() {
     this.loadingService.setLoading();
@@ -74,7 +60,6 @@ export class EnterprisePage {
 
     this.enterpriseService.create(createEnterprise).subscribe({
       next: ({ data }: Response<Enterprise>) => {
-        this.enterprises.push(data);
         this.enterpriseService.setEnterpriseId(data.enterpriseId);
         this.router.navigate(['/groups'], { replaceUrl: true });
         this.loadingService.dismissLoading();

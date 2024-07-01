@@ -1,11 +1,21 @@
-<form [formGroup]="deviceForm" (ngSubmit)="onSubmit()">
+<form
+  class="d-flex flex-column"
+  [formGroup]="deviceForm"
+  (ngSubmit)="onSubmit()"
+>
   <label>
     Nombre del dispositivo
-    <input type="text" name="name" formControlName="name" />
+    <input
+      type="text"
+      class="form-control"
+      name="name"
+      formControlName="name"
+    />
   </label>
 
   <button
     type="submit"
+    class="btn btn-primary mt-2"
     [disabled]="deviceForm.invalid || loadingService.isLoading()"
   >
     @if (editDevice()) {

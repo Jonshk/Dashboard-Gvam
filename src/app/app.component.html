@@ -1,20 +1,6 @@
+<app-navbar></app-navbar>
+
 <app-loading></app-loading>
 <app-error></app-error>
-
-<nav>
-  <ul>
-    @for (route of routes; track $index) {
-      @if (route.path) {
-        <li>
-          <a [routerLink]="route.path" routerLinkActive="active-route">{{
-            route.path
-          }}</a>
-        </li>
-      }
-    }
-  </ul>
-</nav>
-
-<button (click)="logout()">Cerrar sesión</button>
 
 <router-outlet />

@@ -1,33 +1,51 @@
-<div>
+<div class="d-flex align-items-center justify-content-between">
   <a [routerLink]="device().deviceId.toString()">{{ device().deviceName }}</a>
-  <button [disabled]="loadingService.isLoading()" (click)="editDevice()">
-    Editar
-  </button>
-  <button [disabled]="loadingService.isLoading()" (click)="deleteDevice()">
-    Eliminar
-  </button>
+  <div>
+    <button
+      class="btn btn-outline-secondary me-2 btn-sm"
+      [disabled]="loadingService.isLoading()"
+      (click)="editDevice()"
+    >
+      Editar
+    </button>
+    <button
+      class="btn btn-danger btn-sm"
+      [disabled]="loadingService.isLoading()"
+      (click)="deleteDevice()"
+    >
+      Eliminar
+    </button>
+  </div>
   <form [formGroup]="applyPolicyForm" (ngSubmit)="applyPolicy()">
-    <select name="name" formControlName="name">
+    <select class="form-select" name="name" formControlName="name">
       @for (policy of policies(); track policy.name) {
         <option [value]="policy.name">
           {{ policy.name }}
         </option>
       }
     </select>
-    <button type="submit" [disabled]="loadingService.isLoading()">
+    <button
+      class="btn btn-warning btn-sm"
+      type="submit"
+      [disabled]="loadingService.isLoading()"
+    >
       Aplicar política
     </button>
   </form>
 
   <form [formGroup]="sendCommandForm" (ngSubmit)="sendCommand()">
-    <select name="command" formControlName="command">
+    <select class="form-select" name="command" formControlName="command">
       @for (deviceCommand of deviceCommandKeys; track deviceCommand) {
         <option [value]="DeviceCommand[deviceCommand]">
           {{ deviceCommand }}
         </option>
       }
     </select>
-    <button type="submit" [disabled]="loadingService.isLoading()">
+    <button
+      class="btn btn-warning btn-sm"
+      type="submit"
+      [disabled]="loadingService.isLoading()"
+    >
       Enviar comando
     </button>
   </form>

@@ -1,22 +1,26 @@
-<h1>Políticas</h1>
+<main class="p-4">
+  <h1>Políticas</h1>
 
-<button (click)="createMode()">Crear nueva política</button>
+  <button class="btn btn-primary" (click)="createMode()">
+    Crear nueva política
+  </button>
 
-<app-policy-form
-  [groupId]="groupId()"
-  [editPolicy]="policyToEdit"
-  (policy)="addPolicy($event)"
-></app-policy-form>
+  <app-policy-form
+    [groupId]="groupId()"
+    [editPolicy]="policyToEdit"
+    (policy)="addPolicy($event)"
+  ></app-policy-form>
 
-<ul>
-  @for (policy of policies; track policy.name) {
-    <li>
-      <app-policy-list-item
-        [groupId]="groupId()"
-        [policy]="policy"
-        (onEditPolicy)="editPolicy($event)"
-        (onDeletePolicy)="deletePolicy($event)"
-      ></app-policy-list-item>
-    </li>
-  }
-</ul>
+  <ul class="list-group my-2">
+    @for (policy of policies; track policy.name) {
+      <li class="list-group-item">
+        <app-policy-list-item
+          [groupId]="groupId()"
+          [policy]="policy"
+          (onEditPolicy)="editPolicy($event)"
+          (onDeletePolicy)="deletePolicy($event)"
+        ></app-policy-list-item>
+      </li>
+    }
+  </ul>
+</main>

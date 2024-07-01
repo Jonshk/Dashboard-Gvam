@@ -1,11 +1,30 @@
-<div>
+<div class="d-flex align-items-center justify-content-between">
   {{ group().groupName }}
-  <a [routerLink]="[group().groupId, 'policies']">Ver políticas</a>
-  <a [routerLink]="[group().groupId, 'devices']">Ver dispositivos</a>
-  <button (click)="editGroup()" [disabled]="loadingService.isLoading()">
-    Editar
-  </button>
-  <button (click)="deleteGroup()" [disabled]="loadingService.isLoading()">
-    Eliminar
-  </button>
+  <div>
+    <a
+      class="btn btn-light me-2 btn-sm"
+      [routerLink]="[group().groupId, 'policies']"
+    >
+      Ver políticas</a
+    >
+    <a class="btn btn-light btn-sm" [routerLink]="[group().groupId, 'devices']"
+      >Ver dispositivos</a
+    >
+  </div>
+  <div>
+    <button
+      class="btn btn-outline-secondary me-2 btn-sm"
+      (click)="editGroup()"
+      [disabled]="loadingService.isLoading()"
+    >
+      Editar
+    </button>
+    <button
+      class="btn btn-danger btn-sm"
+      (click)="deleteGroup()"
+      [disabled]="loadingService.isLoading()"
+    >
+      Eliminar
+    </button>
+  </div>
 </div>

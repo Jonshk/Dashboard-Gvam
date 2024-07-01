@@ -1,26 +1,56 @@
-<h1>Registro</h1>
+<main class="d-flex align-items-center py-4 form-main">
+  <div class="form-signin w-100 m-auto">
+    <h1>Registro</h1>
 
-<form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-  <label>
-    Nombre
-    <input type="text" name="name" formControlName="name" />
-  </label>
-  <label>
-    Email
-    <input type="email" name="email" formControlName="email" />
-  </label>
-  <label>
-    Contraseña
-    <input type="password" name="password" formControlName="password" />
-  </label>
-  <label>
-    Repetir contraseña
-    <input
-      type="password"
-      name="repeatPassword"
-      formControlName="repeatPassword"
-    />
-  </label>
+    <form
+      class="d-flex flex-column"
+      [formGroup]="registerForm"
+      (ngSubmit)="onSubmit()"
+    >
+      <label>
+        Nombre
+        <input
+          type="text"
+          class="form-control"
+          name="name"
+          formControlName="name"
+        />
+      </label>
+      <label>
+        Email
+        <input
+          type="email"
+          class="form-control"
+          name="email"
+          formControlName="email"
+        />
+      </label>
+      <label>
+        Contraseña
+        <input
+          type="password"
+          class="form-control"
+          name="password"
+          formControlName="password"
+        />
+      </label>
+      <label>
+        Repetir contraseña
+        <input
+          type="password"
+          class="form-control"
+          name="repeatPassword"
+          formControlName="repeatPassword"
+        />
+      </label>
 
-  <button type="submit" [disabled]="registerForm.invalid">Registrarse</button>
-</form>
+      <button
+        type="submit"
+        class="btn btn-primary mt-2"
+        [disabled]="registerForm.invalid"
+      >
+        Registrarse
+      </button>
+    </form>
+  </div>
+</main>

@@ -1,31 +1,39 @@
-<h1>Dispositivos</h1>
+<main class="p-4">
+  <h1>Dispositivos</h1>
 
-<button (click)="createMode()">Crear dispositivo</button>
-<button [disabled]="loadingService.isLoading()" (click)="registerDevices()">
-  Registrar dispositivos
-</button>
-@if (registeredDevices) {
-  <p>
-    Nuevos dispositivos registrados: {{ registeredDevices.registeredDevices }}
-  </p>
-}
-
-<app-device-form
-  [groupId]="groupId()"
-  [editDevice]="deviceToEdit"
-  (device)="updateDevice($event)"
-></app-device-form>
-
-<ul>
-  @for (device of devices; track device.deviceId) {
-    <li>
-      <app-device-list-item
-        [groupId]="groupId()"
-        [device]="device"
-        [policies]="policies"
-        (onEditDevice)="editDevice($event)"
-        (onDeleteDevice)="deleteDevice($event)"
-      ></app-device-list-item>
-    </li>
+  <button class="btn btn-primary me-2" (click)="createMode()">
+    Crear nuevo dispositivo
+  </button>
+  <button
+    class="btn btn-outline-secondary"
+    [disabled]="loadingService.isLoading()"
+    (click)="registerDevices()"
+  >
+    Registrar dispositivos
+  </button>
+  @if (registeredDevices) {
+    <p>
+      Nuevos dispositivos registrados: {{ registeredDevices.registeredDevices }}
+    </p>
   }
-</ul>
+
+  <app-device-form
+    [groupId]="groupId()"
+    [editDevice]="deviceToEdit"
+    (device)="updateDevice($event)"
+  ></app-device-form>
+
+  <ul class="list-group my-2">
+    @for (device of devices; track device.deviceId) {
+      <li class="list-group-item">
+        <app-device-list-item
+          [groupId]="groupId()"
+          [device]="device"
+          [policies]="policies"
+          (onEditDevice)="editDevice($event)"
+          (onDeleteDevice)="deleteDevice($event)"
+        ></app-device-list-item>
+      </li>
+    }
+  </ul>
+</main>

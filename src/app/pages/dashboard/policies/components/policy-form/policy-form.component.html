@@ -1,16 +1,30 @@
-<form [formGroup]="policyForm" (ngSubmit)="onSubmit()">
+<form
+  class="d-flex flex-column"
+  [formGroup]="policyForm"
+  (ngSubmit)="onSubmit()"
+>
   <label>
     Nombre de la política
-    <input type="text" name="name" name="name" formControlName="name" />
+    <input
+      type="text"
+      class="form-control"
+      name="name"
+      name="name"
+      formControlName="name"
+    />
   </label>
 
   <div
-    class="fcol"
+    class="d-flex flex-column"
     name="applicationPolicies"
     formArrayName="applicationPolicies"
   >
     Politica de aplicaciones
-    <button type="button" (click)="addApplicationPolicy()">
+    <button
+      type="button"
+      class="btn btn-outline-primary my-2"
+      (click)="addApplicationPolicy()"
+    >
       Añadir aplicación
     </button>
     @for (
@@ -18,15 +32,24 @@
       track application.value;
       let i = $index
     ) {
-      <div class="fcol" [formGroupName]="i">
+      <div class="d-flex flex-column" [formGroupName]="i">
         <label>
           Paquete de la aplicación
-          <input type="text" name="packageName" formControlName="packageName" />
+          <input
+            type="text"
+            class="form-control"
+            name="packageName"
+            formControlName="packageName"
+          />
         </label>
 
         <label>
           Tipo de instalación
-          <select name="installType" formControlName="installType">
+          <select
+            class="form-select"
+            name="installType"
+            formControlName="installType"
+          >
             @for (installType of installTypeKeys; track installType) {
               <option [value]="InstallType[installType]">
                 {{ installType }}
@@ -38,6 +61,7 @@
         <label>
           Política de permisos
           <select
+            class="form-select"
             name="defaultPermissionPolicy"
             formControlName="defaultPermissionPolicy"
           >
@@ -52,14 +76,23 @@
           </select>
         </label>
 
-        <label>
+        <label class="form-check-label">
           Deshabilitada
-          <input type="checkbox" name="disabled" formControlName="disabled" />
+          <input
+            type="checkbox"
+            class="form-check-input"
+            name="disabled"
+            formControlName="disabled"
+          />
         </label>
 
         <label>
           Modo de autoactualización
-          <select name="autoUpdateMode" formControlName="autoUpdateMode">
+          <select
+            class="form-select"
+            name="autoUpdateMode"
+            formControlName="autoUpdateMode"
+          >
             @for (autoUpdateMode of autoUpdateModeKeys; track autoUpdateMode) {
               <option [value]="AutoUpdateMode[autoUpdateMode]">
                 {{ autoUpdateMode }}
@@ -68,7 +101,11 @@
           </select>
         </label>
 
-        <button type="button" (click)="removeApplicationPolicy(i)">
+        <button
+          type="button"
+          class="btn btn-outline-danger my-2"
+          (click)="removeApplicationPolicy(i)"
+        >
           Eliminar aplicación
         </button>
       </div>
@@ -76,7 +113,7 @@
   </div>
   <label>
     Estado del Wifi
-    <select name="wifiState" formControlName="wifiState">
+    <select class="form-select" name="wifiState" formControlName="wifiState">
       @for (wifiState of wifiStateKeys; track wifiState) {
         <option [value]="WifiState[wifiState]">
           {{ wifiState }}
@@ -85,11 +122,19 @@
     </select>
   </label>
 
-  <div class="fcol" name="wifiSsidPolicy" formGroupName="wifiSsidPolicy">
+  <div
+    class="d-flex flex-column"
+    name="wifiSsidPolicy"
+    formGroupName="wifiSsidPolicy"
+  >
     Política de SSID
     <label
       >Tipo de política
-      <select name="wifiSsidPolicyType" formControlName="wifiSsidPolicyType">
+      <select
+        class="form-select"
+        name="wifiSsidPolicyType"
+        formControlName="wifiSsidPolicyType"
+      >
         @for (
           wifiSsidPolicyType of wifiSsidPolicyTypeKeys;
           track wifiSsidPolicyType
@@ -102,11 +147,26 @@
     </label>
     <label class="fcol" formArrayName="wifiSsids">
       SSID
-      <button type="button" (click)="addWifiSsid()">Añadir SSID</button>
+      <button
+        type="button"
+        class="btn btn-outline-primary btn-sm"
+        (click)="addWifiSsid()"
+      >
+        Añadir SSID
+      </button>
       @for (ssid of wifiSsids.controls; track ssid; let j = $index) {
-        <div>
-          <input type="text" [name]="'ssid' + j" [formControlName]="j" />
-          <button type="button" (click)="removeWifiSsid(j)">
+        <div class="d-flex align-items-center">
+          <input
+            type="text"
+            class="form-control form-control-sm col"
+            [name]="'ssid' + j"
+            [formControlName]="j"
+          />
+          <button
+            type="button"
+            class="btn btn-outline-danger btn-sm col"
+            (click)="removeWifiSsid(j)"
+          >
             Eliminar SSID
           </button>
         </div>
@@ -116,7 +176,11 @@
 
   <label>
     Modo de localización
-    <select name="locationMode" formControlName="locationMode">
+    <select
+      class="form-select"
+      name="locationMode"
+      formControlName="locationMode"
+    >
       @for (locationMode of locationModeKeys; track locationMode) {
         <option [value]="LocationMode[locationMode]">
           {{ locationMode }}
@@ -125,19 +189,21 @@
     </select>
   </label>
 
-  <label>
+  <label class="form-check-label">
     Bluetooth deshabilitado
     <input
       type="checkbox"
+      class="form-check-input"
       name="bluetoothDisabled"
       formControlName="bluetoothDisabled"
     />
   </label>
 
-  <label>
+  <label class="form-check-label">
     Ajustar volumen deshabilitado
     <input
       type="checkbox"
+      class="form-check-input"
       name="adjustVolumeDisabled"
       formControlName="adjustVolumeDisabled"
     />
@@ -145,7 +211,11 @@
 
   <label>
     Botón de encendido
-    <select name="powerButtonAction" formControlName="powerButtonAction">
+    <select
+      class="form-select"
+      name="powerButtonAction"
+      formControlName="powerButtonAction"
+    >
       @for (
         powerButtonAction of powerButtonActionKeys;
         track powerButtonAction
@@ -159,7 +229,11 @@
 
   <label>
     Acceso de datos USB
-    <select name="usbDataAccess" formControlName="usbDataAccess">
+    <select
+      class="form-select"
+      name="usbDataAccess"
+      formControlName="usbDataAccess"
+    >
       @for (usbDataAccess of usbDataAccesKeys; track usbDataAccess) {
         <option [value]="UsbDataAccess[usbDataAccess]">
           {{ usbDataAccess }}
@@ -170,6 +244,7 @@
 
   <button
     type="submit"
+    class="btn btn-primary mt-2"
     [disabled]="policyForm.invalid || loadingService.isLoading()"
   >
     @if (editPolicy()) {
