@@ -1,4 +1,8 @@
-import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import {
+  HttpErrorResponse,
+  HttpInterceptorFn,
+  HttpStatusCode,
+} from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
 import { Response } from '../../models/response/response.model';
 import { inject } from '@angular/core';
@@ -15,7 +19,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => err);
       }
 
-      errorService.setError('Ha ocurrido un error');
+      if (err.status !== HttpStatusCode.Unauthorized) {
+        errorService.setError('Ha ocurrido un error');
+      }
+
       return throwError(() => err);
     }),
   );
