@@ -4,9 +4,6 @@ import {
   FormControl,
   Validators,
   ReactiveFormsModule,
-  ValidatorFn,
-  AbstractControl,
-  ValidationErrors,
 } from '@angular/forms';
 import { RegisterRequest } from '../../../core/models/request/register-request.model';
 import { AuthService } from '../../../core/services/auth/auth.service';
@@ -16,6 +13,7 @@ import { Response } from '../../../core/models/response/response.model';
 import { EnterpriseService } from '../../../core/services/enterprise/enterprise.service';
 import { Router } from '@angular/router';
 import { LoadingService } from '../../../core/services/loading/loading.service';
+import { CustomValidators } from '../../../shared/util/custom-validators';
 
 @Component({
   selector: 'app-register',
@@ -25,15 +23,15 @@ import { LoadingService } from '../../../core/services/loading/loading.service';
   styleUrl: './register.page.css',
 })
 export class RegisterPage {
-  registerForm = new FormGroup({
-    name: new FormControl('', [Validators.required]),
-    email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required]),
-    repeatPassword: new FormControl('', [
-      Validators.required,
-      this.repeatPasswordValidator(),
-    ]),
-  });
+  registerForm = new FormGroup(
+    {
+      name: new FormControl('', [Validators.required]),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', [Validators.required]),
+      repeatPassword: new FormControl('', [Validators.required]),
+    },
+    { validators: CustomValidators.repeatPasswordValidator() },
+  );
 
   constructor(
     private authService: AuthService,
@@ -42,16 +40,6 @@ export class RegisterPage {
     private router: Router,
     private loadingService: LoadingService,
   ) {}
-
-  private repeatPasswordValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const password = this.registerForm?.value.password;
-
-      return password != control.value
-        ? { repeatPassword: { value: control.value } }
-        : null;
-    };
-  }
 
   onSubmit() {
     if (this.registerForm.invalid) return;
