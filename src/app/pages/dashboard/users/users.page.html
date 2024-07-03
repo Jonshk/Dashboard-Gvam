@@ -1,0 +1,29 @@
+<main class="p-4">
+  <h1>Usuarios de dispositivos</h1>
+
+  <button class="btn btn-primary" (click)="createMode()">
+    Crear nuevo usuario de dispositivo
+  </button>
+
+  <app-dialog [open]="showDialog()" (openChange)="hideDialog()">
+    <app-user-form
+      [groupId]="groupId()"
+      [editUser]="userToEdit"
+      (user)="addUser($event)"
+    ></app-user-form>
+  </app-dialog>
+
+  <ul class="list-group my-2">
+    @for (user of users; track user.deviceUserId) {
+      <li class="list-group-item">
+        <app-user-list-item
+          [groupId]="groupId()"
+          [user]="user"
+          (onEditUser)="editUser($event)"
+          (onDeleteUser)="deleteUser($event)"
+        ></app-user-list-item>
+      </li>
+    }
+  </ul>
+</main>
+

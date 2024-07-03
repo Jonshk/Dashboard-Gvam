@@ -7,6 +7,7 @@ import { DevicesPage } from './devices/devices.page';
 import { EnterprisePage } from './enterprise/enterprise.page';
 import { GroupsPage } from './groups/groups.page';
 import { PoliciesPage } from './policies/policies.page';
+import { UsersPage } from './users/users.page';
 
 export const dashboardRoutes: Routes = [
   {
@@ -34,6 +35,12 @@ export const dashboardRoutes: Routes = [
   {
     path: 'groups/:groupId/policies',
     component: PoliciesPage,
+    canMatch: [isIdNumberGuard(1)],
+    canActivate: [isLoggedGuard, hasEnterpriseGuard],
+  },
+  {
+    path: 'groups/:groupId/users',
+    component: UsersPage,
     canMatch: [isIdNumberGuard(1)],
     canActivate: [isLoggedGuard, hasEnterpriseGuard],
   },
