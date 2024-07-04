@@ -5,13 +5,21 @@
     Crear nueva política
   </button>
 
-  <app-dialog [open]="showDialog()" (openChange)="hideDialog()">
+  <app-dialog [open]="showFormDialog()" (openChange)="hideFormDialog()">
     <app-policy-form
       [groupId]="groupId()"
       [editPolicy]="policyToEdit"
       (policy)="addPolicy($event)"
     ></app-policy-form>
   </app-dialog>
+
+  <app-delete-dialog
+    [open]="showDeleteDialog()"
+    (openChange)="hideDeleteDialog()"
+    [message]="'¿Eliminar la política ' + policyToDelete?.name + '?'"
+    (onDelete)="onDeleteConfirm($event)"
+  >
+  </app-delete-dialog>
 
   <ul class="list-group my-2">
     @for (policy of policies; track policy.name) {

@@ -10,11 +10,18 @@ import { DeviceListItemComponent } from './components/device-list-item/device-li
 import { LoadingService } from '../../../core/services/loading/loading.service';
 import { forkJoin } from 'rxjs';
 import { DialogComponent } from '../../../shared/components/dialog/dialog.component';
+import { DeleteDialogComponent } from '../../../shared/components/delete-dialog/delete-dialog.component';
+import { SuccessResponse } from '../../../core/models/response/success-response.model';
 
 @Component({
   selector: 'app-devices',
   standalone: true,
-  imports: [DeviceFormComponent, DeviceListItemComponent, DialogComponent],
+  imports: [
+    DeviceFormComponent,
+    DeviceListItemComponent,
+    DialogComponent,
+    DeleteDialogComponent,
+  ],
   templateUrl: './devices.page.html',
   styleUrl: './devices.page.css',
 })
@@ -22,13 +29,17 @@ export class DevicesPage {
   groupId = input.required<number>();
 
   deviceToEdit: Device | null = null;
+  deviceToDelete: Device | null = null;
 
   devices: Device[] = [];
   registeredDevices?: RegisterDevice;
   policies: Policy[] = [];
 
-  private _showDialog = signal(false);
-  showDialog = this._showDialog.asReadonly();
+  private _showFormDialog = signal(false);
+  showFormDialog = this._showFormDialog.asReadonly();
+
+  private _showDeleteDialog = signal(false);
+  showDeleteDialog = this._showDeleteDialog.asReadonly();
 
   constructor(
     private deviceService: DeviceService,
@@ -62,13 +73,17 @@ export class DevicesPage {
     });
   }
 
-  hideDialog() {
-    this._showDialog.set(false);
+  hideFormDialog() {
+    this._showFormDialog.set(false);
     this.deviceToEdit = null;
   }
 
+  hideDeleteDialog() {
+    this._showDeleteDialog.set(false);
+  }
+
   createMode() {
-    this._showDialog.set(true);
+    this._showFormDialog.set(true);
   }
 
   registerDevices() {
@@ -91,7 +106,7 @@ export class DevicesPage {
 
   editDevice(device: Device) {
     this.deviceToEdit = device;
-    this._showDialog.set(true);
+    this._showFormDialog.set(true);
   }
 
   updateDevice(device: Device) {
@@ -99,16 +114,39 @@ export class DevicesPage {
 
     if (index !== -1) {
       this.devices[index].deviceName = device.deviceName;
-      this.hideDialog();
+      this.hideFormDialog();
       return;
     }
 
-    this.hideDialog();
+    this.hideFormDialog();
   }
 
-  deleteDevice(deviceId: number) {
-    this.devices = this.devices.filter(
-      (device) => device.deviceId !== deviceId,
-    );
+  deleteDevice(device: Device) {
+    this.deviceToDelete = device;
+    this._showDeleteDialog.set(true);
+  }
+
+  onDeleteConfirm(shouldDelete: boolean) {
+    if (!shouldDelete || !this.deviceToDelete) return;
+
+    this.loadingService.setLoading();
+    this.deviceService
+      .delete(this.groupId(), this.deviceToDelete.deviceId)
+      .subscribe({
+        next: ({ data }: Response<SuccessResponse>) => {
+          if (data.success) {
+            this.devices = this.devices.filter(
+              (device) => device.deviceId !== this.deviceToDelete!.deviceId,
+            );
+            this.deviceToDelete = null;
+            this.hideDeleteDialog();
+          }
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });
   }
 }

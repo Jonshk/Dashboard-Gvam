@@ -1,0 +1,10 @@
+<app-dialog [open]="open()" (openChange)="onDismiss()">
+  <p>{{ message() }}</p>
+
+  <div class="d-flex gap-2 flex-wrap justify-content-center">
+    <button class="btn btn-outline-secondary" (click)="onDismiss()">
+      Cancelar
+    </button>
+    <button class="btn btn-danger" (click)="onDeleteClick()">Eliminar</button>
+  </div>
+</app-dialog>

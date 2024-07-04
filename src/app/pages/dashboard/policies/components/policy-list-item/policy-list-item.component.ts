@@ -17,7 +17,7 @@ export class PolicyListItemComponent {
   readonly policy = input.required<Policy>();
 
   readonly onEditPolicy = output<Policy>();
-  readonly onDeletePolicy = output<string>();
+  readonly onDeletePolicy = output<Policy>();
 
   private policyService = inject(PolicyService);
   readonly loadingService = inject(LoadingService);
@@ -27,19 +27,7 @@ export class PolicyListItemComponent {
   }
 
   deletePolicy() {
-    this.loadingService.setLoading();
-    this.policyService.delete(this.groupId(), this.policy().name).subscribe({
-      next: ({ data }: Response<SuccessResponse>) => {
-        if (data) {
-          this.onDeletePolicy.emit(this.policy().name);
-        }
-        this.loadingService.dismissLoading();
-      },
-      error: (err: any) => {
-        console.error('error:', err);
-        this.loadingService.dismissLoading();
-      },
-    });
+    this.onDeletePolicy.emit(this.policy());
   }
 
   applyPolicyToGroup() {

@@ -5,12 +5,20 @@
     Crear nuevo grupo
   </button>
 
-  <app-dialog [open]="showDialog()" (openChange)="hideDialog()">
+  <app-dialog [open]="showFormDialog()" (openChange)="hideFormDialog()">
     <app-group-form
       [editGroup]="groupToEdit"
       (group)="addGroup($event)"
     ></app-group-form>
   </app-dialog>
+
+  <app-delete-dialog
+    [open]="showDeleteDialog()"
+    (openChange)="hideDeleteDialog()"
+    [message]="'¿Eliminar el grupo ' + groupToDelete?.groupName + '?'"
+    (onDelete)="onDeleteConfirm($event)"
+  >
+  </app-delete-dialog>
 
   <ul class="list-group my-2">
     @for (group of groups; track group.groupId) {

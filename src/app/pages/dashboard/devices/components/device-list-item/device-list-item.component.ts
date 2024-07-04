@@ -29,7 +29,7 @@ export class DeviceListItemComponent {
   readonly policies = input.required<Policy[]>();
 
   readonly onEditDevice = output<Device>();
-  readonly onDeleteDevice = output<number>();
+  readonly onDeleteDevice = output<Device>();
 
   private deviceService = inject(DeviceService);
   readonly loadingService = inject(LoadingService);
@@ -55,21 +55,7 @@ export class DeviceListItemComponent {
   }
 
   deleteDevice() {
-    this.loadingService.setLoading();
-    this.deviceService
-      .delete(this.groupId(), this.device().deviceId)
-      .subscribe({
-        next: ({ data }: Response<SuccessResponse>) => {
-          if (data.success) {
-            this.onDeleteDevice.emit(this.device().deviceId);
-          }
-          this.loadingService.dismissLoading();
-        },
-        error: (err: any) => {
-          console.error('error:', err);
-          this.loadingService.dismissLoading();
-        },
-      });
+    this.onDeleteDevice.emit(this.device());
   }
 
   applyPolicy() {

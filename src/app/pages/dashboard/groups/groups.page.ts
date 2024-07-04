@@ -7,6 +7,8 @@ import { GroupFormComponent } from './components/group-form/group-form.component
 import { GroupListItemComponent } from './components/group-list-item/group-list-item.component';
 import { LoadingService } from '../../../core/services/loading/loading.service';
 import { DialogComponent } from '../../../shared/components/dialog/dialog.component';
+import { DeleteDialogComponent } from '../../../shared/components/delete-dialog/delete-dialog.component';
+import { SuccessResponse } from '../../../core/models/response/success-response.model';
 
 @Component({
   selector: 'app-groups',
@@ -16,16 +18,22 @@ import { DialogComponent } from '../../../shared/components/dialog/dialog.compon
     GroupFormComponent,
     GroupListItemComponent,
     DialogComponent,
+    DeleteDialogComponent,
   ],
   templateUrl: './groups.page.html',
   styleUrl: './groups.page.css',
 })
 export class GroupsPage {
   groupToEdit: Group | null = null;
+  groupToDelete: Group | null = null;
+
   groups: Group[] = [];
 
-  private _showDialog = signal(false);
-  showDialog = this._showDialog.asReadonly();
+  private _showFormDialog = signal(false);
+  showFormDialog = this._showFormDialog.asReadonly();
+
+  private _showDeleteDialog = signal(false);
+  showDeleteDialog = this._showDeleteDialog.asReadonly();
 
   constructor(
     private groupService: GroupService,
@@ -48,18 +56,22 @@ export class GroupsPage {
     });
   }
 
-  hideDialog() {
-    this._showDialog.set(false);
+  hideFormDialog() {
+    this._showFormDialog.set(false);
     this.groupToEdit = null;
   }
 
+  hideDeleteDialog() {
+    this._showDeleteDialog.set(false);
+  }
+
   createMode() {
-    this._showDialog.set(true);
+    this._showFormDialog.set(true);
   }
 
   editGroup(group: Group) {
     this.groupToEdit = group;
-    this._showDialog.set(true);
+    this._showFormDialog.set(true);
   }
 
   addGroup(group: Group) {
@@ -67,15 +79,38 @@ export class GroupsPage {
 
     if (index !== -1) {
       this.groups[index].groupName = group.groupName;
-      this.hideDialog();
+      this.hideFormDialog();
       return;
     }
 
     this.groups.push(group);
-    this.hideDialog();
+    this.hideFormDialog();
   }
 
-  deleteGroup(groupId: number) {
-    this.groups = this.groups.filter((group) => group.groupId !== groupId);
+  deleteGroup(group: Group) {
+    this.groupToDelete = group;
+    this._showDeleteDialog.set(true);
+  }
+
+  onDeleteConfirm(shouldDelete: boolean) {
+    if (!shouldDelete || !this.groupToDelete) return;
+
+    this.loadingService.setLoading();
+    this.groupService.delete(this.groupToDelete.groupId).subscribe({
+      next: ({ data }: Response<SuccessResponse>) => {
+        if (data.success) {
+          this.groups = this.groups.filter(
+            (group) => group.groupId !== this.groupToDelete!.groupId,
+          );
+          this.groupToDelete = null;
+          this.hideDeleteDialog();
+        }
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
   }
 }

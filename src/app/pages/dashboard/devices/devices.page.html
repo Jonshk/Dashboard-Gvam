@@ -17,13 +17,20 @@
     </p>
   }
 
-  <app-dialog [open]="showDialog()" (openChange)="hideDialog()">
+  <app-dialog [open]="showFormDialog()" (openChange)="hideFormDialog()">
     <app-device-form
       [groupId]="groupId()"
       [editDevice]="deviceToEdit"
       (device)="updateDevice($event)"
     ></app-device-form>
   </app-dialog>
+
+  <app-delete-dialog
+    [open]="showDeleteDialog()"
+    (openChange)="hideDeleteDialog()"
+    [message]="'¿Eliminar el dispositivo ' + deviceToDelete?.deviceName + '?'"
+    (onDelete)="onDeleteConfirm($event)"
+  ></app-delete-dialog>
 
   <ul class="list-group my-2">
     @for (device of devices; track device.deviceId) {

@@ -6,11 +6,18 @@ import { PolicyFormComponent } from './components/policy-form/policy-form.compon
 import { PolicyListItemComponent } from './components/policy-list-item/policy-list-item.component';
 import { LoadingService } from '../../../core/services/loading/loading.service';
 import { DialogComponent } from '../../../shared/components/dialog/dialog.component';
+import { DeleteDialogComponent } from '../../../shared/components/delete-dialog/delete-dialog.component';
+import { SuccessResponse } from '../../../core/models/response/success-response.model';
 
 @Component({
   selector: 'app-policies',
   standalone: true,
-  imports: [PolicyFormComponent, PolicyListItemComponent, DialogComponent],
+  imports: [
+    PolicyFormComponent,
+    PolicyListItemComponent,
+    DialogComponent,
+    DeleteDialogComponent,
+  ],
   templateUrl: './policies.page.html',
   styleUrl: './policies.page.css',
 })
@@ -20,9 +27,13 @@ export class PoliciesPage {
   policies: Policy[] = [];
 
   policyToEdit: Policy | null = null;
+  policyToDelete: Policy | null = null;
 
-  private _showDialog = signal(false);
-  showDialog = this._showDialog.asReadonly();
+  private _showFormDialog = signal(false);
+  showFormDialog = this._showFormDialog.asReadonly();
+
+  private _showDeleteDialog = signal(false);
+  showDeleteDialog = this._showDeleteDialog.asReadonly();
 
   constructor(
     private policyService: PolicyService,
@@ -50,18 +61,22 @@ export class PoliciesPage {
     });
   }
 
-  hideDialog() {
-    this._showDialog.set(false);
+  hideFormDialog() {
+    this._showFormDialog.set(false);
     this.policyToEdit = null;
   }
 
+  hideDeleteDialog() {
+    this._showDeleteDialog.set(false);
+  }
+
   createMode() {
-    this._showDialog.set(true);
+    this._showFormDialog.set(true);
   }
 
   editPolicy(editPolicy: Policy) {
     this.policyToEdit = editPolicy;
-    this._showDialog.set(true);
+    this._showFormDialog.set(true);
   }
 
   addPolicy(policy: Policy) {
@@ -69,15 +84,40 @@ export class PoliciesPage {
 
     if (index !== -1) {
       this.policies[index] = policy;
-      this.hideDialog();
+      this.hideFormDialog();
       return;
     }
 
     this.policies.push(policy);
-    this.hideDialog();
+    this.hideFormDialog();
   }
 
-  deletePolicy(name: string) {
-    this.policies = this.policies.filter((policy) => policy.name !== name);
+  deletePolicy(policy: Policy) {
+    this.policyToDelete = policy;
+    this._showDeleteDialog.set(true);
+  }
+
+  onDeleteConfirm(shouldDelete: boolean) {
+    if (!shouldDelete || !this.policyToDelete) return;
+
+    this.loadingService.setLoading();
+    this.policyService
+      .delete(this.groupId(), this.policyToDelete.name)
+      .subscribe({
+        next: ({ data }: Response<SuccessResponse>) => {
+          if (data) {
+            this.policies = this.policies.filter(
+              (policy) => policy.name !== this.policyToDelete!.name,
+            );
+            this.policyToDelete = null;
+            this.hideDeleteDialog();
+          }
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });
   }
 }
