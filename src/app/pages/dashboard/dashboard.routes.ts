@@ -8,6 +8,7 @@ import { EnterprisePage } from './enterprise/enterprise.page';
 import { GroupsPage } from './groups/groups.page';
 import { PoliciesPage } from './policies/policies.page';
 import { UsersPage } from './users/users.page';
+import { ApplicationsPage } from './applications/applications.page';
 
 export const dashboardRoutes: Routes = [
   {
@@ -18,6 +19,11 @@ export const dashboardRoutes: Routes = [
   {
     path: 'groups',
     component: GroupsPage,
+    canActivate: [isLoggedGuard, hasEnterpriseGuard],
+  },
+  {
+    path: 'applications',
+    component: ApplicationsPage,
     canActivate: [isLoggedGuard, hasEnterpriseGuard],
   },
   {

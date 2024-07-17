@@ -17,7 +17,7 @@ export class NavbarComponent {
     { path: 'register', name: 'Registrarse' },
   ];
   authRoutes = [{ path: 'enterprises', name: 'Empresa' }];
-  authAndEnterpriseRoutes = [{ path: 'groups', name: 'Grupos' }];
+  authAndEnterpriseRoutes = [{ path: 'groups', name: 'Grupos' }, {path: 'applications', name: 'Aplicaciones'}];
 
   constructor(
     readonly authService: AuthService,
