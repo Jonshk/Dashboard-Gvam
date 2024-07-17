@@ -11,17 +11,18 @@
   >
     Registrar dispositivos
   </button>
-  @if (registeredDevices) {
-    <p>
-      Nuevos dispositivos registrados: {{ registeredDevices.registeredDevices }}
-    </p>
+  @if (newDevices) {
+    <p>Nuevos dispositivos registrados: {{ newDevices.registeredDevices }}</p>
   }
 
   <app-dialog [open]="showFormDialog()" (openChange)="hideFormDialog()">
     <app-device-form
       [groupId]="groupId()"
+      [visible]="showFormDialog()"
       [editDevice]="deviceToEdit"
-      (device)="updateDevice($event)"
+      [deviceUsers]="deviceUsers"
+      (editedDevice)="updateDevice($event)"
+      (deviceCreated)="onDeviceCreated($event)"
     ></app-device-form>
   </app-dialog>
 
@@ -32,17 +33,50 @@
     (onDelete)="onDeleteConfirm($event)"
   ></app-delete-dialog>
 
+  <nav class="nav nav-pills my-4">
+    <li class="nav-item me-2">
+      <button
+        [className]="showRegisteredDevices ? 'nav-link active' : 'nav-link'"
+        (click)="showRegisteredDevices = true"
+      >
+        Dispositivos enrolados
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        [className]="!showRegisteredDevices ? 'nav-link active' : 'nav-link'"
+        (click)="showRegisteredDevices = false"
+      >
+        Dispositivos no enrolados
+      </button>
+    </li>
+  </nav>
+
   <ul class="list-group my-2">
-    @for (device of devices; track device.deviceId) {
-      <li class="list-group-item">
-        <app-device-list-item
-          [groupId]="groupId()"
-          [device]="device"
-          [policies]="policies"
-          (onEditDevice)="editDevice($event)"
-          (onDeleteDevice)="deleteDevice($event)"
-        ></app-device-list-item>
-      </li>
+    @if (showRegisteredDevices) {
+      @for (device of enrolledDevices(); track device.deviceId) {
+        <li class="list-group-item">
+          <app-device-list-item
+            [groupId]="groupId()"
+            [device]="device"
+            [policies]="policies"
+            (onEditDevice)="editDevice($event)"
+            (onDeleteDevice)="deleteDevice($event)"
+          ></app-device-list-item>
+        </li>
+      }
+    } @else {
+      @for (device of notEnrolledDevices(); track device.deviceId) {
+        <li class="list-group-item">
+          <app-device-list-item
+            [groupId]="groupId()"
+            [device]="device"
+            [policies]="policies"
+            (onEditDevice)="editDevice($event)"
+            (onDeleteDevice)="deleteDevice($event)"
+          ></app-device-list-item>
+        </li>
+      }
     }
   </ul>
 </main>

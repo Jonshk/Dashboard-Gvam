@@ -1,5 +1,7 @@
 <div class="d-flex align-items-center justify-content-between">
-  <a [routerLink]="device().deviceId.toString()">{{ device().deviceName }}</a>
+  <a [routerLink]="device().enrolled ? device().deviceId.toString() : null">{{
+    device().deviceName
+  }}</a>
   <div>
     <button
       class="btn btn-outline-secondary me-2 btn-sm"
@@ -16,37 +18,39 @@
       Eliminar
     </button>
   </div>
-  <form [formGroup]="applyPolicyForm" (ngSubmit)="applyPolicy()">
-    <select class="form-select" name="name" formControlName="name">
-      @for (policy of policies(); track policy.name) {
-        <option [value]="policy.name">
-          {{ policy.name }}
-        </option>
-      }
-    </select>
-    <button
-      class="btn btn-warning btn-sm"
-      type="submit"
-      [disabled]="loadingService.isLoading()"
-    >
-      Aplicar política
-    </button>
-  </form>
+  @if (device().enrolled) {
+    <form [formGroup]="applyPolicyForm" (ngSubmit)="applyPolicy()">
+      <select class="form-select" name="name" formControlName="name">
+        @for (policy of policies(); track policy.name) {
+          <option [value]="policy.name">
+            {{ policy.name }}
+          </option>
+        }
+      </select>
+      <button
+        class="btn btn-warning btn-sm"
+        type="submit"
+        [disabled]="loadingService.isLoading()"
+      >
+        Aplicar política
+      </button>
+    </form>
 
-  <form [formGroup]="sendCommandForm" (ngSubmit)="sendCommand()">
-    <select class="form-select" name="command" formControlName="command">
-      @for (deviceCommand of deviceCommandKeys; track deviceCommand) {
-        <option [value]="DeviceCommand[deviceCommand]">
-          {{ deviceCommand }}
-        </option>
-      }
-    </select>
-    <button
-      class="btn btn-warning btn-sm"
-      type="submit"
-      [disabled]="loadingService.isLoading()"
-    >
-      Enviar comando
-    </button>
-  </form>
+    <form [formGroup]="sendCommandForm" (ngSubmit)="sendCommand()">
+      <select class="form-select" name="command" formControlName="command">
+        @for (deviceCommand of deviceCommandKeys; track deviceCommand) {
+          <option [value]="DeviceCommand[deviceCommand]">
+            {{ deviceCommand }}
+          </option>
+        }
+      </select>
+      <button
+        class="btn btn-warning btn-sm"
+        type="submit"
+        [disabled]="loadingService.isLoading()"
+      >
+        Enviar comando
+      </button>
+    </form>
+  }
 </div>

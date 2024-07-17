@@ -1,4 +1,4 @@
-import { Component, effect, input, signal } from '@angular/core';
+import { Component, computed, effect, input, signal } from '@angular/core';
 import { DeviceService } from '../../../core/services/device/device.service';
 import { Response } from '../../../core/models/response/response.model';
 import { RegisterDevice } from '../../../core/models/response/register-device.model';
@@ -12,6 +12,8 @@ import { forkJoin } from 'rxjs';
 import { DialogComponent } from '../../../shared/components/dialog/dialog.component';
 import { DeleteDialogComponent } from '../../../shared/components/delete-dialog/delete-dialog.component';
 import { SuccessResponse } from '../../../core/models/response/success-response.model';
+import { DeviceUser } from '../../../core/models/response/device-user.model';
+import { UserService } from '../../../core/services/user/user.service';
 
 @Component({
   selector: 'app-devices',
@@ -31,9 +33,16 @@ export class DevicesPage {
   deviceToEdit: Device | null = null;
   deviceToDelete: Device | null = null;
 
-  devices: Device[] = [];
-  registeredDevices?: RegisterDevice;
+  private devices = signal<Device[]>([]);
+  enrolledDevices = computed(() => this.devices().filter((d) => d.enrolled));
+  notEnrolledDevices = computed(() =>
+    this.devices().filter((d) => !d.enrolled),
+  );
+
+  showRegisteredDevices: boolean = true;
+  newDevices?: RegisterDevice;
   policies: Policy[] = [];
+  deviceUsers: DeviceUser[] = [];
 
   private _showFormDialog = signal(false);
   showFormDialog = this._showFormDialog.asReadonly();
@@ -44,6 +53,7 @@ export class DevicesPage {
   constructor(
     private deviceService: DeviceService,
     private policyService: PolicyService,
+    private userService: UserService,
     readonly loadingService: LoadingService,
   ) {}
 
@@ -58,11 +68,17 @@ export class DevicesPage {
     this.loadingService.setLoading();
     const $devices = this.deviceService.list(this.groupId());
     const $policies = this.policyService.list(this.groupId());
+    const $deviceUsers = this.userService.list(this.groupId());
 
-    forkJoin([$devices, $policies]).subscribe({
-      next: ([{ data: devices }, { data: policies }]) => {
-        this.devices = devices;
+    forkJoin([$devices, $policies, $deviceUsers]).subscribe({
+      next: ([
+        { data: devices },
+        { data: policies },
+        { data: deviceUsers },
+      ]) => {
+        this.devices.set(devices);
         this.policies = policies;
+        this.deviceUsers = deviceUsers;
 
         this.loadingService.dismissLoading();
       },
@@ -71,6 +87,25 @@ export class DevicesPage {
         this.loadingService.dismissLoading();
       },
     });
+  }
+
+  private listDevices() {
+    this.deviceService.list(this.groupId()).subscribe({
+      next: ({ data }: Response<Device[]>) => {
+        this.devices.set(data);
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
+  }
+
+  onDeviceCreated(created: boolean) {
+    if (created) {
+      this.listDevices();
+    }
   }
 
   hideFormDialog() {
@@ -91,11 +126,11 @@ export class DevicesPage {
     this.deviceService.register(this.groupId()).subscribe({
       next: ({ data }: Response<RegisterDevice>) => {
         if (data.registeredDevices > 0) {
-          this.listDevicesAndPolicies();
+          this.listDevices();
         } else {
           this.loadingService.dismissLoading();
         }
-        this.registeredDevices = data;
+        this.newDevices = data;
       },
       error: (err: any) => {
         console.error('error:', err);
@@ -110,10 +145,12 @@ export class DevicesPage {
   }
 
   updateDevice(device: Device) {
-    const index = this.devices.findIndex((d) => d.deviceId === device.deviceId);
+    const index = this.devices().findIndex(
+      (d) => d.deviceId === device.deviceId,
+    );
 
     if (index !== -1) {
-      this.devices[index].deviceName = device.deviceName;
+      this.devices()[index].deviceName = device.deviceName;
       this.hideFormDialog();
       return;
     }
@@ -131,12 +168,18 @@ export class DevicesPage {
 
     this.loadingService.setLoading();
     this.deviceService
-      .delete(this.groupId(), this.deviceToDelete.deviceId)
+      .delete(
+        this.groupId(),
+        this.deviceToDelete.deviceId,
+        this.deviceToDelete.enrolled,
+      )
       .subscribe({
         next: ({ data }: Response<SuccessResponse>) => {
           if (data.success) {
-            this.devices = this.devices.filter(
-              (device) => device.deviceId !== this.deviceToDelete!.deviceId,
+            this.devices.update((devices) =>
+              devices.filter(
+                (device) => device.deviceId !== this.deviceToDelete!.deviceId,
+              ),
             );
             this.deviceToDelete = null;
             this.hideDeleteDialog();

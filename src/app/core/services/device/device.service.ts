@@ -69,9 +69,11 @@ export class DeviceService {
   delete(
     groupId: number,
     deviceId: number,
+    enrolled: boolean,
   ): Observable<Response<SuccessResponse>> {
     return this.http.delete<Response<SuccessResponse>>(
       this.url(groupId, deviceId),
+      { params: { enrolled } },
     );
   }
 

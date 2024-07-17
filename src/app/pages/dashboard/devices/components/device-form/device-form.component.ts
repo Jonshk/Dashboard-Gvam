@@ -12,6 +12,7 @@ import { DeviceService } from '../../../../../core/services/device/device.servic
 import { Response } from '../../../../../core/models/response/response.model';
 import { EnrollDeviceResponse } from '../../../../../core/models/response/enroll-device-response.model';
 import { LoadingService } from '../../../../../core/services/loading/loading.service';
+import { DeviceUser } from '../../../../../core/models/response/device-user.model';
 
 @Component({
   selector: 'app-device-form',
@@ -22,29 +23,52 @@ import { LoadingService } from '../../../../../core/services/loading/loading.ser
 })
 export class DeviceFormComponent {
   readonly groupId = input.required<number>();
+  readonly visible = input.required<boolean>();
+  readonly deviceUsers = input.required<DeviceUser[]>();
   readonly editDevice = input<Device | null>(null);
 
-  readonly device = output<Device>();
+  readonly editedDevice = output<Device>();
+  readonly deviceCreated = output<boolean>();
 
   private deviceService = inject(DeviceService);
   private domSanitizer = inject(DomSanitizer);
   readonly loadingService = inject(LoadingService);
 
+  deviceName: string = '';
+  pin: string | null = null;
   registerQr: SafeResourceUrl = '';
 
   deviceForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
+    user: new FormControl('', [Validators.required]),
+  });
+
+  private clearView = effect(() => {
+    if (this.visible()) {
+      this.resetForm();
+      this.deviceName = '';
+      this.pin = null;
+      this.registerQr = '';
+    }
   });
 
   private setDeviceForm = effect(() => {
     this.resetForm();
     if (this.editDevice()) {
+      this.deviceName = '';
+      this.pin = null;
+      this.registerQr = '';
       this.deviceForm.controls.name.setValue(this.editDevice()!.deviceName);
+      this.deviceForm.controls.user.setValue(
+        `${this.editDevice()!.deviceUserId}`,
+      );
+      this.deviceForm.controls.user.disable();
     }
   });
 
   private resetForm() {
-    this.deviceForm.reset({ name: '' });
+    this.deviceForm.reset({ name: '', user: '' });
+    this.deviceForm.controls.user.enable();
   }
 
   onSubmit() {
@@ -54,9 +78,13 @@ export class DeviceFormComponent {
 
     const device: EnrollDeviceRequest = {
       deviceName: this.deviceForm.value.name!,
+      deviceUserId: Number(this.deviceForm.value.user),
     };
 
+    this.deviceName = device.deviceName;
+
     if (this.editDevice()) {
+      device.deviceUserId = this.editDevice()!.deviceUserId;
       this.editCurrentDevice(device);
       return;
     }
@@ -67,11 +95,13 @@ export class DeviceFormComponent {
   private enrollDevice(registerDevice: EnrollDeviceRequest) {
     this.deviceService.enroll(this.groupId(), registerDevice).subscribe({
       next: ({ data }: Response<EnrollDeviceResponse>) => {
+        this.pin = data.pin;
         this.registerQr = this.domSanitizer.bypassSecurityTrustResourceUrl(
           `data:image/png;base64,${data.qrCode}`,
         );
-        console.log(this.registerQr);
+        this.resetForm();
         this.loadingService.dismissLoading();
+        this.deviceCreated.emit(true);
       },
       error: (err: any) => {
         console.error('error:', err);
@@ -89,7 +119,7 @@ export class DeviceFormComponent {
       .update(this.groupId(), this.editDevice()!.deviceId, editedDevice)
       .subscribe({
         next: ({ data }: Response<Device>) => {
-          this.device.emit(data);
+          this.editedDevice.emit(data);
           this.loadingService.dismissLoading();
         },
         error: (err: any) => {
