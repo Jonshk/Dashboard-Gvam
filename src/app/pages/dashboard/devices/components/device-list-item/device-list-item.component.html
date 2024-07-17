@@ -52,5 +52,22 @@
         Enviar comando
       </button>
     </form>
+
+    <form [formGroup]="migrateForm" (ngSubmit)="migrate()">
+      <select class="form-select" name="groupId" formControlName="groupId">
+        @for (group of groups(); track group.groupId) {
+          <option [value]="group.groupId">
+            {{ group.groupName }}
+          </option>
+        }
+      </select>
+      <button
+        class="btn btn-warning btn-sm"
+        type="submit"
+        [disabled]="loadingService.isLoading()"
+      >
+        Migrar dispositivo
+      </button>
+    </form>
   }
 </div>

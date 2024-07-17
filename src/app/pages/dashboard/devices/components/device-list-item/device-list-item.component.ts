@@ -15,6 +15,8 @@ import { LoadingService } from '../../../../../core/services/loading/loading.ser
 import { DeviceCommand } from '../../../../../core/enums/device-command';
 import { DeviceCommandRequest } from '../../../../../core/models/request/device-command-request.model';
 import { RouterModule } from '@angular/router';
+import { Group } from '../../../../../core/models/response/group.model';
+import { MigrateDeviceRequest } from '../../../../../core/models/request/migrate-device-request';
 
 @Component({
   selector: 'app-device-list-item',
@@ -27,9 +29,10 @@ export class DeviceListItemComponent {
   readonly groupId = input.required<number>();
   readonly device = input.required<Device>();
   readonly policies = input.required<Policy[]>();
+  readonly groups = input.required<Group[]>();
 
   readonly onEditDevice = output<Device>();
-  readonly onDeleteDevice = output<Device>();
+  readonly onDeleteDevice = output<DeleteDevice>();
 
   private deviceService = inject(DeviceService);
   readonly loadingService = inject(LoadingService);
@@ -46,16 +49,29 @@ export class DeviceListItemComponent {
     command: new FormControl(DeviceCommand.LOCK, [Validators.required]),
   });
 
+  migrateForm = new FormGroup({
+    groupId: new FormControl(-1, [Validators.required]),
+  });
+
   private setDefaultPolicy = effect(() => {
     this.applyPolicyForm.controls.name.setValue(this.device().policyName);
+  });
+
+  private setCurrentGroup = effect(() => {
+    this.migrateForm.controls.groupId.setValue(this.groupId());
   });
 
   editDevice() {
     this.onEditDevice.emit(this.device());
   }
 
-  deleteDevice() {
-    this.onDeleteDevice.emit(this.device());
+  deleteDevice(confirm: boolean = true) {
+    const deleteDevice: DeleteDevice = {
+      device: this.device(),
+      confirm: confirm,
+    };
+
+    this.onDeleteDevice.emit(deleteDevice);
   }
 
   applyPolicy() {
@@ -108,4 +124,37 @@ export class DeviceListItemComponent {
         },
       });
   }
+
+  migrate() {
+    if (this.migrateForm.invalid) return;
+
+    if (this.groupId() === this.migrateForm.value.groupId) return;
+
+    this.loadingService.setLoading();
+
+    const migrateDeviceRequest: MigrateDeviceRequest = {
+      groupId: this.migrateForm.value.groupId!,
+    };
+
+    this.deviceService
+      .migrate(this.groupId(), this.device().deviceId, migrateDeviceRequest)
+      .subscribe({
+        next: ({ data }: Response<SuccessResponse>) => {
+          if (data.success) {
+            console.log('Dispositivo migrado');
+            this.deleteDevice(false);
+          }
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });
+  }
+}
+
+export interface DeleteDevice {
+  device: Device;
+  confirm: boolean;
 }

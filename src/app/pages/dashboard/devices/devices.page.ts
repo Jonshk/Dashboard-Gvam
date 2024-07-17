@@ -6,7 +6,10 @@ import { PolicyService } from '../../../core/services/policy/policy.service';
 import { Policy } from '../../../core/models/response/policy.model';
 import { Device } from '../../../core/models/response/device.model';
 import { DeviceFormComponent } from './components/device-form/device-form.component';
-import { DeviceListItemComponent } from './components/device-list-item/device-list-item.component';
+import {
+  DeleteDevice,
+  DeviceListItemComponent,
+} from './components/device-list-item/device-list-item.component';
 import { LoadingService } from '../../../core/services/loading/loading.service';
 import { forkJoin } from 'rxjs';
 import { DialogComponent } from '../../../shared/components/dialog/dialog.component';
@@ -14,6 +17,8 @@ import { DeleteDialogComponent } from '../../../shared/components/delete-dialog/
 import { SuccessResponse } from '../../../core/models/response/success-response.model';
 import { DeviceUser } from '../../../core/models/response/device-user.model';
 import { UserService } from '../../../core/services/user/user.service';
+import { GroupService } from '../../../core/services/group/group.service';
+import { Group } from '../../../core/models/response/group.model';
 
 @Component({
   selector: 'app-devices',
@@ -43,6 +48,7 @@ export class DevicesPage {
   newDevices?: RegisterDevice;
   policies: Policy[] = [];
   deviceUsers: DeviceUser[] = [];
+  groups: Group[] = [];
 
   private _showFormDialog = signal(false);
   showFormDialog = this._showFormDialog.asReadonly();
@@ -54,6 +60,7 @@ export class DevicesPage {
     private deviceService: DeviceService,
     private policyService: PolicyService,
     private userService: UserService,
+    private groupService: GroupService,
     readonly loadingService: LoadingService,
   ) {}
 
@@ -69,16 +76,19 @@ export class DevicesPage {
     const $devices = this.deviceService.list(this.groupId());
     const $policies = this.policyService.list(this.groupId());
     const $deviceUsers = this.userService.list(this.groupId());
+    const $groups = this.groupService.list();
 
-    forkJoin([$devices, $policies, $deviceUsers]).subscribe({
+    forkJoin([$devices, $policies, $deviceUsers, $groups]).subscribe({
       next: ([
         { data: devices },
         { data: policies },
         { data: deviceUsers },
+        { data: groups },
       ]) => {
         this.devices.set(devices);
         this.policies = policies;
         this.deviceUsers = deviceUsers;
+        this.groups = groups;
 
         this.loadingService.dismissLoading();
       },
@@ -158,9 +168,24 @@ export class DevicesPage {
     this.hideFormDialog();
   }
 
-  deleteDevice(device: Device) {
-    this.deviceToDelete = device;
-    this._showDeleteDialog.set(true);
+  deleteDevice(deleteDevice: DeleteDevice) {
+    this.deviceToDelete = deleteDevice.device;
+    // True cuando se borra un dispositivo
+    if (deleteDevice.confirm) {
+      this._showDeleteDialog.set(true);
+      return;
+    }
+
+    this.migrate();
+  }
+
+  private migrate() {
+    this.devices.update((devices) =>
+      devices.filter(
+        (device) => device.deviceId !== this.deviceToDelete!.deviceId,
+      ),
+    );
+    this.deviceToDelete = null;
   }
 
   onDeleteConfirm(shouldDelete: boolean) {
