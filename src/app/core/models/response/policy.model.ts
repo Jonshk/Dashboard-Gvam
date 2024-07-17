@@ -17,6 +17,8 @@ export interface Policy {
   adjustVolumeDisabled?: boolean;
   powerButtonAction?: PowerButtonAction;
   usbDataAccess?: UsbDataAccess;
+  factoryResetDisabled?: boolean;
+  installAppsDisabled?: boolean;
 }
 export interface WifiSsidPolicy {
   wifiSsidPolicyType: WifiSsidPolicyType;

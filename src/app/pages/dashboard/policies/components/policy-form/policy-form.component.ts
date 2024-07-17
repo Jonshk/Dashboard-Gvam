@@ -48,6 +48,8 @@ export class PolicyFormComponent {
     adjustVolumeDisabled: false,
     powerButtonAction: PowerButtonAction.UNSPECIFIED,
     usbDataAccess: UsbDataAccess.UNSPECIFIED,
+    factoryResetDisabled: false,
+    installAppsDisabled: false,
   };
 
   policyForm = this.formBuilder.group({
@@ -72,6 +74,8 @@ export class PolicyFormComponent {
     adjustVolumeDisabled: [this.defaultFormValues.adjustVolumeDisabled],
     powerButtonAction: [this.defaultFormValues.powerButtonAction],
     usbDataAccess: [this.defaultFormValues.usbDataAccess],
+    factoryResetDisabled: [this.defaultFormValues.factoryResetDisabled],
+    installAppsDisabled: [this.defaultFormValues.installAppsDisabled],
   });
 
   private setEditForm = effect(() => {
@@ -118,21 +122,35 @@ export class PolicyFormComponent {
       this.policyForm.controls.locationMode.setValue(
         this.editPolicy()!.locationMode ?? this.defaultFormValues.locationMode,
       );
+
       this.policyForm.controls.bluetoothDisabled.setValue(
         this.editPolicy()!.bluetoothDisabled ??
           this.defaultFormValues.bluetoothDisabled,
       );
+
       this.policyForm.controls.adjustVolumeDisabled.setValue(
         this.editPolicy()!.adjustVolumeDisabled ??
           this.defaultFormValues.adjustVolumeDisabled,
       );
+
       this.policyForm.controls.powerButtonAction.setValue(
         this.editPolicy()!.powerButtonAction ??
           this.defaultFormValues.powerButtonAction,
       );
+
       this.policyForm.controls.usbDataAccess.setValue(
         this.editPolicy()!.usbDataAccess ??
           this.defaultFormValues.usbDataAccess,
+      );
+
+      this.policyForm.controls.factoryResetDisabled.setValue(
+        this.editPolicy()!.factoryResetDisabled ??
+          this.defaultFormValues.factoryResetDisabled,
+      );
+
+      this.policyForm.controls.installAppsDisabled.setValue(
+        this.editPolicy()!.installAppsDisabled ??
+          this.defaultFormValues.installAppsDisabled,
       );
     }
   });
