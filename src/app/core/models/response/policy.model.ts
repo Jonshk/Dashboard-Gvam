@@ -19,6 +19,7 @@ export interface Policy {
   usbDataAccess?: UsbDataAccess;
   factoryResetDisabled?: boolean;
   installAppsDisabled?: boolean;
+  isDefault?: boolean;
 }
 export interface WifiSsidPolicy {
   wifiSsidPolicyType: WifiSsidPolicyType;

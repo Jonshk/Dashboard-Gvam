@@ -1,5 +1,5 @@
 <div class="d-flex align-items-center justify-content-between">
-  {{ policy().name }}
+  <span [className]="policy().isDefault ? 'fw-bold' : ''">{{ policy().name }}</span>
   <div>
     <button
       class="btn btn-outline-secondary me-2 btn-sm"

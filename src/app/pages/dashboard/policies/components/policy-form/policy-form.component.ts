@@ -37,6 +37,7 @@ export class PolicyFormComponent {
 
   private defaultFormValues = {
     name: '',
+    isDefault: false,
     applicationPolicy: [],
     wifiState: WifiState.UNSPECIFIED,
     wifiSsidPolicy: {
@@ -57,6 +58,7 @@ export class PolicyFormComponent {
       this.defaultFormValues.name,
       [Validators.required, Validators.pattern(new RegExp('^[a-zA-Z0-9]*$'))],
     ],
+    isDefault: [this.defaultFormValues.isDefault],
     applicationPolicies: this.formBuilder.array(
       this.defaultFormValues.applicationPolicy,
     ),
@@ -83,6 +85,8 @@ export class PolicyFormComponent {
     if (this.editPolicy()) {
       this.policyForm.controls.name.setValue(this.editPolicy()!.name);
       this.policyForm.controls.name.disable();
+
+      this.policyForm.controls.isDefault.setValue(this.editPolicy()!.isDefault ?? this.defaultFormValues.isDefault)
 
       this.editPolicy()!.applicationPolicies.forEach((appPolicy) => {
         const applicationPolicyForm = this.newApplicationPolicy();
