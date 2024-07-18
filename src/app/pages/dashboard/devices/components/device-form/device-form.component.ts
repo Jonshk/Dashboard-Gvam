@@ -40,7 +40,7 @@ export class DeviceFormComponent {
 
   deviceForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
-    user: new FormControl('', [Validators.required]),
+    user: new FormControl(-1, [Validators.required, Validators.min(0)]),
   });
 
   private clearView = effect(() => {
@@ -60,15 +60,13 @@ export class DeviceFormComponent {
       this.registerQr = '';
       this.deviceForm.controls.name.setValue(this.editDevice()!.deviceName);
       this.deviceForm.controls.user.setValue(
-        `${this.editDevice()!.deviceUserId}`,
+        this.editDevice()!.deviceUserId ?? -1,
       );
-      this.deviceForm.controls.user.disable();
     }
   });
 
   private resetForm() {
-    this.deviceForm.reset({ name: '', user: '' });
-    this.deviceForm.controls.user.enable();
+    this.deviceForm.reset({ name: '', user: -1 });
   }
 
   onSubmit() {
@@ -84,7 +82,6 @@ export class DeviceFormComponent {
     this.deviceName = device.deviceName;
 
     if (this.editDevice()) {
-      device.deviceUserId = this.editDevice()!.deviceUserId;
       this.editCurrentDevice(device);
       return;
     }
