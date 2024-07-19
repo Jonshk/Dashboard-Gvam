@@ -9,6 +9,7 @@ import { DeviceFormComponent } from './components/device-form/device-form.compon
 import {
   DeleteDevice,
   DeviceListItemComponent,
+  SelectDevice,
 } from './components/device-list-item/device-list-item.component';
 import { LoadingService } from '../../../core/services/loading/loading.service';
 import { forkJoin } from 'rxjs';
@@ -19,6 +20,17 @@ import { DeviceUser } from '../../../core/models/response/device-user.model';
 import { UserService } from '../../../core/services/user/user.service';
 import { GroupService } from '../../../core/services/group/group.service';
 import { Group } from '../../../core/models/response/group.model';
+import {
+  FormGroup,
+  FormControl,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { DeviceCommand } from '../../../core/enums/device-command';
+import { ApplyDevicePolicyRequest } from '../../../core/models/request/apply-device-policy-request.model';
+import { DeviceCommandRequest } from '../../../core/models/request/device-command-request.model';
+import { MigrateDeviceRequest } from '../../../core/models/request/migrate-device-request';
+import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'app-devices',
@@ -28,6 +40,8 @@ import { Group } from '../../../core/models/response/group.model';
     DeviceListItemComponent,
     DialogComponent,
     DeleteDialogComponent,
+    ReactiveFormsModule,
+    NgTemplateOutlet,
   ],
   templateUrl: './devices.page.html',
   styleUrl: './devices.page.css',
@@ -49,6 +63,24 @@ export class DevicesPage {
   policies: Policy[] = [];
   deviceUsers: DeviceUser[] = [];
   groups: Group[] = [];
+  selectedDevices: Device[] = [];
+  actionDialog: ActionTypeDialog = 'hidden';
+
+  applyPolicyForm = new FormGroup({
+    name: new FormControl('', [Validators.required]),
+  });
+
+  readonly DeviceCommand = DeviceCommand;
+  readonly deviceCommandKeys = Object.keys(DeviceCommand) as [
+    keyof typeof DeviceCommand,
+  ];
+  sendCommandForm = new FormGroup({
+    command: new FormControl(DeviceCommand.LOCK, [Validators.required]),
+  });
+
+  migrateForm = new FormGroup({
+    groupId: new FormControl(-1, [Validators.required]),
+  });
 
   private _showFormDialog = signal(false);
   showFormDialog = this._showFormDialog.asReadonly();
@@ -112,6 +144,10 @@ export class DevicesPage {
     });
   }
 
+  getDeviceUser(deviceUserId?: number): DeviceUser | undefined {
+    return this.deviceUsers.find((d) => d.deviceUserId === deviceUserId);
+  }
+
   onDeviceCreated(created: boolean) {
     if (created) {
       this.listDevices();
@@ -149,6 +185,25 @@ export class DevicesPage {
     });
   }
 
+  selectDevice(selectDevice: SelectDevice) {
+    if (selectDevice.select) {
+      const index = this.selectedDevices.findIndex(
+        (d) => d.deviceId === selectDevice.device.deviceId,
+      );
+
+      if (index !== -1) {
+        this.selectedDevices[index] = selectDevice.device;
+        return;
+      }
+
+      this.selectedDevices.push(selectDevice.device);
+    } else {
+      this.selectedDevices = this.selectedDevices.filter(
+        (d) => d.deviceId !== selectDevice.device.deviceId,
+      );
+    }
+  }
+
   editDevice(device: Device) {
     this.deviceToEdit = device;
     this._showFormDialog.set(true);
@@ -161,6 +216,7 @@ export class DevicesPage {
 
     if (index !== -1) {
       this.devices()[index].deviceName = device.deviceName;
+      this.devices()[index].deviceUserId = device.deviceUserId;
       this.hideFormDialog();
       return;
     }
@@ -217,4 +273,166 @@ export class DevicesPage {
         },
       });
   }
+
+  showActionDialog(): boolean {
+    return this.actionDialog !== 'hidden';
+  }
+
+  hideActionDialog() {
+    this.actionDialog = 'hidden';
+  }
+
+  changeActionDialog(action: ActionTypeDialog) {
+    this.actionDialog = action;
+  }
+
+  applyPolicyAction() {
+    if (this.applyPolicyForm.invalid) return;
+
+    if (this.selectedDevices.length === 0) {
+      this.hideActionDialog();
+      return;
+    }
+
+    this.loadingService.setLoading();
+
+    const applyDevicePolicyRequest: ApplyDevicePolicyRequest = {
+      policyName: this.applyPolicyForm.value.name!,
+    };
+
+    const $policyRequests = this.selectedDevices.map((d) =>
+      this.deviceService.applyPolicy(
+        this.groupId(),
+        d.deviceId,
+        applyDevicePolicyRequest,
+      ),
+    );
+
+    forkJoin($policyRequests).subscribe({
+      next: (_: Response<SuccessResponse>[]) => {
+        this.devices.update((devices) => {
+          devices.forEach((d) => {
+            if (this.selectedDevices.includes(d)) {
+              d.policyName = applyDevicePolicyRequest.policyName;
+            }
+          });
+
+          return devices;
+        });
+        this.hideActionDialog();
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
+  }
+
+  sendCommandAction() {
+    if (this.sendCommandForm.invalid) return;
+
+    if (this.selectedDevices.length === 0) {
+      this.hideActionDialog();
+      return;
+    }
+
+    this.loadingService.setLoading();
+
+    const deviceCommandRequest: DeviceCommandRequest = {
+      deviceCommand: this.sendCommandForm.value.command!,
+    };
+
+    const $commandRequests = this.selectedDevices.map((d) =>
+      this.deviceService.sendCommand(
+        this.groupId(),
+        d.deviceId,
+        deviceCommandRequest,
+      ),
+    );
+
+    forkJoin($commandRequests).subscribe({
+      next: (_: Response<SuccessResponse>[]) => {
+        this.hideActionDialog();
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
+  }
+
+  migrateAction() {
+    if (this.migrateForm.invalid) return;
+
+    if (this.selectedDevices.length === 0) {
+      this.hideActionDialog();
+      return;
+    }
+
+    this.loadingService.setLoading();
+
+    const migrateDeviceRequest: MigrateDeviceRequest = {
+      groupId: this.migrateForm.value.groupId!,
+    };
+
+    const $migrateRequests = this.selectedDevices.map((d) =>
+      this.deviceService.migrate(
+        this.groupId(),
+        d.deviceId,
+        migrateDeviceRequest,
+      ),
+    );
+
+    forkJoin($migrateRequests).subscribe({
+      next: (_: Response<SuccessResponse>[]) => {
+        this.devices.update((devices) =>
+          devices.filter((d) => !this.selectedDevices.includes(d)),
+        );
+        this.selectedDevices = [];
+        this.hideActionDialog();
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
+  }
+
+  deleteAction() {
+    if (this.selectedDevices.length === 0) {
+      this.hideActionDialog();
+      return;
+    }
+
+    this.loadingService.setLoading();
+
+    const $deleteRequests = this.selectedDevices.map((d) =>
+      this.deviceService.delete(this.groupId(), d.deviceId, d.enrolled),
+    );
+
+    forkJoin($deleteRequests).subscribe({
+      next: (_: Response<SuccessResponse>[]) => {
+        this.devices.update((devices) =>
+          devices.filter((d) => !this.selectedDevices.includes(d)),
+        );
+        this.selectedDevices = [];
+        this.hideActionDialog();
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
+  }
 }
+
+type ActionTypeDialog =
+  | 'hidden'
+  | 'policies'
+  | 'command'
+  | 'migrate'
+  | 'delete';

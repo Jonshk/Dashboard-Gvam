@@ -17,9 +17,10 @@ import { DeviceCommandRequest } from '../../../../../core/models/request/device-
 import { RouterModule } from '@angular/router';
 import { Group } from '../../../../../core/models/response/group.model';
 import { MigrateDeviceRequest } from '../../../../../core/models/request/migrate-device-request';
+import { DeviceUser } from '../../../../../core/models/response/device-user.model';
 
 @Component({
-  selector: 'app-device-list-item',
+  selector: '[app-device-list-item]',
   standalone: true,
   imports: [ReactiveFormsModule, RouterModule],
   templateUrl: './device-list-item.component.html',
@@ -30,7 +31,9 @@ export class DeviceListItemComponent {
   readonly device = input.required<Device>();
   readonly policies = input.required<Policy[]>();
   readonly groups = input.required<Group[]>();
+  readonly deviceUser = input<DeviceUser | undefined>(undefined);
 
+  readonly onSelectDevice = output<SelectDevice>();
   readonly onEditDevice = output<Device>();
   readonly onDeleteDevice = output<DeleteDevice>();
 
@@ -152,9 +155,25 @@ export class DeviceListItemComponent {
         },
       });
   }
+
+  toggleSelected(event: Event) {
+    const checkbox = event.currentTarget as HTMLInputElement;
+
+    const selectDevice: SelectDevice = {
+      device: this.device(),
+      select: checkbox.checked,
+    };
+
+    this.onSelectDevice.emit(selectDevice);
+  }
 }
 
 export interface DeleteDevice {
   device: Device;
   confirm: boolean;
+}
+
+export interface SelectDevice {
+  device: Device;
+  select: boolean;
 }

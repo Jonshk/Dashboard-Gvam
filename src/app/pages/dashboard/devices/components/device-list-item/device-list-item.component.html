@@ -1,24 +1,38 @@
-<div class="d-flex align-items-center justify-content-between">
+<td>
+  <input
+    (change)="toggleSelected($event)"
+    type="checkbox"
+    name="selected"
+    id="selected"
+  />
+</td>
+<td>
   <a [routerLink]="device().enrolled ? device().deviceId.toString() : null">{{
     device().deviceName
   }}</a>
-  <div>
-    <button
-      class="btn btn-outline-secondary me-2 btn-sm"
-      [disabled]="loadingService.isLoading()"
-      (click)="editDevice()"
-    >
-      Editar
-    </button>
-    <button
-      class="btn btn-danger btn-sm"
-      [disabled]="loadingService.isLoading()"
-      (click)="deleteDevice()"
-    >
-      Eliminar
-    </button>
-  </div>
-  @if (device().enrolled) {
+</td>
+
+<td>{{ deviceUser()?.email ?? "-" }}</td>
+
+<td>
+  <button
+    class="btn btn-outline-secondary me-2 btn-sm"
+    [disabled]="loadingService.isLoading()"
+    (click)="editDevice()"
+  >
+    Editar
+  </button>
+  <button
+    class="btn btn-danger btn-sm"
+    [disabled]="loadingService.isLoading()"
+    (click)="deleteDevice()"
+  >
+    Eliminar
+  </button>
+</td>
+
+@if (device().enrolled) {
+  <td>
     <form [formGroup]="applyPolicyForm" (ngSubmit)="applyPolicy()">
       <select class="form-select" name="name" formControlName="name">
         @for (policy of policies(); track policy.name) {
@@ -35,7 +49,8 @@
         Aplicar política
       </button>
     </form>
-
+  </td>
+  <td>
     <form [formGroup]="sendCommandForm" (ngSubmit)="sendCommand()">
       <select class="form-select" name="command" formControlName="command">
         @for (deviceCommand of deviceCommandKeys; track deviceCommand) {
@@ -52,7 +67,8 @@
         Enviar comando
       </button>
     </form>
-
+  </td>
+  <td>
     <form [formGroup]="migrateForm" (ngSubmit)="migrate()">
       <select class="form-select" name="groupId" formControlName="groupId">
         @for (group of groups(); track group.groupId) {
@@ -69,5 +85,5 @@
         Migrar dispositivo
       </button>
     </form>
-  }
-</div>
+  </td>
+}
