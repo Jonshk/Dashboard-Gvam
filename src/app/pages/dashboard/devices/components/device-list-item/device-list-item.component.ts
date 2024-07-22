@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, output } from '@angular/core';
+import { Component, effect, inject, input, model, output } from '@angular/core';
 import { Device } from '../../../../../core/models/response/device.model';
 import { Policy } from '../../../../../core/models/response/policy.model';
 import {
@@ -28,12 +28,11 @@ import { DeviceUser } from '../../../../../core/models/response/device-user.mode
 })
 export class DeviceListItemComponent {
   readonly groupId = input.required<number>();
-  readonly device = input.required<Device>();
+  readonly device = model.required<SelectableDevice>();
   readonly policies = input.required<Policy[]>();
   readonly groups = input.required<Group[]>();
   readonly deviceUser = input<DeviceUser | undefined>(undefined);
 
-  readonly onSelectDevice = output<SelectDevice>();
   readonly onEditDevice = output<Device>();
   readonly onDeleteDevice = output<DeleteDevice>();
 
@@ -159,12 +158,12 @@ export class DeviceListItemComponent {
   toggleSelected(event: Event) {
     const checkbox = event.currentTarget as HTMLInputElement;
 
-    const selectDevice: SelectDevice = {
-      device: this.device(),
-      select: checkbox.checked,
-    };
-
-    this.onSelectDevice.emit(selectDevice);
+    this.device.update((device) => {
+      return {
+        ...device,
+        selected: checkbox.checked,
+      };
+    });
   }
 }
 
@@ -173,7 +172,6 @@ export interface DeleteDevice {
   confirm: boolean;
 }
 
-export interface SelectDevice {
-  device: Device;
-  select: boolean;
+export interface SelectableDevice extends Device {
+  selected?: boolean;
 }

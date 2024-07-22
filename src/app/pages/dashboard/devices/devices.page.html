@@ -61,7 +61,7 @@
       <li class="nav-item me-2">
         <button
           [className]="showRegisteredDevices ? 'nav-link active' : 'nav-link'"
-          (click)="showRegisteredDevices = true"
+          (click)="toggleRegisteredDevices(true)"
         >
           Dispositivos enrolados
         </button>
@@ -69,51 +69,66 @@
       <li class="nav-item">
         <button
           [className]="!showRegisteredDevices ? 'nav-link active' : 'nav-link'"
-          (click)="showRegisteredDevices = false"
+          (click)="toggleRegisteredDevices(false)"
         >
           Dispositivos no enrolados
         </button>
       </li>
     </nav>
 
-    <div class="btn-group">
-      <button
-        type="button"
-        class="btn btn-warning dropdown-toggle"
-        data-bs-toggle="dropdown"
-        aria-expanded="false"
-      >
-        Acciones
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-secondary" (click)="selectAll()">
+        Seleccionar todos
       </button>
-      <ul class="dropdown-menu">
-        <li>
-          <button
-            class="dropdown-item"
-            (click)="changeActionDialog('policies')"
-          >
-            Cambiar política
-          </button>
-        </li>
-        <li>
-          <button class="dropdown-item" (click)="changeActionDialog('command')">
-            Enviar comando
-          </button>
-        </li>
-        <li>
-          <button class="dropdown-item" (click)="changeActionDialog('migrate')">
-            Migrar de grupo
-          </button>
-        </li>
-        <li><hr class="dropdown-divider" /></li>
-        <li>
-          <button
-            class="dropdown-item text-danger"
-            (click)="changeActionDialog('delete')"
-          >
-            Eliminar
-          </button>
-        </li>
-      </ul>
+      <button class="btn btn-outline-secondary" (click)="unselectAll()">
+        Deseleccionar todos
+      </button>
+
+      <div class="btn-group">
+        <button
+          type="button"
+          class="btn btn-warning dropdown-toggle"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          Acciones
+        </button>
+        <ul class="dropdown-menu">
+          <li>
+            <button
+              class="dropdown-item"
+              (click)="changeActionDialog('policies')"
+            >
+              Cambiar política
+            </button>
+          </li>
+          <li>
+            <button
+              class="dropdown-item"
+              (click)="changeActionDialog('command')"
+            >
+              Enviar comando
+            </button>
+          </li>
+          <li>
+            <button
+              class="dropdown-item"
+              (click)="changeActionDialog('migrate')"
+            >
+              Migrar de grupo
+            </button>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li>
+            <button
+              class="dropdown-item text-danger"
+              (click)="changeActionDialog('delete')"
+            >
+              Eliminar
+            </button>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -139,7 +154,7 @@
             [policies]="policies"
             [groups]="groups"
             [deviceUser]="getDeviceUser(device.deviceUserId)"
-            (onSelectDevice)="selectDevice($event)"
+            (deviceChange)="selectDevice($event)"
             (onEditDevice)="editDevice($event)"
             (onDeleteDevice)="deleteDevice($event)"
           ></tr>
@@ -163,6 +178,7 @@
             [policies]="policies"
             [groups]="groups"
             [deviceUser]="getDeviceUser(device.deviceUserId)"
+            (deviceChange)="selectDevice($event)"
             (onEditDevice)="editDevice($event)"
             (onDeleteDevice)="deleteDevice($event)"
           ></tr>
@@ -176,12 +192,12 @@
 
 <!-- Texto indicativo de los dispositivos seleccionados -->
 <ng-template #devicesCounter>
-  <small [className]="selectedDevices.length === 0 ? 'text-danger' : ''">
-    @if (selectedDevices.length === 0) {
+  <small [className]="selectedDevices().length === 0 ? 'text-danger' : ''">
+    @if (selectedDevices().length === 0) {
       No hay ningún dispositivo seleccionado
     } @else {
-      Has seleccionado {{ selectedDevices.length }}
-      {{ selectedDevices.length > 1 ? "dispositivos" : "dispositivo" }}
+      Has seleccionado {{ selectedDevices().length }}
+      {{ selectedDevices().length > 1 ? "dispositivos" : "dispositivo" }}
     }
   </small>
 </ng-template>
@@ -207,7 +223,7 @@
       type="submit"
       [disabled]="
         applyPolicyForm.invalid ||
-        selectedDevices.length === 0 ||
+        selectedDevices().length === 0 ||
         loadingService.isLoading()
       "
     >
@@ -237,7 +253,7 @@
       type="submit"
       [disabled]="
         sendCommandForm.invalid ||
-        selectedDevices.length === 0 ||
+        selectedDevices().length === 0 ||
         loadingService.isLoading()
       "
     >
@@ -267,7 +283,7 @@
       type="submit"
       [disabled]="
         sendCommandForm.invalid ||
-        selectedDevices.length === 0 ||
+        selectedDevices().length === 0 ||
         loadingService.isLoading()
       "
     >
@@ -290,7 +306,9 @@
       <button
         class="btn btn-danger"
         (click)="deleteAction()"
-        [disabled]="selectedDevices.length === 0 || loadingService.isLoading()"
+        [disabled]="
+          selectedDevices().length === 0 || loadingService.isLoading()
+        "
       >
         Eliminar
       </button>

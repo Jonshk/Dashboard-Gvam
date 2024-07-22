@@ -9,7 +9,7 @@ import { DeviceFormComponent } from './components/device-form/device-form.compon
 import {
   DeleteDevice,
   DeviceListItemComponent,
-  SelectDevice,
+  SelectableDevice,
 } from './components/device-list-item/device-list-item.component';
 import { LoadingService } from '../../../core/services/loading/loading.service';
 import { forkJoin } from 'rxjs';
@@ -52,18 +52,19 @@ export class DevicesPage {
   deviceToEdit: Device | null = null;
   deviceToDelete: Device | null = null;
 
-  private devices = signal<Device[]>([]);
+  private devices = signal<SelectableDevice[]>([]);
   enrolledDevices = computed(() => this.devices().filter((d) => d.enrolled));
   notEnrolledDevices = computed(() =>
     this.devices().filter((d) => !d.enrolled),
   );
+
+  selectedDevices = computed(() => this.devices().filter((d) => d.selected));
 
   showRegisteredDevices: boolean = true;
   newDevices?: RegisterDevice;
   policies: Policy[] = [];
   deviceUsers: DeviceUser[] = [];
   groups: Group[] = [];
-  selectedDevices: Device[] = [];
   actionDialog: ActionTypeDialog = 'hidden';
 
   applyPolicyForm = new FormGroup({
@@ -185,23 +186,53 @@ export class DevicesPage {
     });
   }
 
-  selectDevice(selectDevice: SelectDevice) {
-    if (selectDevice.select) {
-      const index = this.selectedDevices.findIndex(
-        (d) => d.deviceId === selectDevice.device.deviceId,
+  selectDevice(selectableDevice: SelectableDevice) {
+    this.devices.update((devices) => {
+      const index = devices.findIndex(
+        (d) => d.deviceId === selectableDevice.deviceId,
       );
 
       if (index !== -1) {
-        this.selectedDevices[index] = selectDevice.device;
-        return;
+        devices[index].selected = selectableDevice.selected;
       }
 
-      this.selectedDevices.push(selectDevice.device);
-    } else {
-      this.selectedDevices = this.selectedDevices.filter(
-        (d) => d.deviceId !== selectDevice.device.deviceId,
-      );
+      return [...devices];
+    });
+  }
+
+  toggleRegisteredDevices(show: boolean) {
+    if (show !== this.showRegisteredDevices) {
+      this.unselectAll();
     }
+    this.showRegisteredDevices = show;
+  }
+
+  selectAll() {
+    this.devices.update((devices) => {
+      if (this.showRegisteredDevices) {
+        return devices.map((device) => {
+          if (device.enrolled) {
+            return { ...device, selected: true };
+          }
+          return device;
+        });
+      } else {
+        return devices.map((device) => {
+          if (!device.enrolled) {
+            return { ...device, selected: true };
+          }
+          return device;
+        });
+      }
+    });
+  }
+
+  unselectAll() {
+    this.devices.update((devices) =>
+      devices.map((device) => {
+        return { ...device, selected: false };
+      }),
+    );
   }
 
   editDevice(device: Device) {
@@ -289,7 +320,7 @@ export class DevicesPage {
   applyPolicyAction() {
     if (this.applyPolicyForm.invalid) return;
 
-    if (this.selectedDevices.length === 0) {
+    if (this.selectedDevices().length === 0) {
       this.hideActionDialog();
       return;
     }
@@ -300,7 +331,7 @@ export class DevicesPage {
       policyName: this.applyPolicyForm.value.name!,
     };
 
-    const $policyRequests = this.selectedDevices.map((d) =>
+    const $policyRequests = this.selectedDevices().map((d) =>
       this.deviceService.applyPolicy(
         this.groupId(),
         d.deviceId,
@@ -310,15 +341,15 @@ export class DevicesPage {
 
     forkJoin($policyRequests).subscribe({
       next: (_: Response<SuccessResponse>[]) => {
-        this.devices.update((devices) => {
-          devices.forEach((d) => {
-            if (this.selectedDevices.includes(d)) {
-              d.policyName = applyDevicePolicyRequest.policyName;
+        this.devices.update((devices) =>
+          devices.map((d) => {
+            if (this.selectedDevices().includes(d)) {
+              return { ...d, policyName: applyDevicePolicyRequest.policyName };
             }
-          });
 
-          return devices;
-        });
+            return d;
+          }),
+        );
         this.hideActionDialog();
         this.loadingService.dismissLoading();
       },
@@ -332,7 +363,7 @@ export class DevicesPage {
   sendCommandAction() {
     if (this.sendCommandForm.invalid) return;
 
-    if (this.selectedDevices.length === 0) {
+    if (this.selectedDevices().length === 0) {
       this.hideActionDialog();
       return;
     }
@@ -343,7 +374,7 @@ export class DevicesPage {
       deviceCommand: this.sendCommandForm.value.command!,
     };
 
-    const $commandRequests = this.selectedDevices.map((d) =>
+    const $commandRequests = this.selectedDevices().map((d) =>
       this.deviceService.sendCommand(
         this.groupId(),
         d.deviceId,
@@ -366,7 +397,7 @@ export class DevicesPage {
   migrateAction() {
     if (this.migrateForm.invalid) return;
 
-    if (this.selectedDevices.length === 0) {
+    if (this.selectedDevices().length === 0) {
       this.hideActionDialog();
       return;
     }
@@ -377,7 +408,7 @@ export class DevicesPage {
       groupId: this.migrateForm.value.groupId!,
     };
 
-    const $migrateRequests = this.selectedDevices.map((d) =>
+    const $migrateRequests = this.selectedDevices().map((d) =>
       this.deviceService.migrate(
         this.groupId(),
         d.deviceId,
@@ -388,9 +419,8 @@ export class DevicesPage {
     forkJoin($migrateRequests).subscribe({
       next: (_: Response<SuccessResponse>[]) => {
         this.devices.update((devices) =>
-          devices.filter((d) => !this.selectedDevices.includes(d)),
+          devices.filter((d) => !this.selectedDevices().includes(d)),
         );
-        this.selectedDevices = [];
         this.hideActionDialog();
         this.loadingService.dismissLoading();
       },
@@ -402,23 +432,22 @@ export class DevicesPage {
   }
 
   deleteAction() {
-    if (this.selectedDevices.length === 0) {
+    if (this.selectedDevices().length === 0) {
       this.hideActionDialog();
       return;
     }
 
     this.loadingService.setLoading();
 
-    const $deleteRequests = this.selectedDevices.map((d) =>
+    const $deleteRequests = this.selectedDevices().map((d) =>
       this.deviceService.delete(this.groupId(), d.deviceId, d.enrolled),
     );
 
     forkJoin($deleteRequests).subscribe({
       next: (_: Response<SuccessResponse>[]) => {
         this.devices.update((devices) =>
-          devices.filter((d) => !this.selectedDevices.includes(d)),
+          devices.filter((d) => !this.selectedDevices().includes(d)),
         );
-        this.selectedDevices = [];
         this.hideActionDialog();
         this.loadingService.dismissLoading();
       },

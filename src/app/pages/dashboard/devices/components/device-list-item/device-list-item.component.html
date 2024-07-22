@@ -2,8 +2,10 @@
   <input
     (change)="toggleSelected($event)"
     type="checkbox"
+    class="form-check-input"
     name="selected"
     id="selected"
+    [checked]="device().selected"
   />
 </td>
 <td>
