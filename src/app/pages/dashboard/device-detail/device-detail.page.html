@@ -23,6 +23,8 @@
       }
 
       <p>Número de serie: {{ device.serialNumber }}</p>
+      <p>IMEI: {{ device.imei }}</p>
+      <p>Dirección MAC: {{ device.mac }}</p>
 
       @if (device.location) {
         <p>Ubicación: {{ device.location }}</p>

@@ -5,5 +5,7 @@ export interface DeviceDetail {
   installedApps?: string[];
   policyName?: string;
   serialNumber: string;
+  imei: string;
+  mac: string;
   location?: string;
 }
