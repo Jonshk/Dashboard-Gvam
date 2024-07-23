@@ -1,0 +1,4 @@
+export enum DeviceCustomCommand {
+  ADJUST_BRIGHTNESS = 'ADJUST_BRIGHTNESS',
+  ADJUST_VOLUME = 'ADJUST_VOLUME',
+}

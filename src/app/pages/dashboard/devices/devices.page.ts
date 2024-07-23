@@ -31,6 +31,7 @@ import { ApplyDevicePolicyRequest } from '../../../core/models/request/apply-dev
 import { DeviceCommandRequest } from '../../../core/models/request/device-command-request.model';
 import { MigrateDeviceRequest } from '../../../core/models/request/migrate-device-request';
 import { NgTemplateOutlet } from '@angular/common';
+import { DeviceCustomCommandFormComponent } from './components/device-custom-command-form/device-custom-command-form.component';
 
 @Component({
   selector: 'app-devices',
@@ -42,6 +43,7 @@ import { NgTemplateOutlet } from '@angular/common';
     DeleteDialogComponent,
     ReactiveFormsModule,
     NgTemplateOutlet,
+    DeviceCustomCommandFormComponent,
   ],
   templateUrl: './devices.page.html',
   styleUrl: './devices.page.css',
@@ -50,6 +52,7 @@ export class DevicesPage {
   groupId = input.required<number>();
 
   deviceToEdit: Device | null = null;
+  deviceToConfig: Device | null = null;
   deviceToDelete: Device | null = null;
 
   private devices = signal<SelectableDevice[]>([]);
@@ -85,6 +88,9 @@ export class DevicesPage {
 
   private _showFormDialog = signal(false);
   showFormDialog = this._showFormDialog.asReadonly();
+
+  private _showConfigDialog = signal(false);
+  showConfigDialog = this._showConfigDialog.asReadonly();
 
   private _showDeleteDialog = signal(false);
   showDeleteDialog = this._showDeleteDialog.asReadonly();
@@ -158,6 +164,11 @@ export class DevicesPage {
   hideFormDialog() {
     this._showFormDialog.set(false);
     this.deviceToEdit = null;
+  }
+
+  hideConfigDialog() {
+    this._showConfigDialog.set(false);
+    this.deviceToConfig = null;
   }
 
   hideDeleteDialog() {
@@ -238,6 +249,11 @@ export class DevicesPage {
   editDevice(device: Device) {
     this.deviceToEdit = device;
     this._showFormDialog.set(true);
+  }
+
+  configDevice(device: Device) {
+    this.deviceToConfig = device;
+    this._showConfigDialog.set(true);
   }
 
   updateDevice(device: Device) {

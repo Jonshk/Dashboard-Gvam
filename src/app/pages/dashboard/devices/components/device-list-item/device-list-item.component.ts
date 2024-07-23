@@ -35,6 +35,7 @@ export class DeviceListItemComponent {
 
   readonly onEditDevice = output<Device>();
   readonly onDeleteDevice = output<DeleteDevice>();
+  readonly onConfigDevice = output<Device>();
 
   private deviceService = inject(DeviceService);
   readonly loadingService = inject(LoadingService);
@@ -65,6 +66,10 @@ export class DeviceListItemComponent {
 
   editDevice() {
     this.onEditDevice.emit(this.device());
+  }
+
+  configDevice() {
+    this.onConfigDevice.emit(this.device());
   }
 
   deleteDevice(confirm: boolean = true) {

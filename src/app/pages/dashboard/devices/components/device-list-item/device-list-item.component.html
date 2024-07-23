@@ -17,20 +17,29 @@
 <td>{{ deviceUser()?.email ?? "-" }}</td>
 
 <td>
-  <button
-    class="btn btn-outline-secondary me-2 btn-sm"
-    [disabled]="loadingService.isLoading()"
-    (click)="editDevice()"
-  >
-    Editar
-  </button>
-  <button
-    class="btn btn-danger btn-sm"
-    [disabled]="loadingService.isLoading()"
-    (click)="deleteDevice()"
-  >
-    Eliminar
-  </button>
+  <div class="d-flex gap-2 flex-wrap">
+    <button
+      class="btn btn-outline-secondary btn-sm"
+      [disabled]="loadingService.isLoading()"
+      (click)="configDevice()"
+    >
+      Configurar
+    </button>
+    <button
+      class="btn btn-outline-secondary btn-sm"
+      [disabled]="loadingService.isLoading()"
+      (click)="editDevice()"
+    >
+      Editar
+    </button>
+    <button
+      class="btn btn-danger btn-sm"
+      [disabled]="loadingService.isLoading()"
+      (click)="deleteDevice()"
+    >
+      Eliminar
+    </button>
+  </div>
 </td>
 
 @if (device().enrolled) {

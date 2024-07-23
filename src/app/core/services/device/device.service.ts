@@ -13,6 +13,7 @@ import { ApplyDevicePolicyRequest } from '../../models/request/apply-device-poli
 import { Device } from '../../models/response/device.model';
 import { DeviceCommandRequest } from '../../models/request/device-command-request.model';
 import { MigrateDeviceRequest } from '../../models/request/migrate-device-request';
+import { DeviceCustomCommandRequest } from '../../models/request/device-custom-command-request.model';
 
 @Injectable({
   providedIn: 'root',
@@ -97,6 +98,17 @@ export class DeviceService {
     return this.http.post<Response<SuccessResponse>>(
       this.url(groupId, deviceId + '/command'),
       deviceCommandRequest,
+    );
+  }
+
+  sendCustomCommand(
+    groupId: number,
+    deviceId: number,
+    deviceCustomCommandRequest: DeviceCustomCommandRequest,
+  ): Observable<Response<SuccessResponse>> {
+    return this.http.post<Response<SuccessResponse>>(
+      this.url(groupId, deviceId + '/command/custom'),
+      deviceCustomCommandRequest,
     );
   }
 

@@ -27,6 +27,14 @@
     ></app-device-form>
   </app-dialog>
 
+  <!-- Diálogo de configuración de dispositivo -->
+  <app-dialog [open]="showConfigDialog()" (openChange)="hideConfigDialog()">
+    <app-device-custom-command-form
+      [groupId]="groupId()"
+      [device]="deviceToConfig"
+    ></app-device-custom-command-form>
+  </app-dialog>
+
   <!-- Diálogo de acciones a múltiples dispositivos -->
   <app-dialog [open]="showActionDialog()" (openChange)="hideActionDialog()">
     @switch (actionDialog) {
@@ -156,6 +164,7 @@
             [deviceUser]="getDeviceUser(device.deviceUserId)"
             (deviceChange)="selectDevice($event)"
             (onEditDevice)="editDevice($event)"
+            (onConfigDevice)="configDevice($event)"
             (onDeleteDevice)="deleteDevice($event)"
           ></tr>
         }
