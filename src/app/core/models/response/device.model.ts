@@ -4,4 +4,5 @@ export interface Device {
   deviceId: number;
   deviceUserId?: number;
   enrolled: boolean;
+  geofenceId: number | null;
 }

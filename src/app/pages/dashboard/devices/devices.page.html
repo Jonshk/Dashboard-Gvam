@@ -32,6 +32,7 @@
     <app-device-custom-command-form
       [groupId]="groupId()"
       [device]="deviceToConfig"
+      (onGeofenceChange)="updateDevice($event)"
     ></app-device-custom-command-form>
   </app-dialog>
 

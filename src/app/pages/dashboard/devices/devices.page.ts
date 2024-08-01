@@ -264,6 +264,7 @@ export class DevicesPage {
     if (index !== -1) {
       this.devices()[index].deviceName = device.deviceName;
       this.devices()[index].deviceUserId = device.deviceUserId;
+      this.devices()[index].geofenceId = device.geofenceId;
       this.hideFormDialog();
       return;
     }

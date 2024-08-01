@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, effect, inject, input, output } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -12,6 +12,8 @@ import { DeviceCustomCommandRequest } from '../../../../../core/models/request/d
 import { SuccessResponse } from '../../../../../core/models/response/success-response.model';
 import { Response } from '../../../../../core/models/response/response.model';
 import { Device } from '../../../../../core/models/response/device.model';
+import { GeofenceService } from '../../../../../core/services/geofence/geofence.service';
+import { Geofence } from '../../../../../core/models/response/geofence.model';
 
 @Component({
   selector: 'app-device-custom-command-form',
@@ -24,12 +26,31 @@ export class DeviceCustomCommandFormComponent {
   readonly groupId = input.required<number>();
   readonly device = input.required<Device | null>();
 
+  readonly onGeofenceChange = output<Device>();
+
   readonly loadingService = inject(LoadingService);
   private readonly deviceService = inject(DeviceService);
+  private readonly geofenceService = inject(GeofenceService);
+
+  geofences: Geofence[] = [];
 
   customCommandForm = new FormGroup({
-    command: new FormControl(DeviceCustomCommand.ADJUST_BRIGHTNESS),
-    value: new FormControl(0, [Validators.min(0)]),
+    command: new FormControl(
+      DeviceCustomCommand.ADJUST_BRIGHTNESS,
+      Validators.required,
+    ),
+    value: new FormControl(0, [Validators.min(0), Validators.required]),
+  });
+
+  private listGeofences = effect(() => {
+    this.geofenceService.list(this.groupId()).subscribe({
+      next: ({ data }: Response<Geofence[]>) => {
+        this.geofences = data;
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+      },
+    });
   });
 
   sendCustomCommandForm() {
@@ -42,6 +63,14 @@ export class DeviceCustomCommandFormComponent {
       value: this.customCommandForm.value.value!,
     };
 
+    if (
+      deviceCustomCommandRequest.deviceCustomCommand ===
+        DeviceCustomCommand.DEACTIVATE_GEOFENCE &&
+      this.device()!.geofenceId !== null
+    ) {
+      deviceCustomCommandRequest.value = this.device()!.geofenceId!;
+    }
+
     this.deviceService
       .sendCustomCommand(
         this.groupId(),
@@ -52,6 +81,23 @@ export class DeviceCustomCommandFormComponent {
         next: ({ data }: Response<SuccessResponse>) => {
           if (data.success) {
             console.log('Comando enviado');
+            if (
+              deviceCustomCommandRequest.deviceCustomCommand ===
+              DeviceCustomCommand.ACTIVATE_GEOFENCE
+            ) {
+              this.onGeofenceChange.emit({
+                ...this.device()!,
+                geofenceId: Number(deviceCustomCommandRequest.value),
+              });
+            } else if (
+              deviceCustomCommandRequest.deviceCustomCommand ===
+              DeviceCustomCommand.DEACTIVATE_GEOFENCE
+            ) {
+              this.onGeofenceChange.emit({
+                ...this.device()!,
+                geofenceId: null,
+              });
+            }
           }
           this.loadingService.dismissLoading();
         },
@@ -60,6 +106,17 @@ export class DeviceCustomCommandFormComponent {
           this.loadingService.dismissLoading();
         },
       });
+  }
+
+  getActiveGeofenceName() {
+    const activeGeofence = this.geofences.find(
+      (g) => g.geofenceId === this.device()?.geofenceId,
+    );
+    if (activeGeofence) {
+      return activeGeofence.geofenceName;
+    }
+
+    return '';
   }
 
   readonly DeviceCustomCommand = DeviceCustomCommand;

@@ -41,6 +41,29 @@
         max="100"
       />
     </label>
+  } @else if (
+    customCommandForm.value.command === DeviceCustomCommand.ACTIVATE_GEOFENCE
+  ) {
+    <label class="w-100">
+      Geovalla
+      <select class="form-select" name="value" formControlName="value">
+        @for (geofence of geofences; track geofence.geofenceId) {
+          <option [value]="geofence.geofenceId">
+            {{ geofence.geofenceName }}
+          </option>
+        }
+      </select>
+    </label>
+  } @else if (
+    customCommandForm.value.command === DeviceCustomCommand.DEACTIVATE_GEOFENCE
+  ) {
+    <small class="w-100">
+      @if (device()?.geofenceId) {
+        La geovalla {{ getActiveGeofenceName() }} está activa
+      } @else {
+        No hay ninguna geovalla activa
+      }
+    </small>
   }
 
   <button
