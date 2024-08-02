@@ -22,6 +22,7 @@ import { LoadingService } from '../../../core/services/loading/loading.service';
 })
 export class EnterprisePage {
   signUpUrl: string = '';
+  private signUpUrlName: string = '';
   enterpriseRegisterForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
     token: new FormControl('', [Validators.required]),
@@ -38,6 +39,7 @@ export class EnterprisePage {
     this.enterpriseService.signUp().subscribe({
       next: ({ data }: Response<SignUpUrl>) => {
         this.signUpUrl = data.url;
+        this.signUpUrlName = data.name;
         this.loadingService.dismissLoading();
       },
       error: (err: any) => {
@@ -54,7 +56,7 @@ export class EnterprisePage {
 
     const createEnterprise: CreateEnterprise = {
       enterpriseDisplayName: this.enterpriseRegisterForm.value.name!,
-      signupUrlName: this.signUpUrl,
+      signupUrlName: this.signUpUrlName,
       enterpriseToken: this.enterpriseRegisterForm.value.token!,
     };
 
