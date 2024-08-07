@@ -12,7 +12,7 @@ import {
   SelectableDevice,
 } from './components/device-list-item/device-list-item.component';
 import { LoadingService } from '../../../core/services/loading/loading.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { DialogComponent } from '../../../shared/components/dialog/dialog.component';
 import { DeleteDialogComponent } from '../../../shared/components/delete-dialog/delete-dialog.component';
 import { SuccessResponse } from '../../../core/models/response/success-response.model';
@@ -32,6 +32,10 @@ import { DeviceCommandRequest } from '../../../core/models/request/device-comman
 import { MigrateDeviceRequest } from '../../../core/models/request/migrate-device-request';
 import { NgTemplateOutlet } from '@angular/common';
 import { DeviceCustomCommandFormComponent } from './components/device-custom-command-form/device-custom-command-form.component';
+import { DeviceCustomCommand } from '../../../core/enums/device-custom-command';
+import { Geofence } from '../../../core/models/response/geofence.model';
+import { GeofenceService } from '../../../core/services/geofence/geofence.service';
+import { DeviceCustomCommandRequest } from '../../../core/models/request/device-custom-command-request.model';
 
 @Component({
   selector: 'app-devices',
@@ -68,6 +72,7 @@ export class DevicesPage {
   policies: Policy[] = [];
   deviceUsers: DeviceUser[] = [];
   groups: Group[] = [];
+  geofences: Geofence[] = [];
   actionDialog: ActionTypeDialog = 'hidden';
 
   applyPolicyForm = new FormGroup({
@@ -78,12 +83,26 @@ export class DevicesPage {
   readonly deviceCommandKeys = Object.keys(DeviceCommand) as [
     keyof typeof DeviceCommand,
   ];
+
   sendCommandForm = new FormGroup({
     command: new FormControl(DeviceCommand.LOCK, [Validators.required]),
   });
 
   migrateForm = new FormGroup({
     groupId: new FormControl(-1, [Validators.required]),
+  });
+
+  readonly DeviceCustomCommand = DeviceCustomCommand;
+  readonly deviceCustomCommandKeys = Object.keys(DeviceCustomCommand) as [
+    keyof typeof DeviceCustomCommand,
+  ];
+
+  customCommandForm = new FormGroup({
+    command: new FormControl(
+      DeviceCustomCommand.ADJUST_BRIGHTNESS,
+      Validators.required,
+    ),
+    value: new FormControl(0, [Validators.min(0), Validators.required]),
   });
 
   private _showFormDialog = signal(false);
@@ -100,6 +119,7 @@ export class DevicesPage {
     private policyService: PolicyService,
     private userService: UserService,
     private groupService: GroupService,
+    private geofenceService: GeofenceService,
     readonly loadingService: LoadingService,
   ) {}
 
@@ -116,18 +136,27 @@ export class DevicesPage {
     const $policies = this.policyService.list(this.groupId());
     const $deviceUsers = this.userService.list(this.groupId());
     const $groups = this.groupService.list();
+    const $geofences = this.geofenceService.list(this.groupId());
 
-    forkJoin([$devices, $policies, $deviceUsers, $groups]).subscribe({
+    forkJoin([
+      $devices,
+      $policies,
+      $deviceUsers,
+      $groups,
+      $geofences,
+    ]).subscribe({
       next: ([
         { data: devices },
         { data: policies },
         { data: deviceUsers },
         { data: groups },
+        { data: geofences },
       ]) => {
         this.devices.set(devices);
         this.policies = policies;
         this.deviceUsers = deviceUsers;
         this.groups = groups;
+        this.geofences = geofences;
 
         this.loadingService.dismissLoading();
       },
@@ -474,11 +503,98 @@ export class DevicesPage {
       },
     });
   }
+
+  customCommandAction() {
+    if (this.sendCommandForm.invalid) return;
+
+    if (this.selectedDevices().length === 0) {
+      this.hideActionDialog();
+      return;
+    }
+
+    this.loadingService.setLoading();
+
+    let deviceCustomCommandRequest: DeviceCustomCommandRequest = {
+      deviceCustomCommand: this.customCommandForm.value.command!,
+      value: this.customCommandForm.value.value!,
+    };
+
+    const $customCommandRequests = this.selectedDevices()
+      .map((d) => {
+        if (
+          deviceCustomCommandRequest.deviceCustomCommand !==
+          DeviceCustomCommand.DEACTIVATE_GEOFENCE
+        ) {
+          return this.deviceService.sendCustomCommand(
+            this.groupId(),
+            d.deviceId,
+            deviceCustomCommandRequest,
+          );
+        }
+
+        if (d.geofenceId !== null) {
+          deviceCustomCommandRequest.value = d.geofenceId!;
+
+          return this.deviceService.sendCustomCommand(
+            this.groupId(),
+            d.deviceId,
+            deviceCustomCommandRequest,
+          );
+        }
+
+        return null;
+      })
+      .filter((r) => r !== null);
+
+    if ($customCommandRequests.length === 0) {
+      this.hideActionDialog();
+      this.loadingService.dismissLoading();
+    }
+
+    forkJoin($customCommandRequests).subscribe({
+      next: (_: [Observable<Response<SuccessResponse>> | null]) => {
+        if (
+          deviceCustomCommandRequest.deviceCustomCommand ===
+          DeviceCustomCommand.DEACTIVATE_GEOFENCE
+        ) {
+          this.devices.update((devices) =>
+            devices.map((d) => {
+              if (this.selectedDevices().includes(d)) {
+                d.geofenceId = null;
+              }
+
+              return d;
+            }),
+          );
+        } else if (
+          deviceCustomCommandRequest.deviceCustomCommand ===
+          DeviceCustomCommand.ACTIVATE_GEOFENCE
+        ) {
+          this.devices.update((devices) =>
+            devices.map((d) => {
+              if (this.selectedDevices().includes(d)) {
+                d.geofenceId = deviceCustomCommandRequest.value;
+              }
+
+              return d;
+            }),
+          );
+        }
+        this.hideActionDialog();
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
+  }
 }
 
 type ActionTypeDialog =
   | 'hidden'
   | 'policies'
   | 'command'
+  | 'customCommand'
   | 'migrate'
   | 'delete';
