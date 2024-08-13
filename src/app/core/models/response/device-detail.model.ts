@@ -1,5 +1,6 @@
 export interface DeviceDetail {
   deviceName: string;
+  pin: string;
   androidVersion: string;
   batteryLevel?: string;
   installedApps?: string[];

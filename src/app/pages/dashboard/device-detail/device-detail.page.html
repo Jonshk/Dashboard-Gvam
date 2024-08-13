@@ -3,6 +3,7 @@
     <h1>Detalles del dispositivo</h1>
     <div>
       <p>Nombre: {{ device.deviceName }}</p>
+      <p>Pin de registro en app: {{ device.pin }}</p>
       <p>Version de android: {{ device.androidVersion }}</p>
 
       @if (device.batteryLevel) {
