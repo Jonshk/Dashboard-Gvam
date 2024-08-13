@@ -1,43 +1,43 @@
-<form
-  class="d-flex flex-column gap-3"
-  [formGroup]="deviceForm"
-  (ngSubmit)="onSubmit()"
->
-  <label>
-    Nombre del dispositivo
-    <input
-      type="text"
-      class="form-control"
-      name="name"
-      formControlName="name"
-    />
-  </label>
-
-  <label>
-    Usuario del dispositivo
-    <select class="form-select" name="user" formControlName="user">
-      @for (deviceUser of deviceUsers(); track deviceUser.deviceUserId) {
-        <option [value]="deviceUser.deviceUserId">
-          {{ deviceUser.email }}
-        </option>
-      }
-    </select>
-  </label>
-
-  <button
-    type="submit"
-    class="btn btn-primary mt-2"
-    [disabled]="deviceForm.invalid || loadingService.isLoading()"
+@if (!registerQr) {
+  <form
+    class="d-flex flex-column gap-3"
+    [formGroup]="deviceForm"
+    (ngSubmit)="onSubmit()"
   >
-    @if (editDevice()) {
-      Editar dispositivo
-    } @else {
-      Crear dispositivo
-    }
-  </button>
-</form>
+    <label>
+      Nombre del dispositivo
+      <input
+        type="text"
+        class="form-control"
+        name="name"
+        formControlName="name"
+      />
+    </label>
 
-@if (registerQr) {
+    <label>
+      Usuario del dispositivo
+      <select class="form-select" name="user" formControlName="user">
+        @for (deviceUser of deviceUsers(); track deviceUser.deviceUserId) {
+          <option [value]="deviceUser.deviceUserId">
+            {{ deviceUser.email }}
+          </option>
+        }
+      </select>
+    </label>
+
+    <button
+      type="submit"
+      class="btn btn-primary mt-2"
+      [disabled]="deviceForm.invalid || loadingService.isLoading()"
+    >
+      @if (editDevice()) {
+        Editar dispositivo
+      } @else {
+        Crear dispositivo
+      }
+    </button>
+  </form>
+} @else {
   <div
     class="d-flex flex-column justify-content-center align-items-center py-4"
   >
