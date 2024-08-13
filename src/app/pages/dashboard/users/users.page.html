@@ -13,6 +13,14 @@
     ></app-user-form>
   </app-dialog>
 
+  <app-delete-dialog
+    [open]="showDeleteDialog()"
+    (openChange)="hideDeleteDialog()"
+    [message]="'¿Eliminar el usuario ' + userToDelete?.name + '?'"
+    (onDelete)="onDeleteConfirm($event)"
+  >
+  </app-delete-dialog>
+
   <ul class="list-group my-2">
     @for (user of users; track user.deviceUserId) {
       <li class="list-group-item">
@@ -26,4 +34,3 @@
     }
   </ul>
 </main>
-

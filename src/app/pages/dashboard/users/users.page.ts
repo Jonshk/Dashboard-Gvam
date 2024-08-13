@@ -6,11 +6,18 @@ import { DeviceUser } from '../../../core/models/response/device-user.model';
 import { UserService } from '../../../core/services/user/user.service';
 import { LoadingService } from '../../../core/services/loading/loading.service';
 import { Response } from '../../../core/models/response/response.model';
+import { SuccessResponse } from '../../../core/models/response/success-response.model';
+import { DeleteDialogComponent } from '../../../shared/components/delete-dialog/delete-dialog.component';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [DialogComponent, UserFormComponent, UserListItemComponent],
+  imports: [
+    DialogComponent,
+    UserFormComponent,
+    UserListItemComponent,
+    DeleteDialogComponent,
+  ],
   templateUrl: './users.page.html',
   styleUrl: './users.page.css',
 })
@@ -20,9 +27,13 @@ export class UsersPage {
   users: DeviceUser[] = [];
 
   userToEdit: DeviceUser | null = null;
+  userToDelete: DeviceUser | null = null;
 
   private _showDialog = signal(false);
   showDialog = this._showDialog.asReadonly();
+
+  private _showDeleteDialog = signal(false);
+  showDeleteDialog = this._showDeleteDialog.asReadonly();
 
   constructor(
     private userService: UserService,
@@ -55,6 +66,11 @@ export class UsersPage {
     this.userToEdit = null;
   }
 
+  hideDeleteDialog() {
+    this._showDeleteDialog.set(false);
+    this.userToDelete = null;
+  }
+
   createMode() {
     this._showDialog.set(true);
   }
@@ -79,7 +95,31 @@ export class UsersPage {
     this.hideDialog();
   }
 
-  deleteUser(id: number) {
-    this.users = this.users.filter((user) => user.deviceUserId !== id);
+  deleteUser(user: DeviceUser) {
+    this.userToDelete = user;
+    this._showDeleteDialog.set(true);
+  }
+
+  onDeleteConfirm(shouldDelete: boolean) {
+    if (!shouldDelete || !this.userToDelete) return;
+
+    this.loadingService.setLoading();
+    this.userService
+      .delete(this.groupId(), this.userToDelete!.deviceUserId)
+      .subscribe({
+        next: ({ data }: Response<SuccessResponse>) => {
+          if (data.success) {
+            this.users = this.users.filter(
+              (u) => u.deviceUserId !== this.userToDelete!.deviceUserId,
+            );
+            this.hideDeleteDialog();
+          }
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });
   }
 }
