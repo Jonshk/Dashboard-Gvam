@@ -86,7 +86,9 @@ export class PolicyFormComponent {
       this.policyForm.controls.name.setValue(this.editPolicy()!.name);
       this.policyForm.controls.name.disable();
 
-      this.policyForm.controls.isDefault.setValue(this.editPolicy()!.isDefault ?? this.defaultFormValues.isDefault)
+      this.policyForm.controls.isDefault.setValue(
+        this.editPolicy()!.isDefault ?? this.defaultFormValues.isDefault,
+      );
 
       this.editPolicy()!.applicationPolicies.forEach((appPolicy) => {
         const applicationPolicyForm = this.newApplicationPolicy();
@@ -207,6 +209,10 @@ export class PolicyFormComponent {
         this.loadingService.dismissLoading();
       },
     });
+  }
+
+  get policyName() {
+    return this.policyForm.get('name');
   }
 
   readonly applicationPolicy = this.policyForm.get(

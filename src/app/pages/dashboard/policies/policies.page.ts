@@ -81,7 +81,7 @@ export class PoliciesPage {
 
   addPolicy(policy: Policy) {
     if (policy.isDefault) {
-      this.policies.forEach((p) => p.isDefault = false);
+      this.policies.forEach((p) => (p.isDefault = false));
     }
 
     const index = this.policies.findIndex((p) => p.name === policy.name);

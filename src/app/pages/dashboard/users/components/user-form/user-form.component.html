@@ -1,4 +1,8 @@
-<form class="d-flex flex-column" [formGroup]="userForm" (ngSubmit)="onSubmit()">
+<form
+  class="d-flex flex-column gap-3"
+  [formGroup]="userForm"
+  (ngSubmit)="onSubmit()"
+>
   <label>
     Nombre
     <input

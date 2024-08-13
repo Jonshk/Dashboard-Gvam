@@ -65,7 +65,9 @@ export class UsersPage {
   }
 
   addUser(user: DeviceUser) {
-    const index = this.users.findIndex((u) => u.name === user.name);
+    const index = this.users.findIndex(
+      (u) => u.deviceUserId === user.deviceUserId,
+    );
 
     if (index !== -1) {
       this.users[index] = user;

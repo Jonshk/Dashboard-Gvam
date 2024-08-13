@@ -348,7 +348,11 @@
 
 <!-- Formulario para enviar comandos personalizados (ajustes) a los dispositivos seleccionados -->
 <ng-template #customCommandFormTemplate>
-  <form [formGroup]="customCommandForm" (ngSubmit)="customCommandAction()">
+  <form
+    class="d-flex flex-column gap-2"
+    [formGroup]="customCommandForm"
+    (ngSubmit)="customCommandAction()"
+  >
     <label class="w-100">
       Elige el ajuste para aplicar a los dispositivos seleccionados:
       <select class="form-select" name="command" formControlName="command">

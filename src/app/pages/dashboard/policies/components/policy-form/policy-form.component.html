@@ -1,5 +1,5 @@
 <form
-  class="d-flex flex-column"
+  class="d-flex flex-column gap-3"
   [formGroup]="policyForm"
   (ngSubmit)="onSubmit()"
 >
@@ -12,6 +12,17 @@
       name="name"
       formControlName="name"
     />
+    @if (policyName?.invalid && (policyName?.dirty || policyName?.touched)) {
+      @if (policyName?.hasError("required")) {
+        <small class="text-danger">El nombre es obligatorio</small>
+      }
+      @if (policyName?.hasError("pattern")) {
+        <small class="text-danger"
+          >El nombre ha de ser alfanumérico y no puede contener espacios en
+          blanco</small
+        >
+      }
+    }
   </label>
 
   <label class="form-check-label">
@@ -42,7 +53,7 @@
       track application.value;
       let i = $index
     ) {
-      <div class="d-flex flex-column" [formGroupName]="i">
+      <div class="d-flex flex-column gap-3" [formGroupName]="i">
         <label>
           Paquete de la aplicación
           <input
@@ -51,6 +62,14 @@
             name="packageName"
             formControlName="packageName"
           />
+
+          @if (application.get("packageName")?.invalid) {
+            @if (application.get("packageName")?.hasError("required")) {
+              <small class="text-danger"
+                >El nombre del paquete es obligatorio</small
+              >
+            }
+          }
         </label>
 
         <label>
@@ -133,7 +152,7 @@
   </label>
 
   <div
-    class="d-flex flex-column"
+    class="d-flex flex-column gap-3"
     name="wifiSsidPolicy"
     formGroupName="wifiSsidPolicy"
   >
@@ -155,7 +174,7 @@
         }
       </select>
     </label>
-    <label class="fcol" formArrayName="wifiSsids">
+    <label formArrayName="wifiSsids">
       SSID
       <button
         type="button"
@@ -164,23 +183,32 @@
       >
         Añadir SSID
       </button>
-      @for (ssid of wifiSsids.controls; track ssid; let j = $index) {
-        <div class="d-flex align-items-center">
-          <input
-            type="text"
-            class="form-control form-control-sm col"
-            [name]="'ssid' + j"
-            [formControlName]="j"
-          />
-          <button
-            type="button"
-            class="btn btn-outline-danger btn-sm col"
-            (click)="removeWifiSsid(j)"
-          >
-            Eliminar SSID
-          </button>
-        </div>
-      }
+      <div class="d-flex flex-column gap-2">
+        @for (ssid of wifiSsids.controls; track ssid; let j = $index) {
+          <div class="d-flex flex-column">
+            <div class="d-flex align-items-center gap-2">
+              <input
+                type="text"
+                class="form-control form-control-sm col"
+                [name]="'ssid' + j"
+                [formControlName]="j"
+              />
+              <button
+                type="button"
+                class="btn btn-outline-danger btn-sm col"
+                (click)="removeWifiSsid(j)"
+              >
+                Eliminar SSID
+              </button>
+            </div>
+            @if (ssid?.invalid) {
+              @if (ssid?.hasError("required")) {
+                <small class="text-danger">El SSID es obligatorio</small>
+              }
+            }
+          </div>
+        }
+      </div>
     </label>
   </div>
 

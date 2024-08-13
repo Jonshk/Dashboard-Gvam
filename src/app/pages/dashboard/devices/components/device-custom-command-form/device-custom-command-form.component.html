@@ -1,4 +1,8 @@
-<form [formGroup]="customCommandForm" (ngSubmit)="sendCustomCommandForm()">
+<form
+  class="d-flex flex-column gap-2"
+  [formGroup]="customCommandForm"
+  (ngSubmit)="sendCustomCommandForm()"
+>
   <label class="w-100 mb-2">
     Ajuste
     <select class="form-select" name="command" formControlName="command">
