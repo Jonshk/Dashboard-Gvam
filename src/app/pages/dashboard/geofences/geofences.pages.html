@@ -8,6 +8,7 @@
   <app-dialog [open]="showFormDialog()" (openChange)="hideFormDialog()">
     <app-geofence-form
       [groupId]="groupId()"
+      [isVisible]="showFormDialog()"
       [editGeofence]="geofenceToEdit"
       (geofence)="addGeofence($event)"
     ></app-geofence-form>

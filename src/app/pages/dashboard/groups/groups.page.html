@@ -8,6 +8,7 @@
   <app-dialog [open]="showFormDialog()" (openChange)="hideFormDialog()">
     <app-group-form
       [editGroup]="groupToEdit"
+      [isVisible]="showFormDialog()"
       (group)="addGroup($event)"
     ></app-group-form>
   </app-dialog>

@@ -23,6 +23,7 @@ import { Policy } from '../../../../../core/models/response/policy.model';
 })
 export class UserFormComponent {
   readonly groupId = input.required<number>();
+  readonly isVisible = input.required<boolean>();
   readonly editUser = input<DeviceUser | null>(null);
   policies: Policy[] = [];
 
@@ -31,7 +32,6 @@ export class UserFormComponent {
   private userService = inject(UserService);
   private policyService = inject(PolicyService);
   readonly loadingService = inject(LoadingService);
-
 
   private defaultFormValues = {
     name: '',
@@ -94,6 +94,12 @@ export class UserFormComponent {
     this.userForm.controls.password.setValidators(Validators.required);
     this.userForm.controls.repeatPassword.setValidators(Validators.required);
   }
+
+  private resetOnHide = effect(() => {
+    if (!this.isVisible()) {
+      this.resetForm();
+    }
+  });
 
   onSubmit() {
     if (this.userForm.invalid) return;

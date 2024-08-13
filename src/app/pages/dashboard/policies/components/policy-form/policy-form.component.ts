@@ -27,6 +27,7 @@ import { LoadingService } from '../../../../../core/services/loading/loading.ser
 })
 export class PolicyFormComponent {
   readonly groupId = input.required<number>();
+  readonly isVisible = input.required<boolean>();
   readonly editPolicy = input<Policy | null>(null);
 
   readonly policy = output<Policy>();
@@ -167,6 +168,12 @@ export class PolicyFormComponent {
     this.applicationPolicy.clear();
     this.wifiSsids.clear();
   }
+
+  private resetOnHide = effect(() => {
+    if (!this.isVisible()) {
+      this.resetForm();
+    }
+  });
 
   onSubmit() {
     if (this.policyForm.invalid) return;

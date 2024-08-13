@@ -8,6 +8,7 @@
   <app-dialog [open]="showDialog()" (openChange)="hideDialog()">
     <app-user-form
       [groupId]="groupId()"
+      [isVisible]="showDialog()"
       [editUser]="userToEdit"
       (user)="addUser($event)"
     ></app-user-form>

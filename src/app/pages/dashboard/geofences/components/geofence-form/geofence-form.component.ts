@@ -20,6 +20,7 @@ import { CreateGeofence } from '../../../../../core/models/request/create-geofen
 })
 export class GeofenceFormComponent {
   groupId = input.required<number>();
+  readonly isVisible = input.required<boolean>();
   editGeofence = input<Geofence | null>();
 
   private geofenceService = inject(GeofenceService);
@@ -61,6 +62,12 @@ export class GeofenceFormComponent {
   private resetForm() {
     this.geofenceForm.reset({ name: '', latitude: 0, longitude: 0, radius: 0 });
   }
+
+  private resetOnHide = effect(() => {
+    if (!this.isVisible()) {
+      this.resetForm();
+    }
+  });
 
   onSubmit() {
     if (this.geofenceForm.invalid) return;

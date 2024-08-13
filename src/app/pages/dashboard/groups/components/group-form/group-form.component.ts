@@ -20,6 +20,7 @@ import { LoadingService } from '../../../../../core/services/loading/loading.ser
 })
 export class GroupFormComponent {
   readonly editGroup = input<Group | null>(null);
+  readonly isVisible = input.required<boolean>();
 
   readonly group = output<Group>();
 
@@ -40,6 +41,12 @@ export class GroupFormComponent {
   private resetForm() {
     this.groupForm.reset({ name: '' });
   }
+
+  private resetOnHide = effect(() => {
+    if (!this.isVisible()) {
+      this.resetForm();
+    }
+  });
 
   onSubmit() {
     if (this.groupForm.invalid) return;
