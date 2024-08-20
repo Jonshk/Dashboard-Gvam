@@ -1,6 +1,4 @@
-<main class="p-4">
-  <h1>Dispositivos</h1>
-
+<main class="container-fluid">
   <button class="btn btn-primary me-2" (click)="createMode()">
     Crear nuevo dispositivo
   </button>
@@ -74,145 +72,161 @@
     (onDelete)="onDeleteConfirm($event)"
   ></app-delete-dialog>
 
-  <div class="d-flex justify-content-between align-items-center">
-    <nav class="nav nav-pills my-4">
-      <li class="nav-item me-2">
-        <button
-          [className]="showRegisteredDevices ? 'nav-link active' : 'nav-link'"
-          (click)="toggleRegisteredDevices(true)"
-        >
-          Dispositivos enrolados
-        </button>
-      </li>
-      <li class="nav-item">
-        <button
-          [className]="!showRegisteredDevices ? 'nav-link active' : 'nav-link'"
-          (click)="toggleRegisteredDevices(false)"
-        >
-          Dispositivos no enrolados
-        </button>
-      </li>
-    </nav>
+  <div class="card mt-4">
+    <div
+      class="card-header card-no-border d-flex justify-content-between align-items-center flex-wrap gap-2"
+    >
+      <nav class="nav nav-pills">
+        <li class="nav-item me-2">
+          <button
+            [className]="showRegisteredDevices ? 'nav-link active' : 'nav-link'"
+            (click)="toggleRegisteredDevices(true)"
+          >
+            Dispositivos enrolados
+          </button>
+        </li>
+        <li class="nav-item">
+          <button
+            [className]="
+              !showRegisteredDevices ? 'nav-link active' : 'nav-link'
+            "
+            (click)="toggleRegisteredDevices(false)"
+          >
+            Dispositivos no enrolados
+          </button>
+        </li>
+      </nav>
 
-    <div class="d-flex gap-2">
-      <button class="btn btn-outline-secondary" (click)="selectAll()">
-        Seleccionar todos
-      </button>
-      <button class="btn btn-outline-secondary" (click)="unselectAll()">
-        Deseleccionar todos
-      </button>
-
-      <div class="btn-group">
-        <button
-          type="button"
-          class="btn btn-warning dropdown-toggle"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          Acciones
+      <div class="d-flex align-items-center flex-wrap gap-2">
+        <button class="btn btn-outline-secondary" (click)="selectAll()">
+          Seleccionar todos
         </button>
-        <ul class="dropdown-menu">
-          <li>
-            <button
-              class="dropdown-item"
-              (click)="changeActionDialog('customCommand')"
-            >
-              Configurar
-            </button>
-          </li>
-          <li>
-            <button
-              class="dropdown-item"
-              (click)="changeActionDialog('policies')"
-            >
-              Cambiar política
-            </button>
-          </li>
-          <li>
-            <button
-              class="dropdown-item"
-              (click)="changeActionDialog('command')"
-            >
-              Enviar comando
-            </button>
-          </li>
-          <li>
-            <button
-              class="dropdown-item"
-              (click)="changeActionDialog('migrate')"
-            >
-              Migrar de grupo
-            </button>
-          </li>
-          <li><hr class="dropdown-divider" /></li>
-          <li>
-            <button
-              class="dropdown-item text-danger"
-              (click)="changeActionDialog('delete')"
-            >
-              Eliminar
-            </button>
-          </li>
-        </ul>
+        <button class="btn btn-outline-secondary" (click)="unselectAll()">
+          Deseleccionar todos
+        </button>
+
+        <div class="btn-group" ngbDropdown>
+          <button
+            type="button"
+            class="btn btn-warning dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            ngbDropdownToggle
+          >
+            Acciones
+          </button>
+          <ul class="dropdown-menu" ngbDropdownMenu>
+            <li>
+              <button
+                class="dropdown-item"
+                (click)="changeActionDialog('customCommand')"
+                ngbDropdownItem
+              >
+                Configurar
+              </button>
+            </li>
+            <li>
+              <button
+                class="dropdown-item"
+                (click)="changeActionDialog('policies')"
+                ngbDropdownItem
+              >
+                Cambiar política
+              </button>
+            </li>
+            <li>
+              <button
+                class="dropdown-item"
+                (click)="changeActionDialog('command')"
+                ngbDropdownItem
+              >
+                Enviar comando
+              </button>
+            </li>
+            <li>
+              <button
+                class="dropdown-item"
+                (click)="changeActionDialog('migrate')"
+                ngbDropdownItem
+              >
+                Migrar de grupo
+              </button>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <button
+                class="dropdown-item text-danger"
+                (click)="changeActionDialog('delete')"
+                ngbDropdownItem
+              >
+                Eliminar
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="tranaction-table w-100">
+          @if (showRegisteredDevices) {
+            <thead>
+              <tr>
+                <th scope="col">-</th>
+                <th scope="col">Nombre del dispositivo</th>
+                <th scope="col">Usuario</th>
+                <th scope="col">Acciones</th>
+                <th scope="col">Política</th>
+                <th scope="col">Comando</th>
+                <th scope="col">Migrar de grupo</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (device of enrolledDevices(); track device.deviceId) {
+                <tr
+                  app-device-list-item
+                  [groupId]="groupId()"
+                  [device]="device"
+                  [policies]="policies"
+                  [groups]="groups"
+                  [deviceUser]="getDeviceUser(device.deviceUserId)"
+                  (deviceChange)="selectDevice($event)"
+                  (onEditDevice)="editDevice($event)"
+                  (onConfigDevice)="configDevice($event)"
+                  (onDeleteDevice)="deleteDevice($event)"
+                ></tr>
+              }
+            </tbody>
+          } @else {
+            <thead>
+              <tr>
+                <th scope="col">-</th>
+                <th scope="col">Nombre del dispositivo</th>
+                <th scope="col">Usuario</th>
+                <th scope="col">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (device of notEnrolledDevices(); track device.deviceId) {
+                <tr
+                  app-device-list-item
+                  [groupId]="groupId()"
+                  [device]="device"
+                  [policies]="policies"
+                  [groups]="groups"
+                  [deviceUser]="getDeviceUser(device.deviceUserId)"
+                  (deviceChange)="selectDevice($event)"
+                  (onEditDevice)="editDevice($event)"
+                  (onDeleteDevice)="deleteDevice($event)"
+                ></tr>
+              }
+            </tbody>
+          }
+        </table>
       </div>
     </div>
   </div>
-
-  <table class="table">
-    @if (showRegisteredDevices) {
-      <thead>
-        <tr>
-          <th scope="col">-</th>
-          <th scope="col">Nombre del dispositivo</th>
-          <th scope="col">Usuario</th>
-          <th scope="col">Acciones</th>
-          <th scope="col">Política</th>
-          <th scope="col">Comando</th>
-          <th scope="col">Migrar de grupo</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (device of enrolledDevices(); track device.deviceId) {
-          <tr
-            app-device-list-item
-            [groupId]="groupId()"
-            [device]="device"
-            [policies]="policies"
-            [groups]="groups"
-            [deviceUser]="getDeviceUser(device.deviceUserId)"
-            (deviceChange)="selectDevice($event)"
-            (onEditDevice)="editDevice($event)"
-            (onConfigDevice)="configDevice($event)"
-            (onDeleteDevice)="deleteDevice($event)"
-          ></tr>
-        }
-      </tbody>
-    } @else {
-      <thead>
-        <tr>
-          <th scope="col">-</th>
-          <th scope="col">Nombre del dispositivo</th>
-          <th scope="col">Usuario</th>
-          <th scope="col">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (device of notEnrolledDevices(); track device.deviceId) {
-          <tr
-            app-device-list-item
-            [groupId]="groupId()"
-            [device]="device"
-            [policies]="policies"
-            [groups]="groups"
-            [deviceUser]="getDeviceUser(device.deviceUserId)"
-            (deviceChange)="selectDevice($event)"
-            (onEditDevice)="editDevice($event)"
-            (onDeleteDevice)="deleteDevice($event)"
-          ></tr>
-        }
-      </tbody>
-    }
-  </table>
 </main>
 
 <!------------ TEMPLATES ------------>

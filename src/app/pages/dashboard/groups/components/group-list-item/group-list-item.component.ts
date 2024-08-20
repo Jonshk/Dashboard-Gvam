@@ -8,7 +8,7 @@ import { LoadingService } from '../../../../../core/services/loading/loading.ser
   standalone: true,
   imports: [RouterModule],
   templateUrl: './group-list-item.component.html',
-  styleUrl: './group-list-item.component.css',
+  styleUrl: './group-list-item.component.scss',
 })
 export class GroupListItemComponent {
   readonly group = input.required<Group>();

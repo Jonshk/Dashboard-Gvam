@@ -13,46 +13,80 @@ import { GeofencesPages } from './geofences/geofences.pages';
 
 export const dashboardRoutes: Routes = [
   {
+    path: '',
+    redirectTo: 'groups',
+    pathMatch: 'full',
+  },
+  {
     path: 'enterprises',
+    data: {
+      title: 'Empresas',
+    },
     component: EnterprisePage,
     canActivate: [isLoggedGuard, hasEnterpriseGuard],
   },
   {
     path: 'groups',
+    data: {
+      title: 'Grupos',
+    },
     component: GroupsPage,
     canActivate: [isLoggedGuard, hasEnterpriseGuard],
   },
   {
     path: 'applications',
+    data: {
+      title: 'Aplicaciones',
+    },
     component: ApplicationsPage,
     canActivate: [isLoggedGuard, hasEnterpriseGuard],
   },
   {
     path: 'groups/:groupId/devices',
+    data: {
+      title: 'Dispositivos',
+      breadcrumb: 'Dispositivos',
+    },
     component: DevicesPage,
     canMatch: [isIdNumberGuard(1)],
     canActivate: [isLoggedGuard, hasEnterpriseGuard],
   },
   {
     path: 'groups/:groupId/devices/:deviceId',
+    data: {
+      title: 'Detalle del dispositivo',
+      breadcrumb: 'Detalle del dispositivo',
+    },
     component: DeviceDetailPage,
     canMatch: [isIdNumberGuard(1), isIdNumberGuard(3)],
     canActivate: [isLoggedGuard, hasEnterpriseGuard],
   },
   {
     path: 'groups/:groupId/policies',
+    data: {
+      title: 'Políticas',
+      breadcrumb: 'Políticas',
+    },
     component: PoliciesPage,
     canMatch: [isIdNumberGuard(1)],
     canActivate: [isLoggedGuard, hasEnterpriseGuard],
   },
   {
     path: 'groups/:groupId/users',
+    data: {
+      title: 'Usuarios',
+      breadcrumb: 'Usuarios',
+    },
     component: UsersPage,
     canMatch: [isIdNumberGuard(1)],
     canActivate: [isLoggedGuard, hasEnterpriseGuard],
   },
   {
     path: 'groups/:groupId/geofences',
+    data: {
+      title: 'Geovallas',
+      breadcrumb: 'Geovallas',
+    },
     component: GeofencesPages,
     canActivate: [isLoggedGuard, hasEnterpriseGuard],
   },

@@ -16,7 +16,7 @@ import { CreateGeofence } from '../../../../../core/models/request/create-geofen
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './geofence-form.component.html',
-  styleUrl: './geofence-form.component.css',
+  styleUrl: './geofence-form.component.scss',
 })
 export class GeofenceFormComponent {
   groupId = input.required<number>();

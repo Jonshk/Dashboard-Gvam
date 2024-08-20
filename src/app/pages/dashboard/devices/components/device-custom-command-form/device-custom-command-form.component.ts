@@ -20,7 +20,7 @@ import { Geofence } from '../../../../../core/models/response/geofence.model';
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './device-custom-command-form.component.html',
-  styleUrl: './device-custom-command-form.component.css',
+  styleUrl: './device-custom-command-form.component.scss',
 })
 export class DeviceCustomCommandFormComponent {
   readonly groupId = input.required<number>();

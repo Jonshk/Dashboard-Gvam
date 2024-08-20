@@ -25,15 +25,17 @@
     }
   </label>
 
-  <label class="form-check-label">
-    Establecer como política por defecto del grupo
-    <input
-      type="checkbox"
-      class="form-check-input"
-      name="isDefault"
-      formControlName="isDefault"
-    />
-  </label>
+  <div class="form-check checkbox-checked">
+    <label class="form-check-label">
+      Establecer como política por defecto del grupo
+      <input
+        type="checkbox"
+        class="form-check-input"
+        name="isDefault"
+        formControlName="isDefault"
+      />
+    </label>
+  </div>
 
   <div
     class="d-flex flex-column"
@@ -53,7 +55,7 @@
       track application.value;
       let i = $index
     ) {
-      <div class="d-flex flex-column gap-3" [formGroupName]="i">
+      <div class="d-flex flex-column gap-2" [formGroupName]="i">
         <label>
           Paquete de la aplicación
           <input
@@ -105,15 +107,17 @@
           </select>
         </label>
 
-        <label class="form-check-label">
-          Deshabilitada
-          <input
-            type="checkbox"
-            class="form-check-input"
-            name="disabled"
-            formControlName="disabled"
-          />
-        </label>
+        <div class="form-check checkbox-checked">
+          <label class="form-check-label">
+            Deshabilitada
+            <input
+              type="checkbox"
+              class="form-check-input"
+              name="disabled"
+              formControlName="disabled"
+            />
+          </label>
+        </div>
 
         <label>
           Modo de autoactualización
@@ -183,33 +187,33 @@
       >
         Añadir SSID
       </button>
-      <div class="d-flex flex-column gap-2">
-        @for (ssid of wifiSsids.controls; track ssid; let j = $index) {
-          <div class="d-flex flex-column">
-            <div class="d-flex align-items-center gap-2">
-              <input
-                type="text"
-                class="form-control form-control-sm col"
-                [name]="'ssid' + j"
-                [formControlName]="j"
-              />
-              <button
-                type="button"
-                class="btn btn-outline-danger btn-sm col"
-                (click)="removeWifiSsid(j)"
-              >
-                Eliminar SSID
-              </button>
-            </div>
-            @if (ssid?.invalid) {
-              @if (ssid?.hasError("required")) {
-                <small class="text-danger">El SSID es obligatorio</small>
-              }
-            }
-          </div>
-        }
-      </div>
     </label>
+    <div class="d-flex flex-column gap-2">
+      @for (ssid of wifiSsids.controls; track ssid; let j = $index) {
+        <div class="d-flex flex-column">
+          <div class="d-flex align-items-center gap-2">
+            <input
+              type="text"
+              class="form-control form-control-sm col"
+              [name]="'ssid' + j"
+              [formControlName]="j"
+            />
+            <button
+              type="button"
+              class="btn btn-outline-danger btn-sm col"
+              (click)="removeWifiSsid(j)"
+            >
+              Eliminar SSID
+            </button>
+          </div>
+          @if (ssid?.invalid) {
+            @if (ssid?.hasError("required")) {
+              <small class="text-danger">El SSID es obligatorio</small>
+            }
+          }
+        </div>
+      }
+    </div>
   </div>
 
   <label>
@@ -227,25 +231,29 @@
     </select>
   </label>
 
-  <label class="form-check-label">
-    Bluetooth deshabilitado
-    <input
-      type="checkbox"
-      class="form-check-input"
-      name="bluetoothDisabled"
-      formControlName="bluetoothDisabled"
-    />
-  </label>
+  <div class="form-check checkbox-checked">
+    <label class="form-check-label">
+      Bluetooth deshabilitado
+      <input
+        type="checkbox"
+        class="form-check-input"
+        name="bluetoothDisabled"
+        formControlName="bluetoothDisabled"
+      />
+    </label>
+  </div>
 
-  <label class="form-check-label">
-    Ajustar volumen deshabilitado
-    <input
-      type="checkbox"
-      class="form-check-input"
-      name="adjustVolumeDisabled"
-      formControlName="adjustVolumeDisabled"
-    />
-  </label>
+  <div class="form-check checkbox-checked">
+    <label class="form-check-label">
+      Ajustar volumen deshabilitado
+      <input
+        type="checkbox"
+        class="form-check-input"
+        name="adjustVolumeDisabled"
+        formControlName="adjustVolumeDisabled"
+      />
+    </label>
+  </div>
 
   <label>
     Botón de encendido
@@ -280,29 +288,33 @@
     </select>
   </label>
 
-  <label class="form-check-label">
-    Restablecimiento a fábrica deshabilitado
-    <input
-      type="checkbox"
-      class="form-check-input"
-      name="factoryResetDisabled"
-      formControlName="factoryResetDisabled"
-    />
-  </label>
+  <div class="form-check checkbox-checked">
+    <label class="form-check-label">
+      Restablecimiento a fábrica deshabilitado
+      <input
+        type="checkbox"
+        class="form-check-input"
+        name="factoryResetDisabled"
+        formControlName="factoryResetDisabled"
+      />
+    </label>
+  </div>
 
-  <label class="form-check-label">
-    Instalación de aplicaciones deshabilitado
-    <input
-      type="checkbox"
-      class="form-check-input"
-      name="installAppsDisabled"
-      formControlName="installAppsDisabled"
-    />
-  </label>
+  <div class="form-check checkbox-checked">
+    <label class="form-check-label">
+      Instalación de aplicaciones deshabilitado
+      <input
+        type="checkbox"
+        class="form-check-input"
+        name="installAppsDisabled"
+        formControlName="installAppsDisabled"
+      />
+    </label>
+  </div>
 
   <button
     type="submit"
-    class="btn btn-primary mt-2"
+    class="btn btn-primary w-100"
     [disabled]="policyForm.invalid || loadingService.isLoading()"
   >
     @if (editPolicy()) {

@@ -7,7 +7,7 @@ import { LoadingService } from '../../../../../core/services/loading/loading.ser
   standalone: true,
   imports: [],
   templateUrl: './geofence-list-item.component.html',
-  styleUrl: './geofence-list-item.component.css',
+  styleUrl: './geofence-list-item.component.scss',
 })
 export class GeofenceListItemComponent {
   readonly geofence = input.required<Geofence>();

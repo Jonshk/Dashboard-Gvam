@@ -11,7 +11,7 @@ declare var gapi: any; // Google API
   standalone: true,
   imports: [],
   templateUrl: './applications.page.html',
-  styleUrl: './applications.page.css',
+  styleUrl: './applications.page.scss',
 })
 export class ApplicationsPage {
   @ViewChild('application') application!: ElementRef<HTMLDivElement>;

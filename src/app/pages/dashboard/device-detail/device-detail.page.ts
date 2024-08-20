@@ -9,7 +9,7 @@ import { Response } from '../../../core/models/response/response.model';
   standalone: true,
   imports: [],
   templateUrl: './device-detail.page.html',
-  styleUrl: './device-detail.page.css',
+  styleUrl: './device-detail.page.scss',
 })
 export class DeviceDetailPage {
   readonly groupId = input.required<number>();

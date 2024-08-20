@@ -44,5 +44,11 @@
     <p class="fs-2">{{ deviceName }}</p>
     <p class="fs-2">{{ pin }}</p>
     <img [src]="registerQr" alt="Código QR de registro" />
+    <small>
+      El QR solo podrá ser usado para registrar un dispositivo. Si no va a
+      escanearlo ahora, guárdelo para escanearlo más tarde. El QR caducará en un
+      día.
+    </small>
+    <small>El PIN podrá ser consultado en los detalles del dispositivo.</small>
   </div>
 }

@@ -11,16 +11,16 @@ import { StoreService } from '../../../core/services/store/store.service';
 import { LoginResponse } from '../../../core/models/response/login-response.model';
 import { Response } from '../../../core/models/response/response.model';
 import { EnterpriseService } from '../../../core/services/enterprise/enterprise.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { LoadingService } from '../../../core/services/loading/loading.service';
 import { CustomValidators } from '../../../shared/util/custom-validators';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterModule],
   templateUrl: './register.page.html',
-  styleUrl: './register.page.css',
+  styleUrl: './register.page.scss',
 })
 export class RegisterPage {
   registerForm = new FormGroup(

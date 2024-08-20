@@ -13,8 +13,6 @@ import {
 } from './components/device-list-item/device-list-item.component';
 import { LoadingService } from '../../../core/services/loading/loading.service';
 import { forkJoin, Observable } from 'rxjs';
-import { DialogComponent } from '../../../shared/components/dialog/dialog.component';
-import { DeleteDialogComponent } from '../../../shared/components/delete-dialog/delete-dialog.component';
 import { SuccessResponse } from '../../../core/models/response/success-response.model';
 import { DeviceUser } from '../../../core/models/response/device-user.model';
 import { UserService } from '../../../core/services/user/user.service';
@@ -36,6 +34,9 @@ import { DeviceCustomCommand } from '../../../core/enums/device-custom-command';
 import { Geofence } from '../../../core/models/response/geofence.model';
 import { GeofenceService } from '../../../core/services/geofence/geofence.service';
 import { DeviceCustomCommandRequest } from '../../../core/models/request/device-custom-command-request.model';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { DeleteDialogComponent } from '../../../shared/component/delete-dialog/delete-dialog.component';
+import { DialogComponent } from '../../../shared/component/dialog/dialog.component';
 
 @Component({
   selector: 'app-devices',
@@ -48,9 +49,10 @@ import { DeviceCustomCommandRequest } from '../../../core/models/request/device-
     ReactiveFormsModule,
     NgTemplateOutlet,
     DeviceCustomCommandFormComponent,
+    NgbDropdownModule,
   ],
   templateUrl: './devices.page.html',
-  styleUrl: './devices.page.css',
+  styleUrl: './devices.page.scss',
 })
 export class DevicesPage {
   groupId = input.required<number>();
@@ -544,7 +546,7 @@ export class DevicesPage {
 
         return null;
       })
-      .filter((r) => r !== null);
+      .filter((r) => r !== null) as Observable<Response<SuccessResponse>>[];
 
     if ($customCommandRequests.length === 0) {
       this.hideActionDialog();
@@ -552,7 +554,7 @@ export class DevicesPage {
     }
 
     forkJoin($customCommandRequests).subscribe({
-      next: (_: [Observable<Response<SuccessResponse>> | null]) => {
+      next: (_: Response<SuccessResponse>[]) => {
         if (
           deviceCustomCommandRequest.deviceCustomCommand ===
           DeviceCustomCommand.DEACTIVATE_GEOFENCE

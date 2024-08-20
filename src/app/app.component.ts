@@ -1,20 +1,23 @@
 import { Component } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
-import { LoadingComponent } from './shared/components/loading/loading.component';
-import { ErrorComponent } from './shared/components/error/error.component';
-import { NavbarComponent } from './core/components/navbar/navbar.component';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
+import { LoaderComponent } from './shared/component/loader/loader.component';
+import { TapToTopComponent } from './shared/component/tap-to-top/tap-to-top.component';
+import { ContentComponent } from './shared/component/layout/content/content.component';
+import { ErrorComponent } from './shared/component/error/error.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
+    CommonModule,
     RouterOutlet,
-    RouterModule,
-    LoadingComponent,
+    LoaderComponent,
+    TapToTopComponent,
+    ContentComponent,
     ErrorComponent,
-    NavbarComponent,
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {}

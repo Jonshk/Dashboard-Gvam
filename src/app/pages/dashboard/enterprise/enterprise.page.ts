@@ -18,7 +18,7 @@ import { LoadingService } from '../../../core/services/loading/loading.service';
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './enterprise.page.html',
-  styleUrl: './enterprise.page.css',
+  styleUrl: './enterprise.page.scss',
 })
 export class EnterprisePage {
   signUpUrl: string = '';

@@ -1,15 +1,17 @@
 <div class="d-flex align-items-center justify-content-between">
-  <span [className]="policy().isDefault ? 'fw-bold' : ''">{{ policy().name }}</span>
-  <div>
+  <span [className]="policy().isDefault ? 'fw-bold' : ''">{{
+    policy().name
+  }}</span>
+  <div class="d-flex justify-content-end flex-wrap gap-2">
     <button
-      class="btn btn-outline-secondary me-2 btn-sm"
+      class="btn btn-outline-secondary btn-sm"
       [disabled]="loadingService.isLoading()"
       (click)="editPolicy()"
     >
       Editar
     </button>
     <button
-      class="btn btn-danger btn-sm me-2"
+      class="btn btn-danger btn-sm"
       [disabled]="loadingService.isLoading()"
       (click)="deletePolicy()"
     >

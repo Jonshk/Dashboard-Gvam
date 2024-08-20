@@ -5,9 +5,9 @@ import { Response } from '../../../core/models/response/response.model';
 import { PolicyFormComponent } from './components/policy-form/policy-form.component';
 import { PolicyListItemComponent } from './components/policy-list-item/policy-list-item.component';
 import { LoadingService } from '../../../core/services/loading/loading.service';
-import { DialogComponent } from '../../../shared/components/dialog/dialog.component';
-import { DeleteDialogComponent } from '../../../shared/components/delete-dialog/delete-dialog.component';
 import { SuccessResponse } from '../../../core/models/response/success-response.model';
+import { DeleteDialogComponent } from '../../../shared/component/delete-dialog/delete-dialog.component';
+import { DialogComponent } from '../../../shared/component/dialog/dialog.component';
 
 @Component({
   selector: 'app-policies',
@@ -19,7 +19,7 @@ import { SuccessResponse } from '../../../core/models/response/success-response.
     DeleteDialogComponent,
   ],
   templateUrl: './policies.page.html',
-  styleUrl: './policies.page.css',
+  styleUrl: './policies.page.scss',
 })
 export class PoliciesPage {
   readonly groupId = input.required<number>();

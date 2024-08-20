@@ -1,5 +1,4 @@
 import { Component, effect, input, signal } from '@angular/core';
-import { DialogComponent } from '../../../shared/components/dialog/dialog.component';
 import { UserFormComponent } from './components/user-form/user-form.component';
 import { UserListItemComponent } from './components/user-list-item/user-list-item.component';
 import { DeviceUser } from '../../../core/models/response/device-user.model';
@@ -7,7 +6,8 @@ import { UserService } from '../../../core/services/user/user.service';
 import { LoadingService } from '../../../core/services/loading/loading.service';
 import { Response } from '../../../core/models/response/response.model';
 import { SuccessResponse } from '../../../core/models/response/success-response.model';
-import { DeleteDialogComponent } from '../../../shared/components/delete-dialog/delete-dialog.component';
+import { DeleteDialogComponent } from '../../../shared/component/delete-dialog/delete-dialog.component';
+import { DialogComponent } from '../../../shared/component/dialog/dialog.component';
 
 @Component({
   selector: 'app-users',
@@ -19,7 +19,7 @@ import { DeleteDialogComponent } from '../../../shared/components/delete-dialog/
     DeleteDialogComponent,
   ],
   templateUrl: './users.page.html',
-  styleUrl: './users.page.css',
+  styleUrl: './users.page.scss',
 })
 export class UsersPage {
   readonly groupId = input.required<number>();

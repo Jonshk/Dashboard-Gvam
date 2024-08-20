@@ -10,7 +10,7 @@ import { LoadingService } from '../../../../../core/services/loading/loading.ser
   standalone: true,
   imports: [],
   templateUrl: './policy-list-item.component.html',
-  styleUrl: './policy-list-item.component.css',
+  styleUrl: './policy-list-item.component.scss',
 })
 export class PolicyListItemComponent {
   readonly groupId = input.required<number>();

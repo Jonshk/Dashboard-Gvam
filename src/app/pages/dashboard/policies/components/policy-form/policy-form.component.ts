@@ -23,7 +23,7 @@ import { LoadingService } from '../../../../../core/services/loading/loading.ser
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './policy-form.component.html',
-  styleUrl: './policy-form.component.css',
+  styleUrl: './policy-form.component.scss',
 })
 export class PolicyFormComponent {
   readonly groupId = input.required<number>();

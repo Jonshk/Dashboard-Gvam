@@ -1,13 +1,13 @@
 import { Component, effect, input, signal } from '@angular/core';
 import { GeofenceFormComponent } from './components/geofence-form/geofence-form.component';
-import { DialogComponent } from '../../../shared/components/dialog/dialog.component';
 import { GeofenceService } from '../../../core/services/geofence/geofence.service';
 import { Geofence } from '../../../core/models/response/geofence.model';
 import { Response } from '../../../core/models/response/response.model';
 import { LoadingService } from '../../../core/services/loading/loading.service';
 import { GeofenceListItemComponent } from './components/geofence-list-item/geofence-list-item.component';
-import { DeleteDialogComponent } from '../../../shared/components/delete-dialog/delete-dialog.component';
 import { SuccessResponse } from '../../../core/models/response/success-response.model';
+import { DeleteDialogComponent } from '../../../shared/component/delete-dialog/delete-dialog.component';
+import { DialogComponent } from '../../../shared/component/dialog/dialog.component';
 
 @Component({
   selector: 'app-geofences',
@@ -19,7 +19,7 @@ import { SuccessResponse } from '../../../core/models/response/success-response.
     DeleteDialogComponent,
   ],
   templateUrl: './geofences.pages.html',
-  styleUrl: './geofences.pages.css',
+  styleUrl: './geofences.pages.scss',
 })
 export class GeofencesPages {
   readonly groupId = input.required<number>();

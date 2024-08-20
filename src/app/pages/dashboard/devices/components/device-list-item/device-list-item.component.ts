@@ -24,7 +24,7 @@ import { DeviceUser } from '../../../../../core/models/response/device-user.mode
   standalone: true,
   imports: [ReactiveFormsModule, RouterModule],
   templateUrl: './device-list-item.component.html',
-  styleUrl: './device-list-item.component.css',
+  styleUrl: './device-list-item.component.scss',
 })
 export class DeviceListItemComponent {
   readonly groupId = input.required<number>();

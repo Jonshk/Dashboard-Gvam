@@ -10,7 +10,7 @@ import { LoginRequest } from '../../../core/models/request/login-request.model';
 import { Response } from '../../../core/models/response/response.model';
 import { LoginResponse } from '../../../core/models/response/login-response.model';
 import { StoreService } from '../../../core/services/store/store.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { EnterpriseService } from '../../../core/services/enterprise/enterprise.service';
 import { Enterprise } from '../../../core/models/response/enterprise-response.model';
 import { LoadingService } from '../../../core/services/loading/loading.service';
@@ -18,9 +18,9 @@ import { LoadingService } from '../../../core/services/loading/loading.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterModule],
   templateUrl: './login.page.html',
-  styleUrl: './login.page.css',
+  styleUrl: './login.page.scss',
 })
 export class LoginPage {
   loginForm = new FormGroup({

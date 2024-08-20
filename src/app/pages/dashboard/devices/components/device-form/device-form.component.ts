@@ -19,7 +19,7 @@ import { DeviceUser } from '../../../../../core/models/response/device-user.mode
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './device-form.component.html',
-  styleUrl: './device-form.component.css',
+  styleUrl: './device-form.component.scss',
 })
 export class DeviceFormComponent {
   readonly groupId = input.required<number>();

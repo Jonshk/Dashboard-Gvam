@@ -16,7 +16,7 @@ import { LoadingService } from '../../../../../core/services/loading/loading.ser
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './group-form.component.html',
-  styleUrl: './group-form.component.css',
+  styleUrl: './group-form.component.scss',
 })
 export class GroupFormComponent {
   readonly editGroup = input<Group | null>(null);

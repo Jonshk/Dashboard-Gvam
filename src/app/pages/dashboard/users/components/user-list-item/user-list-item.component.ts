@@ -7,7 +7,7 @@ import { LoadingService } from '../../../../../core/services/loading/loading.ser
   standalone: true,
   imports: [],
   templateUrl: './user-list-item.component.html',
-  styleUrl: './user-list-item.component.css',
+  styleUrl: './user-list-item.component.scss',
 })
 export class UserListItemComponent {
   readonly groupId = input.required<number>();

@@ -19,7 +19,7 @@ import { Policy } from '../../../../../core/models/response/policy.model';
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './user-form.component.html',
-  styleUrl: './user-form.component.css',
+  styleUrl: './user-form.component.scss',
 })
 export class UserFormComponent {
   readonly groupId = input.required<number>();

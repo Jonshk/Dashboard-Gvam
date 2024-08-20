@@ -1,37 +1,95 @@
-<main class="d-flex align-items-center py-4 form-main">
-  <div class="form-signin w-100 m-auto">
-    <h1>Iniciar sesión</h1>
-    <form
-      class="d-flex flex-column"
-      [formGroup]="loginForm"
-      (ngSubmit)="onSubmit()"
-    >
-      <label class="form-group">
-        Email
-        <input
-          type="email"
-          class="form-control"
-          name="email"
-          formControlName="email"
-        />
-      </label>
-      <label class="form-group">
-        Contraseña
-        <input
-          type="password"
-          class="form-control"
-          name="password"
-          formControlName="password"
-        />
-      </label>
-
-      <button
-        type="submit"
-        class="btn btn-primary mt-2"
-        [disabled]="loginForm.invalid || loadingService.isLoading()"
-      >
-        Iniciar sesión
-      </button>
-    </form>
+<main class="container-fluid p-0">
+  <div class="row m-0">
+    <div class="col-12 p-0">
+      <div class="login-card login-dark">
+        <div>
+          <div>
+            <a class="logo" [routerLink]="['/']">
+              <img
+                class="img-fluid for-dark"
+                src="assets/images/logo/logo.png"
+                alt="looginpage"
+              />
+              <img
+                class="img-fluid for-light"
+                src="assets/images/logo/logo_dark.png"
+                alt="looginpage"
+              />
+            </a>
+          </div>
+          <div class="login-main">
+            <form
+              class="theme-form"
+              [formGroup]="loginForm"
+              (ngSubmit)="onSubmit()"
+            >
+              <h3>Iniciar sesión</h3>
+              <p>Introduce email y contraseña para iniciar sesión</p>
+              <div class="form-group">
+                <label class="col-form-label">Email</label>
+                <input
+                  class="form-control"
+                  type="email"
+                  name="email"
+                  formControlName="email"
+                  placeholder="test@gmail.com"
+                  required
+                />
+                @if (
+                  loginForm.controls["email"].touched &&
+                  loginForm.controls["email"].errors?.["required"]
+                ) {
+                  <div class="text text-danger mt-1">
+                    El email es obligatorio
+                  </div>
+                }
+                @if (
+                  loginForm.controls["email"].touched &&
+                  loginForm.controls["email"].errors?.["email"]
+                ) {
+                  <div class="text text-danger mt-1">El email no es válido</div>
+                }
+              </div>
+              <div class="form-group">
+                <label class="col-form-label">Contraseña</label>
+                <div class="form-input position-relative">
+                  <input
+                    class="form-control"
+                    type="password"
+                    name="password"
+                    formControlName="password"
+                    placeholder="*********"
+                    required
+                  />
+                  @if (
+                    loginForm.controls["password"].touched &&
+                    loginForm.controls["password"].errors?.["required"]
+                  ) {
+                    <div class="text text-danger mt-1">
+                      La contraseña es obligatoria
+                    </div>
+                  }
+                </div>
+              </div>
+              <div class="form-group mb-0">
+                <div class="text-end mt-3">
+                  <button
+                    class="btn btn-primary btn-block w-100"
+                    [disabled]="loginForm.invalid || loadingService.isLoading()"
+                    type="submit"
+                  >
+                    Iniciar sesión
+                  </button>
+                </div>
+              </div>
+              <p class="mt-4 mb-0 text-center">
+                ¿No tienes cuenta?
+                <a class="ms-2" [routerLink]="['/register']">Crear Cuenta</a>
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </main>
