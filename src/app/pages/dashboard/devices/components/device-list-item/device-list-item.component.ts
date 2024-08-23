@@ -18,6 +18,9 @@ import { RouterModule } from '@angular/router';
 import { Group } from '../../../../../core/models/response/group.model';
 import { MigrateDeviceRequest } from '../../../../../core/models/request/migrate-device-request';
 import { DeviceUser } from '../../../../../core/models/response/device-user.model';
+import CobrowseAPI from 'cobrowse-agent-sdk';
+import { CobrowseToken } from '../../../../../core/models/response/cobrowse-token.model';
+import { ErrorService } from '../../../../../core/services/error/error.service';
 
 @Component({
   selector: '[app-device-list-item]',
@@ -39,6 +42,7 @@ export class DeviceListItemComponent {
 
   private deviceService = inject(DeviceService);
   readonly loadingService = inject(LoadingService);
+  private errorService = inject(ErrorService);
 
   applyPolicyForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
@@ -169,6 +173,40 @@ export class DeviceListItemComponent {
         selected: checkbox.checked,
       };
     });
+  }
+
+  async connect() {
+    this.loadingService.setLoading();
+    this.deviceService
+      .getCowbroseToken(this.groupId(), this.device().deviceId)
+      .subscribe({
+        next: async ({ data }: Response<CobrowseToken>) => {
+          try {
+            const cobrowse = new CobrowseAPI();
+            cobrowse.token = data.token;
+            const devices = await cobrowse.devices.list();
+            const device = devices.find(
+              (d) => d.custom_data['device_id'] === this.device().deviceId,
+            );
+
+            if (device) {
+              window.open(
+                `${cobrowse.api}/connect/device/${device.id}?token=${cobrowse.token}&end_action=none`,
+              );
+            }
+          } catch (error) {
+            this.errorService.setError(
+              'Ha ocurrido un error al conectarse con Cobrowse, inténtelo de nuevo más tarde.',
+            );
+          } finally {
+            this.loadingService.dismissLoading();
+          }
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });
   }
 }
 

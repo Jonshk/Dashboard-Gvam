@@ -14,6 +14,7 @@ import { Device } from '../../models/response/device.model';
 import { DeviceCommandRequest } from '../../models/request/device-command-request.model';
 import { MigrateDeviceRequest } from '../../models/request/migrate-device-request';
 import { DeviceCustomCommandRequest } from '../../models/request/device-custom-command-request.model';
+import { CobrowseToken } from '../../models/response/cobrowse-token.model';
 
 @Injectable({
   providedIn: 'root',
@@ -120,6 +121,15 @@ export class DeviceService {
     return this.http.post<Response<SuccessResponse>>(
       this.url(groupId, deviceId + '/migrate'),
       migrateDeviceRequest,
+    );
+  }
+
+  getCowbroseToken(
+    groupId: number,
+    deviceId: number,
+  ): Observable<Response<CobrowseToken>> {
+    return this.http.get<Response<CobrowseToken>>(
+      this.url(groupId, deviceId + '/remote-control/token'),
     );
   }
 }

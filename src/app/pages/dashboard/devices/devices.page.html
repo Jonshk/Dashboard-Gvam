@@ -30,7 +30,8 @@
     <app-device-custom-command-form
       [groupId]="groupId()"
       [device]="deviceToConfig"
-      (onGeofenceChange)="updateDevice($event)"
+      [geofences]="geofences"
+      (onDeviceChange)="updateDevice($event)"
     ></app-device-custom-command-form>
   </app-dialog>
 
@@ -180,6 +181,7 @@
                 <th scope="col">Política</th>
                 <th scope="col">Comando</th>
                 <th scope="col">Migrar de grupo</th>
+                <th scope="col">Control remoto</th>
               </tr>
             </thead>
             <tbody>
@@ -423,7 +425,6 @@
         </select>
       </label>
     }
-
     <ng-container *ngTemplateOutlet="devicesCounter"></ng-container>
 
     <button

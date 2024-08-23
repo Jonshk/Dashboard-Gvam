@@ -17,57 +17,66 @@
     </select>
   </label>
 
-  @if (
-    customCommandForm.value.command === DeviceCustomCommand.ADJUST_BRIGHTNESS
-  ) {
-    <label class="w-100">
-      Nivel de brillo: {{ customCommandForm.value.value }}
-      <input
-        type="range"
-        name="value"
-        formControlName="value"
-        class="form-range"
-        min="0"
-        max="255"
-      />
-    </label>
-  } @else if (
-    customCommandForm.value.command === DeviceCustomCommand.ADJUST_VOLUME
-  ) {
-    <label class="w-100">
-      Nivel de volumen: {{ customCommandForm.value.value }}
-      <input
-        type="range"
-        name="value"
-        formControlName="value"
-        class="form-range"
-        min="0"
-        max="100"
-      />
-    </label>
-  } @else if (
-    customCommandForm.value.command === DeviceCustomCommand.ACTIVATE_GEOFENCE
-  ) {
-    <label class="w-100">
-      Geovalla
-      <select class="form-select" name="value" formControlName="value">
-        @for (geofence of geofences; track geofence.geofenceId) {
-          <option [value]="geofence.geofenceId">
-            {{ geofence.geofenceName }}
-          </option>
+  @switch (customCommandForm.value.command) {
+    @case (DeviceCustomCommand.ADJUST_BRIGHTNESS) {
+      <label class="w-100">
+        Nivel de brillo: {{ customCommandForm.value.value }}
+        <input
+          type="range"
+          name="value"
+          formControlName="value"
+          class="form-range"
+          min="0"
+          max="255"
+        />
+      </label>
+    }
+    @case (DeviceCustomCommand.ADJUST_VOLUME) {
+      <label class="w-100">
+        Nivel de volumen: {{ customCommandForm.value.value }}
+        <input
+          type="range"
+          name="value"
+          formControlName="value"
+          class="form-range"
+          min="0"
+          max="100"
+        />
+      </label>
+    }
+    @case (DeviceCustomCommand.ACTIVATE_GEOFENCE) {
+      <label class="w-100">
+        Geovalla
+        <select class="form-select" name="value" formControlName="value">
+          @for (geofence of geofences(); track geofence.geofenceId) {
+            <option [value]="geofence.geofenceId">
+              {{ geofence.geofenceName }}
+            </option>
+          }
+        </select>
+      </label>
+    }
+    @case (DeviceCustomCommand.DEACTIVATE_GEOFENCE) {
+      <small class="w-100">
+        @if (device()?.geofenceId) {
+          La geovalla {{ getActiveGeofenceName() }} está activa
+        } @else {
+          No hay ninguna geovalla activa
         }
-      </select>
-    </label>
-  } @else if (
-    customCommandForm.value.command === DeviceCustomCommand.DEACTIVATE_GEOFENCE
-  ) {
-    <small class="w-100">
-      @if (device()?.geofenceId) {
-        La geovalla {{ getActiveGeofenceName() }} está activa
-      } @else {
-        No hay ninguna geovalla activa
-      }
-    </small>
+      </small>
+    }
+    @case (
+      DeviceCustomCommand.ACTIVATE_REMOTE_CONTROL ||
+      DeviceCustomCommand.DEACTIVATE_GEOFENCE
+    ) {
+      <small class="w-100">
+        @if (device()?.remoteControlActive) {
+          El control remoto está activo
+        } @else {
+          El control remoto no está activo
+        }
+      </small>
+    }
   }
 
   <button

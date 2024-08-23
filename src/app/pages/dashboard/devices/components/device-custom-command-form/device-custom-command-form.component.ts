@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -25,14 +25,13 @@ import { Geofence } from '../../../../../core/models/response/geofence.model';
 export class DeviceCustomCommandFormComponent {
   readonly groupId = input.required<number>();
   readonly device = input.required<Device | null>();
+  readonly geofences = input.required<Geofence[]>();
 
-  readonly onGeofenceChange = output<Device>();
+  readonly onDeviceChange = output<Device>();
 
   readonly loadingService = inject(LoadingService);
   private readonly deviceService = inject(DeviceService);
   private readonly geofenceService = inject(GeofenceService);
-
-  geofences: Geofence[] = [];
 
   customCommandForm = new FormGroup({
     command: new FormControl(
@@ -40,17 +39,6 @@ export class DeviceCustomCommandFormComponent {
       Validators.required,
     ),
     value: new FormControl(0, [Validators.min(0), Validators.required]),
-  });
-
-  private listGeofences = effect(() => {
-    this.geofenceService.list(this.groupId()).subscribe({
-      next: ({ data }: Response<Geofence[]>) => {
-        this.geofences = data;
-      },
-      error: (err: any) => {
-        console.error('error:', err);
-      },
-    });
   });
 
   sendCustomCommandForm() {
@@ -85,7 +73,7 @@ export class DeviceCustomCommandFormComponent {
               deviceCustomCommandRequest.deviceCustomCommand ===
               DeviceCustomCommand.ACTIVATE_GEOFENCE
             ) {
-              this.onGeofenceChange.emit({
+              this.onDeviceChange.emit({
                 ...this.device()!,
                 geofenceId: Number(deviceCustomCommandRequest.value),
               });
@@ -93,9 +81,25 @@ export class DeviceCustomCommandFormComponent {
               deviceCustomCommandRequest.deviceCustomCommand ===
               DeviceCustomCommand.DEACTIVATE_GEOFENCE
             ) {
-              this.onGeofenceChange.emit({
+              this.onDeviceChange.emit({
                 ...this.device()!,
                 geofenceId: null,
+              });
+            } else if (
+              deviceCustomCommandRequest.deviceCustomCommand ===
+              DeviceCustomCommand.ACTIVATE_REMOTE_CONTROL
+            ) {
+              this.onDeviceChange.emit({
+                ...this.device()!,
+                remoteControlActive: true,
+              });
+            } else if (
+              deviceCustomCommandRequest.deviceCustomCommand ===
+              DeviceCustomCommand.DEACTIVATE_REMOTE_CONTROL
+            ) {
+              this.onDeviceChange.emit({
+                ...this.device()!,
+                remoteControlActive: false,
               });
             }
           }
@@ -109,7 +113,7 @@ export class DeviceCustomCommandFormComponent {
   }
 
   getActiveGeofenceName() {
-    const activeGeofence = this.geofences.find(
+    const activeGeofence = this.geofences().find(
       (g) => g.geofenceId === this.device()?.geofenceId,
     );
     if (activeGeofence) {

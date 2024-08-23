@@ -103,4 +103,14 @@
       </button>
     </form>
   </td>
+
+  <td>
+    <button
+      class="btn btn-primary"
+      [disabled]="!device().remoteControlActive"
+      (click)="connect()"
+    >
+      Conectar
+    </button>
+  </td>
 }

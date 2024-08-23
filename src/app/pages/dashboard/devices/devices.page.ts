@@ -296,6 +296,7 @@ export class DevicesPage {
       this.devices()[index].deviceName = device.deviceName;
       this.devices()[index].deviceUserId = device.deviceUserId;
       this.devices()[index].geofenceId = device.geofenceId;
+      this.devices()[index].remoteControlActive = device.remoteControlActive;
       this.hideFormDialog();
       return;
     }
@@ -576,6 +577,32 @@ export class DevicesPage {
             devices.map((d) => {
               if (this.selectedDevices().includes(d)) {
                 d.geofenceId = deviceCustomCommandRequest.value;
+              }
+
+              return d;
+            }),
+          );
+        } else if (
+          deviceCustomCommandRequest.deviceCustomCommand ===
+          DeviceCustomCommand.DEACTIVATE_REMOTE_CONTROL
+        ) {
+          this.devices.update((devices) =>
+            devices.map((d) => {
+              if (this.selectedDevices().includes(d)) {
+                d.remoteControlActive = false;
+              }
+
+              return d;
+            }),
+          );
+        } else if (
+          deviceCustomCommandRequest.deviceCustomCommand ===
+          DeviceCustomCommand.ACTIVATE_REMOTE_CONTROL
+        ) {
+          this.devices.update((devices) =>
+            devices.map((d) => {
+              if (this.selectedDevices().includes(d)) {
+                d.remoteControlActive = true;
               }
 
               return d;
