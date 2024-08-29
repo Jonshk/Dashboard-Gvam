@@ -49,16 +49,30 @@ export class PoliciesPage {
 
   private list() {
     this.loadingService.setLoading();
-    this.policyService.list(this.groupId()).subscribe({
-      next: ({ data }: Response<Policy[]>) => {
-        this.policies = data;
-        this.loadingService.dismissLoading();
-      },
-      error: (err: any) => {
-        console.error('error:', err);
-        this.loadingService.dismissLoading();
-      },
-    });
+    if(this.groupId()){
+      console.log("ENTRE EN EL NOT NUll" , this.groupId())
+      this.policyService.list(this.groupId()).subscribe({
+        next: ({ data }: Response<Policy[]>) => {
+          this.policies = data;
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });  
+    }else{
+      this.policyService.listAll().subscribe({
+        next: ({ data }: Response<Policy[]>) => {
+          this.policies = data;
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });  
+    }
   }
 
   hideFormDialog() {

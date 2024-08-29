@@ -18,6 +18,10 @@ export class UserService {
     return `${environment.apiUrl}/enterprises/${this.enterpriseId}/groups/${groupId}/users${path ? '/' + path : ''}`;
   }
 
+  private urlAll(path: number | null = null) {
+    return `${environment.apiUrl}/enterprises/${this.enterpriseId}/users${path ? '/' + path : ''}`;
+  }
+
   constructor(
     private http: HttpClient,
     private enterpriseService: EnterpriseService,
@@ -44,6 +48,10 @@ export class UserService {
       this.url(groupId, deviceUserId),
       createDeviceUser,
     );
+  }
+
+  listAll(): Observable<Response<DeviceUser[]>> {
+    return this.http.get<Response<DeviceUser[]>>(this.urlAll());
   }
 
   list(groupId: number): Observable<Response<DeviceUser[]>> {

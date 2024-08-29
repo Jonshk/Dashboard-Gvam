@@ -48,17 +48,31 @@ export class UsersPage {
   );
 
   private list() {
-    this.loadingService.setLoading();
-    this.userService.list(this.groupId()).subscribe({
-      next: ({ data }: Response<DeviceUser[]>) => {
-        this.users = data;
-        this.loadingService.dismissLoading();
-      },
-      error: (err: any) => {
-        console.error('error:', err);
-        this.loadingService.dismissLoading();
-      },
-    });
+    if(this.groupId()){
+      this.loadingService.setLoading();
+      this.userService.list(this.groupId()).subscribe({
+        next: ({ data }: Response<DeviceUser[]>) => {
+          this.users = data;
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });  
+    }else{
+      this.loadingService.setLoading();
+      this.userService.listAll().subscribe({
+        next: ({ data }: Response<DeviceUser[]>) => {
+          this.users = data;
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });
+    }
   }
 
   hideDialog() {

@@ -49,6 +49,33 @@ export class NavmenuService {
       icon: 'file',
       type: 'link',
     },
+    {
+      level: 1,
+      id: 3,
+      path: '/users',
+      bookmark: true,
+      title: 'Usuarios',
+      icon: 'user',
+      type: 'link',
+    },
+    {
+      level: 1,
+      id: 4,
+      path: '/policies',
+      bookmark: true,
+      title: 'Politicas',
+      icon: 'chat',
+      type: 'link',
+    },
+    {
+      level: 1,
+      id: 5,
+      path: '/devices',
+      bookmark: true,
+      title: 'Dispositivos',
+      icon: 'others',
+      type: 'link',
+    },
   ];
 
   item = new BehaviorSubject<Menu[]>(this.MENUITEMS);

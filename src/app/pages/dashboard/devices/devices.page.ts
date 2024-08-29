@@ -133,53 +133,58 @@ export class DevicesPage {
   );
 
   private listDevicesAndPolicies() {
-    this.loadingService.setLoading();
-    const $devices = this.deviceService.list(this.groupId());
-    const $policies = this.policyService.list(this.groupId());
-    const $deviceUsers = this.userService.list(this.groupId());
-    const $groups = this.groupService.list();
-    const $geofences = this.geofenceService.list(this.groupId());
-
-    forkJoin([
-      $devices,
-      $policies,
-      $deviceUsers,
-      $groups,
-      $geofences,
-    ]).subscribe({
-      next: ([
-        { data: devices },
-        { data: policies },
-        { data: deviceUsers },
-        { data: groups },
-        { data: geofences },
-      ]) => {
-        this.devices.set(devices);
-        this.policies = policies;
-        this.deviceUsers = deviceUsers;
-        this.groups = groups;
-        this.geofences = geofences;
-
-        this.loadingService.dismissLoading();
-      },
-      error: (err: any) => {
-        console.error('error:', err);
-        this.loadingService.dismissLoading();
-      },
-    });
+    if(this.groupId()){
+      this.loadingService.setLoading();
+      const $devices = this.deviceService.list(this.groupId());
+      const $policies = this.policyService.list(this.groupId());
+      const $deviceUsers = this.userService.list(this.groupId());
+      const $groups = this.groupService.list();
+      const $geofences = this.geofenceService.list(this.groupId());
+  
+      forkJoin([
+        $devices,
+        $policies,
+        $deviceUsers,
+        $groups,
+        $geofences,
+      ]).subscribe({
+        next: ([
+          { data: devices },
+          { data: policies },
+          { data: deviceUsers },
+          { data: groups },
+          { data: geofences },
+        ]) => {
+          this.devices.set(devices);
+          this.policies = policies;
+          this.deviceUsers = deviceUsers;
+          this.groups = groups;
+          this.geofences = geofences;
+  
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });
+  
+    }
   }
 
   private listDevices() {
-    this.deviceService.list(this.groupId()).subscribe({
-      next: ({ data }: Response<Device[]>) => {
-        this.devices.set(data);
-        this.loadingService.dismissLoading();
-      },
-      error: (err: any) => {
-        console.error('error:', err);
-        this.loadingService.dismissLoading();
-      },
-    });
+    if(this.groupId()){
+      this.deviceService.list(this.groupId()).subscribe({
+        next: ({ data }: Response<Device[]>) => {
+          this.devices.set(data);
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });
+    }
   }
 
   getDeviceUser(deviceUserId?: number): DeviceUser | undefined {

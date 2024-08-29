@@ -62,14 +62,25 @@ export class UserFormComponent {
   );
 
   private getGroupPolicies = effect(() => {
-    this.policyService.list(this.groupId()).subscribe({
-      next: ({ data }: Response<Policy[]>) => {
-        this.policies = data;
-      },
-      error: (err: any) => {
-        console.error('error:', err);
-      },
-    });
+    if(this.groupId()){
+      this.policyService.list(this.groupId()).subscribe({
+        next: ({ data }: Response<Policy[]>) => {
+          this.policies = data;
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+        },
+      });        
+    }else{
+      this.policyService.listAll().subscribe({
+        next: ({ data }: Response<Policy[]>) => {
+          this.policies = data;
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+        },
+      });
+    }
   });
 
   private setUserForm = effect(() => {
