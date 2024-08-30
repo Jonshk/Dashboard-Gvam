@@ -133,8 +133,8 @@ export class DevicesPage {
   );
 
   private listDevicesAndPolicies() {
+    this.loadingService.setLoading();
     if(this.groupId()){
-      this.loadingService.setLoading();
       const $devices = this.deviceService.list(this.groupId());
       const $policies = this.policyService.list(this.groupId());
       const $deviceUsers = this.userService.list(this.groupId());
@@ -168,13 +168,53 @@ export class DevicesPage {
           this.loadingService.dismissLoading();
         },
       });
-  
+    }else{
+      const $devices = this.deviceService.listAll();
+      const $policies = this.policyService.listAll();
+      const $deviceUsers = this.userService.listAll();
+      const $groups = this.groupService.list();
+      
+      forkJoin([
+        $devices,
+        $policies,
+        $deviceUsers,
+        $groups,
+      ]).subscribe({
+        next: ([
+          { data: devices },
+          { data: policies },
+          { data: deviceUsers },
+          { data: groups },
+        ]) => {
+          this.devices.set(devices);
+          this.policies = policies;
+          this.deviceUsers = deviceUsers;
+          this.groups = groups;
+        
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });
     }
   }
 
   private listDevices() {
     if(this.groupId()){
       this.deviceService.list(this.groupId()).subscribe({
+        next: ({ data }: Response<Device[]>) => {
+          this.devices.set(data);
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });
+    }else{
+      this.deviceService.listAll().subscribe({
         next: ({ data }: Response<Device[]>) => {
           this.devices.set(data);
           this.loadingService.dismissLoading();

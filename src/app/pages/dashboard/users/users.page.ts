@@ -1,5 +1,6 @@
 import { Component, effect, input, signal } from '@angular/core';
 import { UserFormComponent } from './components/user-form/user-form.component';
+import { UserSelectionFormComponent } from './components/user-selection-form/user-selection-form.component';
 import { UserListItemComponent } from './components/user-list-item/user-list-item.component';
 import { DeviceUser } from '../../../core/models/response/device-user.model';
 import { UserService } from '../../../core/services/user/user.service';
@@ -15,6 +16,7 @@ import { DialogComponent } from '../../../shared/component/dialog/dialog.compone
   imports: [
     DialogComponent,
     UserFormComponent,
+    UserSelectionFormComponent,
     UserListItemComponent,
     DeleteDialogComponent,
   ],
@@ -25,12 +27,16 @@ export class UsersPage {
   readonly groupId = input.required<number>();
 
   users: DeviceUser[] = [];
+  isAll: boolean = true;
 
   userToEdit: DeviceUser | null = null;
   userToDelete: DeviceUser | null = null;
 
   private _showDialog = signal(false);
   showDialog = this._showDialog.asReadonly();
+
+  private _showSelectionDialog = signal(false);
+  showSelectionDialog = this._showSelectionDialog.asReadonly();
 
   private _showDeleteDialog = signal(false);
   showDeleteDialog = this._showDeleteDialog.asReadonly();
@@ -80,6 +86,11 @@ export class UsersPage {
     this.userToEdit = null;
   }
 
+  hideSelectionDialog() {
+    this._showSelectionDialog.set(false);
+    this.userToEdit = null;
+  }
+
   hideDeleteDialog() {
     this._showDeleteDialog.set(false);
     this.userToDelete = null;
@@ -87,6 +98,10 @@ export class UsersPage {
 
   createMode() {
     this._showDialog.set(true);
+  }
+
+  addMode() {
+    this._showSelectionDialog.set(true);
   }
 
   editUser(editUser: DeviceUser) {
