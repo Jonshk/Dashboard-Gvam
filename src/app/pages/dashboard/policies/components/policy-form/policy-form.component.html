@@ -3,6 +3,19 @@
   [formGroup]="policyForm"
   (ngSubmit)="onSubmit()"
 >
+  @if (!groupId()) {
+    <label>
+      Grupo
+      <select class="form-select" name="group" formControlName="group">
+        @for (group of groups(); track group.groupId) {
+          <option [value]="group.groupId">
+            {{ group.groupName }}
+          </option>
+        }
+      </select>
+    </label>
+  }
+
   <label>
     Nombre de la política
     <input
