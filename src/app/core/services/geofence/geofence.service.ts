@@ -18,6 +18,10 @@ export class GeofenceService {
     return `${environment.apiUrl}/enterprises/${this.enterpriseId}/groups/${groupId}/geofences${path ? '/' + path : ''}`;
   }
 
+  private urlAll(path: string | number | null = null) {
+    return `${environment.apiUrl}/enterprises/${this.enterpriseId}/geofences${path ? '/' + path : ''}`;
+  }
+
   constructor(
     private http: HttpClient,
     private enterpriseService: EnterpriseService,
@@ -44,6 +48,10 @@ export class GeofenceService {
       this.url(groupId, geofenceId),
       updateGeofence,
     );
+  }
+
+  listAll(): Observable<Response<Geofence[]>> {
+    return this.http.get<Response<Geofence[]>>(this.urlAll());
   }
 
   list(groupId: number): Observable<Response<Geofence[]>> {

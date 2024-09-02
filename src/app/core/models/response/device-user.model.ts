@@ -3,4 +3,5 @@ export interface DeviceUser {
   name: string;
   email: string;
   policyName: string;
+  groupId: number;
 }

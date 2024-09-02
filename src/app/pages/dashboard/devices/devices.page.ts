@@ -134,13 +134,13 @@ export class DevicesPage {
 
   private listDevicesAndPolicies() {
     this.loadingService.setLoading();
-    if(this.groupId()){
+    if (this.groupId()) {
       const $devices = this.deviceService.list(this.groupId());
       const $policies = this.policyService.list(this.groupId());
       const $deviceUsers = this.userService.list(this.groupId());
       const $groups = this.groupService.list();
       const $geofences = this.geofenceService.list(this.groupId());
-  
+
       forkJoin([
         $devices,
         $policies,
@@ -160,7 +160,7 @@ export class DevicesPage {
           this.deviceUsers = deviceUsers;
           this.groups = groups;
           this.geofences = geofences;
-  
+
           this.loadingService.dismissLoading();
         },
         error: (err: any) => {
@@ -168,29 +168,33 @@ export class DevicesPage {
           this.loadingService.dismissLoading();
         },
       });
-    }else{
+    } else {
       const $devices = this.deviceService.listAll();
       const $policies = this.policyService.listAll();
       const $deviceUsers = this.userService.listAll();
       const $groups = this.groupService.list();
-      
+      const $geofences = this.geofenceService.listAll();
+
       forkJoin([
         $devices,
         $policies,
         $deviceUsers,
         $groups,
+        $geofences,
       ]).subscribe({
         next: ([
           { data: devices },
           { data: policies },
           { data: deviceUsers },
           { data: groups },
+          { data: geofences },
         ]) => {
           this.devices.set(devices);
           this.policies = policies;
           this.deviceUsers = deviceUsers;
           this.groups = groups;
-        
+          this.geofences = geofences;
+
           this.loadingService.dismissLoading();
         },
         error: (err: any) => {
@@ -202,7 +206,7 @@ export class DevicesPage {
   }
 
   private listDevices() {
-    if(this.groupId()){
+    if (this.groupId()) {
       this.deviceService.list(this.groupId()).subscribe({
         next: ({ data }: Response<Device[]>) => {
           this.devices.set(data);
@@ -213,7 +217,7 @@ export class DevicesPage {
           this.loadingService.dismissLoading();
         },
       });
-    }else{
+    } else {
       this.deviceService.listAll().subscribe({
         next: ({ data }: Response<Device[]>) => {
           this.devices.set(data);
@@ -257,20 +261,53 @@ export class DevicesPage {
 
   registerDevices() {
     this.loadingService.setLoading();
-    this.deviceService.register(this.groupId()).subscribe({
-      next: ({ data }: Response<RegisterDevice>) => {
-        if (data.registeredDevices > 0) {
-          this.listDevices();
-        } else {
+    if (this.groupId()) {
+      this.deviceService.register(this.groupId()).subscribe({
+        next: ({ data }: Response<RegisterDevice>) => {
+          if (data.registeredDevices > 0) {
+            this.listDevices();
+          } else {
+            this.loadingService.dismissLoading();
+          }
+          this.newDevices = data;
+        },
+        error: (err: any) => {
+          console.error('error:', err);
           this.loadingService.dismissLoading();
-        }
-        this.newDevices = data;
-      },
-      error: (err: any) => {
-        console.error('error:', err);
-        this.loadingService.dismissLoading();
-      },
-    });
+        },
+      });
+    } else {
+      const $registerRequests = this.groups
+        .map((g) => {
+          if (this.devices().some((d) => d.groupId === g.groupId)) {
+            return this.deviceService.register(g.groupId);
+          }
+
+          return null;
+        })
+        .filter((r) => r !== null) as Observable<Response<RegisterDevice>>[];
+
+      forkJoin($registerRequests).subscribe({
+        next: (data) => {
+          if (data.some((d) => d.data.registeredDevices > 0)) {
+            this.listDevices();
+          } else {
+            this.loadingService.dismissLoading();
+          }
+          let newDevicesCount = 0;
+          data.forEach((d) => (newDevicesCount += d.data.registeredDevices));
+
+          const newDevices: RegisterDevice = {
+            registeredDevices: newDevicesCount,
+          };
+          this.newDevices = newDevices;
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });
+    }
   }
 
   selectDevice(selectableDevice: SelectableDevice) {
@@ -373,9 +410,10 @@ export class DevicesPage {
     if (!shouldDelete || !this.deviceToDelete) return;
 
     this.loadingService.setLoading();
+    const groupId = this.groupId() ?? this.deviceToDelete.groupId;
     this.deviceService
       .delete(
-        this.groupId(),
+        groupId,
         this.deviceToDelete.deviceId,
         this.deviceToDelete.enrolled,
       )
@@ -425,13 +463,13 @@ export class DevicesPage {
       policyName: this.applyPolicyForm.value.name!,
     };
 
-    const $policyRequests = this.selectedDevices().map((d) =>
-      this.deviceService.applyPolicy(
+    const $policyRequests = this.selectedDevices().map((d) => {
+      return this.deviceService.applyPolicy(
         this.groupId(),
         d.deviceId,
         applyDevicePolicyRequest,
-      ),
-    );
+      );
+    });
 
     forkJoin($policyRequests).subscribe({
       next: (_: Response<SuccessResponse>[]) => {
@@ -468,13 +506,14 @@ export class DevicesPage {
       deviceCommand: this.sendCommandForm.value.command!,
     };
 
-    const $commandRequests = this.selectedDevices().map((d) =>
-      this.deviceService.sendCommand(
-        this.groupId(),
+    const $commandRequests = this.selectedDevices().map((d) => {
+      const groupId = this.groupId() ?? d.groupId;
+      return this.deviceService.sendCommand(
+        groupId,
         d.deviceId,
         deviceCommandRequest,
-      ),
-    );
+      );
+    });
 
     forkJoin($commandRequests).subscribe({
       next: (_: Response<SuccessResponse>[]) => {
@@ -502,13 +541,14 @@ export class DevicesPage {
       groupId: this.migrateForm.value.groupId!,
     };
 
-    const $migrateRequests = this.selectedDevices().map((d) =>
-      this.deviceService.migrate(
-        this.groupId(),
+    const $migrateRequests = this.selectedDevices().map((d) => {
+      const groupId = this.groupId() ?? d.groupId;
+      return this.deviceService.migrate(
+        groupId,
         d.deviceId,
         migrateDeviceRequest,
-      ),
-    );
+      );
+    });
 
     forkJoin($migrateRequests).subscribe({
       next: (_: Response<SuccessResponse>[]) => {
@@ -533,9 +573,10 @@ export class DevicesPage {
 
     this.loadingService.setLoading();
 
-    const $deleteRequests = this.selectedDevices().map((d) =>
-      this.deviceService.delete(this.groupId(), d.deviceId, d.enrolled),
-    );
+    const $deleteRequests = this.selectedDevices().map((d) => {
+      const groupId = this.groupId() ?? d.groupId;
+      return this.deviceService.delete(groupId, d.deviceId, d.enrolled);
+    });
 
     forkJoin($deleteRequests).subscribe({
       next: (_: Response<SuccessResponse>[]) => {
@@ -569,12 +610,13 @@ export class DevicesPage {
 
     const $customCommandRequests = this.selectedDevices()
       .map((d) => {
+        const groupId = this.groupId() ?? d.groupId;
         if (
           deviceCustomCommandRequest.deviceCustomCommand !==
           DeviceCustomCommand.DEACTIVATE_GEOFENCE
         ) {
           return this.deviceService.sendCustomCommand(
-            this.groupId(),
+            groupId,
             d.deviceId,
             deviceCustomCommandRequest,
           );
@@ -584,7 +626,7 @@ export class DevicesPage {
           deviceCustomCommandRequest.value = d.geofenceId!;
 
           return this.deviceService.sendCustomCommand(
-            this.groupId(),
+            groupId,
             d.deviceId,
             deviceCustomCommandRequest,
           );

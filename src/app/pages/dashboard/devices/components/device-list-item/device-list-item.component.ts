@@ -1,4 +1,12 @@
-import { Component, effect, inject, input, model, output } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  model,
+  output,
+} from '@angular/core';
 import { Device } from '../../../../../core/models/response/device.model';
 import { Policy } from '../../../../../core/models/response/policy.model';
 import {
@@ -44,6 +52,11 @@ export class DeviceListItemComponent {
   readonly loadingService = inject(LoadingService);
   private errorService = inject(ErrorService);
 
+  groupPolicies = computed(() => {
+    if (this.groupId()) return this.policies();
+    return this.policies().filter((p) => p.groupId === this.device().groupId);
+  });
+
   applyPolicyForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
   });
@@ -65,8 +78,16 @@ export class DeviceListItemComponent {
   });
 
   private setCurrentGroup = effect(() => {
-    this.migrateForm.controls.groupId.setValue(this.groupId());
+    const groupId = this.groupId() ?? this.device().groupId;
+    this.migrateForm.controls.groupId.setValue(groupId);
   });
+
+  getGroupName(groupId: number): string {
+    return (
+      this.groups().find((g) => g.groupId === groupId)?.groupName ??
+      groupId.toString()
+    );
+  }
 
   editDevice() {
     this.onEditDevice.emit(this.device());
@@ -94,8 +115,9 @@ export class DeviceListItemComponent {
       policyName: this.applyPolicyForm.value.name!,
     };
 
+    const groupId = this.groupId() ?? this.device().groupId;
     this.deviceService
-      .applyPolicy(this.groupId(), this.device().deviceId, devicePolicyRequest)
+      .applyPolicy(groupId, this.device().deviceId, devicePolicyRequest)
       .subscribe({
         next: ({ data }: Response<SuccessResponse>) => {
           if (data.success) {
@@ -120,8 +142,9 @@ export class DeviceListItemComponent {
       deviceCommand: this.sendCommandForm.value.command!,
     };
 
+    const groupId = this.groupId() ?? this.device().groupId;
     this.deviceService
-      .sendCommand(this.groupId(), this.device().deviceId, deviceCommandRequest)
+      .sendCommand(groupId, this.device().deviceId, deviceCommandRequest)
       .subscribe({
         next: ({ data }: Response<SuccessResponse>) => {
           if (data.success) {
@@ -139,7 +162,8 @@ export class DeviceListItemComponent {
   migrate() {
     if (this.migrateForm.invalid) return;
 
-    if (this.groupId() === this.migrateForm.value.groupId) return;
+    const groupId = this.groupId() ?? this.device().groupId;
+    if (groupId === this.migrateForm.value.groupId) return;
 
     this.loadingService.setLoading();
 
@@ -148,7 +172,7 @@ export class DeviceListItemComponent {
     };
 
     this.deviceService
-      .migrate(this.groupId(), this.device().deviceId, migrateDeviceRequest)
+      .migrate(groupId, this.device().deviceId, migrateDeviceRequest)
       .subscribe({
         next: ({ data }: Response<SuccessResponse>) => {
           if (data.success) {
@@ -177,8 +201,9 @@ export class DeviceListItemComponent {
 
   async connect() {
     this.loadingService.setLoading();
+    const groupId = this.groupId() ?? this.device().groupId;
     this.deviceService
-      .getCowbroseToken(this.groupId(), this.device().deviceId)
+      .getCowbroseToken(groupId, this.device().deviceId)
       .subscribe({
         next: async ({ data }: Response<CobrowseToken>) => {
           try {

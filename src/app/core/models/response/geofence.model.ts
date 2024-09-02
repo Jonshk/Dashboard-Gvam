@@ -4,4 +4,5 @@ export interface Geofence {
   latitude: number;
   longitude: number;
   radius: number;
+  groupId: number;
 }

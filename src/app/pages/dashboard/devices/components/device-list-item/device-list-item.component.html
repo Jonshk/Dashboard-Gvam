@@ -13,12 +13,20 @@
 <td>
   <a
     [className]="device().enrolled ? 'fw-bold text-underline' : ''"
-    [routerLink]="device().enrolled ? device().deviceId.toString() : null"
+    [routerLink]="
+      device().enrolled
+        ? ['/groups', device().groupId, 'devices', device().deviceId]
+        : null
+    "
     >{{ device().deviceName }}</a
   >
 </td>
 
 <td>{{ deviceUser()?.email ?? "-" }}</td>
+
+@if (!groupId()) {
+  <td>{{ getGroupName(device().groupId) }}</td>
+}
 
 <td>
   <div class="d-flex gap-2 flex-wrap justify-content-center">
@@ -52,7 +60,7 @@
   <td>
     <form [formGroup]="applyPolicyForm" (ngSubmit)="applyPolicy()">
       <select class="form-select" name="name" formControlName="name">
-        @for (policy of policies(); track policy.name) {
+        @for (policy of groupPolicies(); track policy.name) {
           <option [value]="policy.name">
             {{ policy.name }}
           </option>
