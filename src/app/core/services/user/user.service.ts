@@ -57,6 +57,9 @@ export class UserService {
   list(groupId: number): Observable<Response<DeviceUser[]>> {
     return this.http.get<Response<DeviceUser[]>>(this.url(groupId));
   }
+
+
+
   delete(
     groupId: number,
     deviceUserId: number,

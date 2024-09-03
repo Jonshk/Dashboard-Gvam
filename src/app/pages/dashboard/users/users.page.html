@@ -3,11 +3,14 @@
     Crear nuevo usuario de dispositivo
   </button>
 
+  <!--Por ahora se deja sin hacer-->
+  <!--
   @if(groupId()){
     <button class="btn btn-primary" style="margin-left: 2%" (click)="addMode()">
       Añadir usuario existente
     </button>
   }
+    -->
 
   <app-dialog [open]="showDialog()" (openChange)="hideDialog()">
     <app-user-form
@@ -22,6 +25,7 @@
     <app-user-selection-form
       [groupId]="groupId()"
       [isVisible]="showSelectionDialog()"
+      [groupUsers]="users"
       (user)="addUser($event)"
     ></app-user-selection-form>
   </app-dialog>

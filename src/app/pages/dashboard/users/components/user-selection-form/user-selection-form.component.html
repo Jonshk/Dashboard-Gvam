@@ -5,7 +5,7 @@
 >
   <label>
     Usuarios
-    <select class="form-select" name="user" formControlName="users">
+    <select class="form-select" name="user" formControlName="user">
       @for (user of users; track user.email) {
         <option [value]="user.email">
           {{ user.email }}

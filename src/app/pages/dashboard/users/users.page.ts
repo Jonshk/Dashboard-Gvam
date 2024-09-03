@@ -71,6 +71,7 @@ export class UsersPage {
       this.userService.listAll().subscribe({
         next: ({ data }: Response<DeviceUser[]>) => {
           this.users = data;
+          console.log(this.users)
           this.loadingService.dismissLoading();
         },
         error: (err: any) => {

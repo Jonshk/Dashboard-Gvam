@@ -24,10 +24,12 @@ import { Policy } from '../../../../../core/models/response/policy.model';
 export class UserSelectionFormComponent {
   readonly groupId = input.required<number>();
   readonly isVisible = input.required<boolean>();
+  readonly groupUsers = input.required<DeviceUser[]>();
   readonly editUser = input<DeviceUser | null>(null);
   policies: Policy[] = [];
   users: DeviceUser[] = [];
-
+  
+  
   user = output<DeviceUser>();
 
   private userService = inject(UserService);
@@ -35,37 +37,34 @@ export class UserSelectionFormComponent {
   readonly loadingService = inject(LoadingService);
 
   private defaultFormValues = {
-    name: '',
-    email: '',
-    password: '',
-    repeatPassword: '',
-    policy: '',
+    user: '',
   };
 
   userForm = new FormGroup(
     {
-      name: new FormControl(this.defaultFormValues.name, [Validators.required]),
-      email: new FormControl(this.defaultFormValues.email, [
-        Validators.required,
-        Validators.email,
-      ]),
-      password: new FormControl(this.defaultFormValues.password, [
-        Validators.required,
-      ]),
-      repeatPassword: new FormControl(this.defaultFormValues.repeatPassword, [
-        Validators.required,
-      ]),
-      policy: new FormControl(this.defaultFormValues.policy, [
+      user: new FormControl(this.defaultFormValues.user, [
         Validators.required,
       ]),
     },
-    { validators: [CustomValidators.repeatPasswordValidator()] },
   );
 
-  private getUsers = effect(() => {
-    this.userService.listAll().subscribe({
+  private getUsers = effect(async () => {
+    //list all users
+    await this.userService.listAll().subscribe({
       next: ({ data }: Response<DeviceUser[]>) => {
         this.users = data;
+        console.log(this.users)
+        console.log(this.groupUsers())
+        //Exclude those that are already in the group
+        var newUsers: DeviceUser[] = [];  
+
+        this.users.forEach(user => {
+          if(!this.groupUsers().some(e => user.deviceUserId === e.deviceUserId)){
+            newUsers.push(user)
+          }
+        });
+        
+        this.users = newUsers;
       },
       error: (err: any) => {
         console.error('error:', err);
@@ -75,25 +74,10 @@ export class UserSelectionFormComponent {
 
   private setUserForm = effect(() => {
     this.resetForm();
-    if (this.editUser()) {
-      this.userForm.controls.name.setValue(this.editUser()!.name);
-      this.userForm.controls.email.setValue(this.editUser()!.email);
-      this.userForm.controls.policy.setValue(this.editUser()!.policyName);
-
-      this.userForm.controls.password.removeValidators(Validators.required);
-      this.userForm.controls.repeatPassword.removeValidators(
-        Validators.required,
-      );
-
-      this.userForm.controls.password.setValue('');
-      this.userForm.controls.repeatPassword.setValue('');
-    }
   });
 
   private resetForm() {
     this.userForm.reset(this.defaultFormValues);
-    this.userForm.controls.password.setValidators(Validators.required);
-    this.userForm.controls.repeatPassword.setValidators(Validators.required);
   }
 
   private resetOnHide = effect(() => {
@@ -106,23 +90,15 @@ export class UserSelectionFormComponent {
     if (this.userForm.invalid) return;
 
     this.loadingService.showLoading();
+    //We get the selected user
+    const userToAdd = this.users.find((el: DeviceUser) => el.email === this.userForm.value.user);
 
-    const deviceUser: CreateDeviceUserRequest = {
-      name: this.userForm.value.name!,
-      email: this.userForm.value.email!,
-      password: this.userForm.value.password,
-      policyName: this.userForm.value.policy!,
-    };
+    console.log(userToAdd);
 
-    if (this.editUser()) {
-      this.updateDeviceUser(deviceUser);
-      return;
-    }
-
-    this.createDeviceUser(deviceUser);
+    //this.AddDeviceUser(this.userForm.value.user)
   }
 
-  private createDeviceUser(newDeviceUser: CreateDeviceUserRequest) {
+  private AddDeviceUser(newDeviceUser: CreateDeviceUserRequest) {
     this.userService.create(this.groupId(), newDeviceUser).subscribe({
       next: ({ data }: Response<DeviceUser>) => {
         this.user.emit(data);
@@ -134,21 +110,5 @@ export class UserSelectionFormComponent {
         this.loadingService.dismissLoading();
       },
     });
-  }
-
-  private updateDeviceUser(editedDeviceUser: CreateDeviceUserRequest) {
-    this.userService
-      .patch(this.groupId(), this.editUser()!.deviceUserId, editedDeviceUser)
-      .subscribe({
-        next: ({ data }: Response<DeviceUser>) => {
-          this.user.emit(data);
-          this.resetForm();
-          this.loadingService.dismissLoading();
-        },
-        error: (err: any) => {
-          console.error('error:', err);
-          this.loadingService.dismissLoading();
-        },
-      });
   }
 }
