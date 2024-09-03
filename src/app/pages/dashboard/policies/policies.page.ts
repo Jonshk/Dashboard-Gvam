@@ -8,6 +8,9 @@ import { LoadingService } from '../../../core/services/loading/loading.service';
 import { SuccessResponse } from '../../../core/models/response/success-response.model';
 import { DeleteDialogComponent } from '../../../shared/component/delete-dialog/delete-dialog.component';
 import { DialogComponent } from '../../../shared/component/dialog/dialog.component';
+import { Group } from '../../../core/models/response/group.model';
+import { GroupService } from '../../../core/services/group/group.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-policies',
@@ -25,6 +28,7 @@ export class PoliciesPage {
   readonly groupId = input.required<number>();
 
   policies: Policy[] = [];
+  groups: Group[] = [];
 
   policyToEdit: Policy | null = null;
   policyToDelete: Policy | null = null;
@@ -37,6 +41,7 @@ export class PoliciesPage {
 
   constructor(
     private policyService: PolicyService,
+    private groupService: GroupService,
     private loadingService: LoadingService,
   ) {}
 
@@ -49,30 +54,23 @@ export class PoliciesPage {
 
   private list() {
     this.loadingService.setLoading();
-    if(this.groupId()){
-      console.log("ENTRE EN EL NOT NUll" , this.groupId())
-      this.policyService.list(this.groupId()).subscribe({
-        next: ({ data }: Response<Policy[]>) => {
-          this.policies = data;
-          this.loadingService.dismissLoading();
-        },
-        error: (err: any) => {
-          console.error('error:', err);
-          this.loadingService.dismissLoading();
-        },
-      });  
-    }else{
-      this.policyService.listAll().subscribe({
-        next: ({ data }: Response<Policy[]>) => {
-          this.policies = data;
-          this.loadingService.dismissLoading();
-        },
-        error: (err: any) => {
-          console.error('error:', err);
-          this.loadingService.dismissLoading();
-        },
-      });  
-    }
+
+    const $groups = this.groupService.list();
+    const $policies = this.groupId()
+      ? this.policyService.list(this.groupId())
+      : this.policyService.listAll();
+
+    forkJoin([$groups, $policies]).subscribe({
+      next: ([{ data: groups }, { data: policies }]) => {
+        this.groups = groups;
+        this.policies = policies;
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
   }
 
   hideFormDialog() {
@@ -119,23 +117,22 @@ export class PoliciesPage {
     if (!shouldDelete || !this.policyToDelete) return;
 
     this.loadingService.setLoading();
-    this.policyService
-      .delete(this.groupId(), this.policyToDelete.name)
-      .subscribe({
-        next: ({ data }: Response<SuccessResponse>) => {
-          if (data) {
-            this.policies = this.policies.filter(
-              (policy) => policy.name !== this.policyToDelete!.name,
-            );
-            this.policyToDelete = null;
-            this.hideDeleteDialog();
-          }
-          this.loadingService.dismissLoading();
-        },
-        error: (err: any) => {
-          console.error('error:', err);
-          this.loadingService.dismissLoading();
-        },
-      });
+    const groupId = this.groupId() ?? this.policyToDelete.groupId;
+    this.policyService.delete(groupId, this.policyToDelete.name).subscribe({
+      next: ({ data }: Response<SuccessResponse>) => {
+        if (data) {
+          this.policies = this.policies.filter(
+            (policy) => policy.name !== this.policyToDelete!.name,
+          );
+          this.policyToDelete = null;
+          this.hideDeleteDialog();
+        }
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
   }
 }

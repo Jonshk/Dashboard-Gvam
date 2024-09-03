@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -33,6 +33,11 @@ export class DeviceCustomCommandFormComponent {
   private readonly deviceService = inject(DeviceService);
   private readonly geofenceService = inject(GeofenceService);
 
+  groupGeofences = computed(() => {
+    if (this.groupId()) return this.geofences();
+    return this.geofences().filter((g) => g.groupId === this.device()?.groupId);
+  });
+
   customCommandForm = new FormGroup({
     command: new FormControl(
       DeviceCustomCommand.ADJUST_BRIGHTNESS,
@@ -59,9 +64,10 @@ export class DeviceCustomCommandFormComponent {
       deviceCustomCommandRequest.value = this.device()!.geofenceId!;
     }
 
+    const groupId = this.groupId() ?? this.device()!.groupId;
     this.deviceService
       .sendCustomCommand(
-        this.groupId(),
+        groupId,
         this.device()!.deviceId,
         deviceCustomCommandRequest,
       )
@@ -113,7 +119,7 @@ export class DeviceCustomCommandFormComponent {
   }
 
   getActiveGeofenceName() {
-    const activeGeofence = this.geofences().find(
+    const activeGeofence = this.groupGeofences().find(
       (g) => g.geofenceId === this.device()?.geofenceId,
     );
     if (activeGeofence) {

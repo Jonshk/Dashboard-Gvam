@@ -3,9 +3,12 @@ import { DeviceUser } from '../../../../../core/models/response/device-user.mode
 import { UserService } from '../../../../../core/services/user/user.service';
 import { LoadingService } from '../../../../../core/services/loading/loading.service';
 import {
+  AbstractControl,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { CustomValidators } from '../../../../../shared/util/custom-validators';
@@ -13,6 +16,7 @@ import { CreateDeviceUserRequest } from '../../../../../core/models/request/crea
 import { Response } from '../../../../../core/models/response/response.model';
 import { PolicyService } from '../../../../../core/services/policy/policy.service';
 import { Policy } from '../../../../../core/models/response/policy.model';
+import { Group } from '../../../../../core/models/response/group.model';
 
 @Component({
   selector: 'app-user-form',
@@ -23,11 +27,14 @@ import { Policy } from '../../../../../core/models/response/policy.model';
 })
 export class UserFormComponent {
   readonly groupId = input.required<number>();
+  readonly groups = input.required<Group[]>();
   readonly isVisible = input.required<boolean>();
   readonly editUser = input<DeviceUser | null>(null);
-  policies: Policy[] = [];
 
   user = output<DeviceUser>();
+
+  policies: Policy[] = [];
+  groupPolicies: Policy[] = [];
 
   private userService = inject(UserService);
   private policyService = inject(PolicyService);
@@ -39,6 +46,7 @@ export class UserFormComponent {
     password: '',
     repeatPassword: '',
     policy: '',
+    group: -1,
   };
 
   userForm = new FormGroup(
@@ -57,21 +65,68 @@ export class UserFormComponent {
       policy: new FormControl(this.defaultFormValues.policy, [
         Validators.required,
       ]),
+      group: new FormControl(this.defaultFormValues.group),
     },
     { validators: [CustomValidators.repeatPasswordValidator()] },
   );
 
+  private updateFormValidator = effect(() => {
+    const validators = [Validators.required, this.policyValidator()];
+    if (this.groupId() || this.editUser()) {
+      this.userForm.controls.group.removeValidators(validators);
+    } else {
+      this.userForm.controls.group.addValidators(validators);
+    }
+  });
+
+  private policyValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      console.log('validating...');
+      const group = control.value;
+      if (group && group != -1) {
+        this.updatePolicies(group);
+        this.userForm.controls.policy.setValue(
+          this.groupPolicies[0]?.name ?? this.defaultFormValues.policy,
+        );
+      }
+      return null;
+    };
+  }
+
+  private initializePolicies = effect(() => {
+    this.updatePolicies();
+  });
+
+  private updatePolicies(group?: number) {
+    if (this.groupId()) return (this.groupPolicies = this.policies);
+
+    if (this.editUser()) {
+      return (this.groupPolicies = this.policies.filter(
+        (u) => u.groupId === this.editUser()!.groupId,
+      ));
+    }
+
+    if (group) {
+      return (this.groupPolicies = this.policies.filter(
+        (u) => u.groupId == group,
+      ));
+    }
+
+    return (this.groupPolicies = []);
+  }
+
   private getGroupPolicies = effect(() => {
-    if(this.groupId()){
+    if (this.groupId()) {
       this.policyService.list(this.groupId()).subscribe({
         next: ({ data }: Response<Policy[]>) => {
           this.policies = data;
+          this.groupPolicies = data;
         },
         error: (err: any) => {
           console.error('error:', err);
         },
-      });        
-    }else{
+      });
+    } else {
       this.policyService.listAll().subscribe({
         next: ({ data }: Response<Policy[]>) => {
           this.policies = data;
@@ -133,7 +188,9 @@ export class UserFormComponent {
   }
 
   private createDeviceUser(newDeviceUser: CreateDeviceUserRequest) {
-    this.userService.create(this.groupId(), newDeviceUser).subscribe({
+    const groupId = this.groupId() ?? this.userForm.value.group;
+
+    this.userService.create(groupId, newDeviceUser).subscribe({
       next: ({ data }: Response<DeviceUser>) => {
         this.user.emit(data);
         this.resetForm();
@@ -147,8 +204,10 @@ export class UserFormComponent {
   }
 
   private updateDeviceUser(editedDeviceUser: CreateDeviceUserRequest) {
+    const groupId = this.groupId() ?? this.editUser()?.groupId;
+
     this.userService
-      .patch(this.groupId(), this.editUser()!.deviceUserId, editedDeviceUser)
+      .patch(groupId, this.editUser()!.deviceUserId, editedDeviceUser)
       .subscribe({
         next: ({ data }: Response<DeviceUser>) => {
           this.user.emit(data);

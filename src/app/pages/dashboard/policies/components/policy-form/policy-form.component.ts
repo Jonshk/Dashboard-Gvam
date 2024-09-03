@@ -17,6 +17,7 @@ import { PolicyService } from '../../../../../core/services/policy/policy.servic
 import { Policy } from '../../../../../core/models/response/policy.model';
 import { Response } from '../../../../../core/models/response/response.model';
 import { LoadingService } from '../../../../../core/services/loading/loading.service';
+import { Group } from '../../../../../core/models/response/group.model';
 
 @Component({
   selector: 'app-policy-form',
@@ -27,6 +28,7 @@ import { LoadingService } from '../../../../../core/services/loading/loading.ser
 })
 export class PolicyFormComponent {
   readonly groupId = input.required<number>();
+  readonly groups = input.required<Group[]>();
   readonly isVisible = input.required<boolean>();
   readonly editPolicy = input<Policy | null>(null);
 
@@ -37,6 +39,7 @@ export class PolicyFormComponent {
   readonly loadingService = inject(LoadingService);
 
   private defaultFormValues = {
+    group: -1,
     name: '',
     isDefault: false,
     applicationPolicy: [],
@@ -55,6 +58,7 @@ export class PolicyFormComponent {
   };
 
   policyForm = this.formBuilder.group({
+    group: [this.defaultFormValues.group, [Validators.required]],
     name: [
       this.defaultFormValues.name,
       [Validators.required, Validators.pattern(new RegExp('^[a-zA-Z0-9]*$'))],
@@ -84,6 +88,9 @@ export class PolicyFormComponent {
   private setEditForm = effect(() => {
     this.resetForm();
     if (this.editPolicy()) {
+      this.policyForm.controls.group.setValue(this.editPolicy()!.groupId);
+      this.policyForm.controls.group.disable();
+
       this.policyForm.controls.name.setValue(this.editPolicy()!.name);
       this.policyForm.controls.name.disable();
 
@@ -165,6 +172,7 @@ export class PolicyFormComponent {
   private resetForm() {
     this.policyForm.reset(this.defaultFormValues);
     this.policyForm.controls.name.enable();
+    this.policyForm.controls.group.enable();
     this.applicationPolicy.clear();
     this.wifiSsids.clear();
   }
@@ -192,7 +200,9 @@ export class PolicyFormComponent {
   }
 
   private createPolicy(newPolicy: Policy) {
-    this.policyService.create(this.groupId(), newPolicy).subscribe({
+    const groupId = this.groupId() ?? this.policyForm.value.group;
+
+    this.policyService.create(groupId, newPolicy).subscribe({
       next: ({ data }: Response<Policy>) => {
         this.policy.emit(data);
         this.resetForm();
@@ -206,7 +216,9 @@ export class PolicyFormComponent {
   }
 
   private editCurrentPolicy(editedPolicy: Policy) {
-    this.policyService.update(this.groupId(), editedPolicy).subscribe({
+    const groupId = this.groupId() ?? this.editPolicy()?.groupId;
+
+    this.policyService.update(groupId, editedPolicy).subscribe({
       next: ({ data }: Response<Policy>) => {
         this.policy.emit(data);
         this.loadingService.dismissLoading();

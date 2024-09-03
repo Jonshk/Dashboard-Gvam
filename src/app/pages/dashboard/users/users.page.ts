@@ -9,6 +9,9 @@ import { Response } from '../../../core/models/response/response.model';
 import { SuccessResponse } from '../../../core/models/response/success-response.model';
 import { DeleteDialogComponent } from '../../../shared/component/delete-dialog/delete-dialog.component';
 import { DialogComponent } from '../../../shared/component/dialog/dialog.component';
+import { Group } from '../../../core/models/response/group.model';
+import { GroupService } from '../../../core/services/group/group.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-users',
@@ -28,6 +31,7 @@ export class UsersPage {
 
   users: DeviceUser[] = [];
   isAll: boolean = true;
+  groups: Group[] = [];
 
   userToEdit: DeviceUser | null = null;
   userToDelete: DeviceUser | null = null;
@@ -43,6 +47,7 @@ export class UsersPage {
 
   constructor(
     private userService: UserService,
+    private groupService: GroupService,
     private loadingService: LoadingService,
   ) {}
 
@@ -54,32 +59,24 @@ export class UsersPage {
   );
 
   private list() {
-    if(this.groupId()){
-      this.loadingService.setLoading();
-      this.userService.list(this.groupId()).subscribe({
-        next: ({ data }: Response<DeviceUser[]>) => {
-          this.users = data;
-          this.loadingService.dismissLoading();
-        },
-        error: (err: any) => {
-          console.error('error:', err);
-          this.loadingService.dismissLoading();
-        },
-      });  
-    }else{
-      this.loadingService.setLoading();
-      this.userService.listAll().subscribe({
-        next: ({ data }: Response<DeviceUser[]>) => {
-          this.users = data;
-          console.log(this.users)
-          this.loadingService.dismissLoading();
-        },
-        error: (err: any) => {
-          console.error('error:', err);
-          this.loadingService.dismissLoading();
-        },
-      });
-    }
+    this.loadingService.setLoading();
+
+    const $groups = this.groupService.list();
+    const $users = this.groupId()
+      ? this.userService.list(this.groupId())
+      : this.userService.listAll();
+
+    forkJoin([$groups, $users]).subscribe({
+      next: ([{ data: groups }, { data: users }]) => {
+        this.groups = groups;
+        this.users = users;
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
   }
 
   hideDialog() {
@@ -134,8 +131,9 @@ export class UsersPage {
     if (!shouldDelete || !this.userToDelete) return;
 
     this.loadingService.setLoading();
+    const groupId = this.groupId() ?? this.userToDelete.groupId;
     this.userService
-      .delete(this.groupId(), this.userToDelete!.deviceUserId)
+      .delete(groupId, this.userToDelete!.deviceUserId)
       .subscribe({
         next: ({ data }: Response<SuccessResponse>) => {
           if (data.success) {

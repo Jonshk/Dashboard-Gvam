@@ -4,6 +4,7 @@ import { PolicyService } from '../../../../../core/services/policy/policy.servic
 import { SuccessResponse } from '../../../../../core/models/response/success-response.model';
 import { Response } from '../../../../../core/models/response/response.model';
 import { LoadingService } from '../../../../../core/services/loading/loading.service';
+import { Group } from '../../../../../core/models/response/group.model';
 
 @Component({
   selector: 'app-policy-list-item',
@@ -15,6 +16,7 @@ import { LoadingService } from '../../../../../core/services/loading/loading.ser
 export class PolicyListItemComponent {
   readonly groupId = input.required<number>();
   readonly policy = input.required<Policy>();
+  readonly groups = input.required<Group[]>();
 
   readonly onEditPolicy = output<Policy>();
   readonly onDeletePolicy = output<Policy>();
@@ -32,8 +34,9 @@ export class PolicyListItemComponent {
 
   applyPolicyToGroup() {
     this.loadingService.setLoading();
+    const groupId = this.groupId() ?? this.policy().groupId;
     this.policyService
-      .applyPolicyToGroup(this.groupId(), this.policy().name)
+      .applyPolicyToGroup(groupId, this.policy().name)
       .subscribe({
         next: ({ data }: Response<SuccessResponse>) => {
           if (data) {
@@ -46,5 +49,9 @@ export class PolicyListItemComponent {
           this.loadingService.dismissLoading();
         },
       });
+  }
+
+  getGroupName(groupId: number) {
+    return this.groups().find((g) => g.groupId === groupId)?.groupName;
   }
 }

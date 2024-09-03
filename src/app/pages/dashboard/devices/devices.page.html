@@ -17,6 +17,7 @@
   <app-dialog [open]="showFormDialog()" (openChange)="hideFormDialog()">
     <app-device-form
       [groupId]="groupId()"
+      [groups]="groups"
       [visible]="showFormDialog()"
       [editDevice]="deviceToEdit"
       [deviceUsers]="deviceUsers"
@@ -39,9 +40,11 @@
   <app-dialog [open]="showActionDialog()" (openChange)="hideActionDialog()">
     @switch (actionDialog) {
       @case ("policies") {
-        <ng-container
-          *ngTemplateOutlet="applyPolicyFormTemplate"
-        ></ng-container>
+        @if (groupId()) {
+          <ng-container
+            *ngTemplateOutlet="applyPolicyFormTemplate"
+          ></ng-container>
+        }
       }
       @case ("command") {
         <ng-container
@@ -126,15 +129,17 @@
                 Configurar
               </button>
             </li>
-            <li>
-              <button
-                class="dropdown-item"
-                (click)="changeActionDialog('policies')"
-                ngbDropdownItem
-              >
-                Cambiar política
-              </button>
-            </li>
+            @if (groupId()) {
+              <li>
+                <button
+                  class="dropdown-item"
+                  (click)="changeActionDialog('policies')"
+                  ngbDropdownItem
+                >
+                  Cambiar política
+                </button>
+              </li>
+            }
             <li>
               <button
                 class="dropdown-item"
@@ -177,6 +182,9 @@
                 <th scope="col">-</th>
                 <th scope="col">Nombre del dispositivo</th>
                 <th scope="col">Usuario</th>
+                @if (!groupId()) {
+                  <th scope="col">Grupo</th>
+                }
                 <th scope="col">Acciones</th>
                 <th scope="col">Política</th>
                 <th scope="col">Comando</th>
@@ -206,6 +214,9 @@
                 <th scope="col">-</th>
                 <th scope="col">Nombre del dispositivo</th>
                 <th scope="col">Usuario</th>
+                @if (!groupId()) {
+                  <th scope="col">Grupo</th>
+                }
                 <th scope="col">Acciones</th>
               </tr>
             </thead>
