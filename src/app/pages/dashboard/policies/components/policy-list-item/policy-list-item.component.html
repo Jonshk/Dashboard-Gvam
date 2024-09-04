@@ -2,7 +2,7 @@
   <span [className]="policy().isDefault ? 'fw-bold' : ''">{{
     policy().name
   }}</span>
-  <div class="d-flex justify-content-end flex-wrap gap-2">
+  <div class="d-flex justify-content-end align-items-center flex-wrap gap-2">
     <button
       class="btn btn-outline-secondary btn-sm"
       [disabled]="loadingService.isLoading()"
@@ -23,6 +23,11 @@
       (click)="applyPolicyToGroup()"
     >
       Aplicar al grupo
+      @if (!groupId()) {
+        <span>
+          {{ getGroupName(policy().groupId) }}
+        </span>
+      }
     </button>
   </div>
 </div>

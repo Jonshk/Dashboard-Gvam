@@ -17,6 +17,10 @@ export class PolicyService {
     return `${environment.apiUrl}/enterprises/${this.enterpriseId}/groups/${groupId}/policies${path ? '/' + path : ''}`;
   }
 
+  private urlAll(path: string | null = null) {
+    return `${environment.apiUrl}/enterprises/${this.enterpriseId}/policies${path ? '/' + path : ''}`;
+  }
+
   constructor(
     private http: HttpClient,
     private enterpriseService: EnterpriseService,
@@ -34,6 +38,10 @@ export class PolicyService {
 
   list(groupId: number): Observable<Response<Policy[]>> {
     return this.http.get<Response<Policy[]>>(this.url(groupId));
+  }
+  
+  listAll(): Observable<Response<Policy[]>> {
+    return this.http.get<Response<Policy[]>>(this.urlAll());
   }
 
   find(groupId: number, policyName: string): Observable<Response<Policy>> {

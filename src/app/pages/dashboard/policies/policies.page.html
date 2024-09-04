@@ -6,6 +6,7 @@
   <app-dialog [open]="showFormDialog()" (openChange)="hideFormDialog()">
     <app-policy-form
       [groupId]="groupId()"
+      [groups]="groups"
       [isVisible]="showFormDialog()"
       [editPolicy]="policyToEdit"
       (policy)="addPolicy($event)"
@@ -21,11 +22,12 @@
   </app-delete-dialog>
 
   <ul class="list-group my-2">
-    @for (policy of policies; track policy.name) {
+    @for (policy of policies; track policy.name + policy.groupId) {
       <li class="list-group-item">
         <app-policy-list-item
           [groupId]="groupId()"
           [policy]="policy"
+          [groups]="groups"
           (onEditPolicy)="editPolicy($event)"
           (onDeletePolicy)="deletePolicy($event)"
         ></app-policy-list-item>

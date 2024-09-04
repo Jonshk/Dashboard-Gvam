@@ -20,6 +20,7 @@ export interface Policy {
   factoryResetDisabled?: boolean;
   installAppsDisabled?: boolean;
   isDefault?: boolean;
+  groupId: number;
 }
 export interface WifiSsidPolicy {
   wifiSsidPolicyType: WifiSsidPolicyType;

@@ -1,5 +1,6 @@
 import { Component, effect, input, signal } from '@angular/core';
 import { UserFormComponent } from './components/user-form/user-form.component';
+import { UserSelectionFormComponent } from './components/user-selection-form/user-selection-form.component';
 import { UserListItemComponent } from './components/user-list-item/user-list-item.component';
 import { DeviceUser } from '../../../core/models/response/device-user.model';
 import { UserService } from '../../../core/services/user/user.service';
@@ -8,6 +9,9 @@ import { Response } from '../../../core/models/response/response.model';
 import { SuccessResponse } from '../../../core/models/response/success-response.model';
 import { DeleteDialogComponent } from '../../../shared/component/delete-dialog/delete-dialog.component';
 import { DialogComponent } from '../../../shared/component/dialog/dialog.component';
+import { Group } from '../../../core/models/response/group.model';
+import { GroupService } from '../../../core/services/group/group.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-users',
@@ -15,6 +19,7 @@ import { DialogComponent } from '../../../shared/component/dialog/dialog.compone
   imports: [
     DialogComponent,
     UserFormComponent,
+    UserSelectionFormComponent,
     UserListItemComponent,
     DeleteDialogComponent,
   ],
@@ -25,6 +30,8 @@ export class UsersPage {
   readonly groupId = input.required<number>();
 
   users: DeviceUser[] = [];
+  isAll: boolean = true;
+  groups: Group[] = [];
 
   userToEdit: DeviceUser | null = null;
   userToDelete: DeviceUser | null = null;
@@ -32,11 +39,15 @@ export class UsersPage {
   private _showDialog = signal(false);
   showDialog = this._showDialog.asReadonly();
 
+  private _showSelectionDialog = signal(false);
+  showSelectionDialog = this._showSelectionDialog.asReadonly();
+
   private _showDeleteDialog = signal(false);
   showDeleteDialog = this._showDeleteDialog.asReadonly();
 
   constructor(
     private userService: UserService,
+    private groupService: GroupService,
     private loadingService: LoadingService,
   ) {}
 
@@ -49,9 +60,16 @@ export class UsersPage {
 
   private list() {
     this.loadingService.setLoading();
-    this.userService.list(this.groupId()).subscribe({
-      next: ({ data }: Response<DeviceUser[]>) => {
-        this.users = data;
+
+    const $groups = this.groupService.list();
+    const $users = this.groupId()
+      ? this.userService.list(this.groupId())
+      : this.userService.listAll();
+
+    forkJoin([$groups, $users]).subscribe({
+      next: ([{ data: groups }, { data: users }]) => {
+        this.groups = groups;
+        this.users = users;
         this.loadingService.dismissLoading();
       },
       error: (err: any) => {
@@ -66,6 +84,11 @@ export class UsersPage {
     this.userToEdit = null;
   }
 
+  hideSelectionDialog() {
+    this._showSelectionDialog.set(false);
+    this.userToEdit = null;
+  }
+
   hideDeleteDialog() {
     this._showDeleteDialog.set(false);
     this.userToDelete = null;
@@ -73,6 +96,10 @@ export class UsersPage {
 
   createMode() {
     this._showDialog.set(true);
+  }
+
+  addMode() {
+    this._showSelectionDialog.set(true);
   }
 
   editUser(editUser: DeviceUser) {
@@ -104,8 +131,9 @@ export class UsersPage {
     if (!shouldDelete || !this.userToDelete) return;
 
     this.loadingService.setLoading();
+    const groupId = this.groupId() ?? this.userToDelete.groupId;
     this.userService
-      .delete(this.groupId(), this.userToDelete!.deviceUserId)
+      .delete(groupId, this.userToDelete!.deviceUserId)
       .subscribe({
         next: ({ data }: Response<SuccessResponse>) => {
           if (data.success) {

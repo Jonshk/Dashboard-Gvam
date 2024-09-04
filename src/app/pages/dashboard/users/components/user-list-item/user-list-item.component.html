@@ -1,25 +1,36 @@
-<div class="d-flex align-items-center justify-content-between gap-2">
-  {{ user().name }}
-  <span>
-    {{ user().email }}
-  </span>
-  <span>
-    {{ user().policyName }}
-  </span>
-  <div class="d-flex gap-2 flex-wrap justify-content-center">
-    <button
-      class="btn btn-outline-secondary me-2 btn-sm"
-      [disabled]="loadingService.isLoading()"
-      (click)="editUser()"
-    >
-      Editar
-    </button>
-    <button
-      class="btn btn-danger btn-sm me-2"
-      [disabled]="loadingService.isLoading()"
-      (click)="deleteUser()"
-    >
-      Eliminar
-    </button>
+<div class="container text-center">
+  <div class="row justify-content-center align-items-center">
+    <span class="col">
+      {{ user().name }}
+    </span>
+    <span class="col">
+      {{ user().email }}
+    </span>
+    <span class="col">
+      {{ user().policyName }}
+    </span>
+
+    @if (!groupId()) {
+      <span class="col">
+        {{ getGroupName(user().groupId) }}
+      </span>
+    }
+
+    <div class="col-3 d-flex gap-2 flex-wrap justify-content-center">
+      <button
+        class="btn btn-outline-secondary me-2 btn-sm"
+        [disabled]="loadingService.isLoading()"
+        (click)="editUser()"
+      >
+        Editar
+      </button>
+      <button
+        class="btn btn-danger btn-sm me-2"
+        [disabled]="loadingService.isLoading()"
+        (click)="deleteUser()"
+      >
+        Eliminar
+      </button>
+    </div>
   </div>
 </div>

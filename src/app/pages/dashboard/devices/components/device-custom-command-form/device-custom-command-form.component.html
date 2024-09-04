@@ -48,7 +48,7 @@
       <label class="w-100">
         Geovalla
         <select class="form-select" name="value" formControlName="value">
-          @for (geofence of geofences(); track geofence.geofenceId) {
+          @for (geofence of groupGeofences(); track geofence.geofenceId) {
             <option [value]="geofence.geofenceId">
               {{ geofence.geofenceName }}
             </option>

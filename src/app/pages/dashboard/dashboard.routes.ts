@@ -42,6 +42,30 @@ export const dashboardRoutes: Routes = [
     canActivate: [isLoggedGuard, hasEnterpriseGuard],
   },
   {
+    path: 'users',
+    data: {
+      title: 'Usuarios',
+    },
+    component: UsersPage,
+    canActivate: [isLoggedGuard, hasEnterpriseGuard],
+  },
+  {
+    path: 'policies',
+    data: {
+      title: 'Politicas',
+    },
+    component: PoliciesPage,
+    canActivate: [isLoggedGuard, hasEnterpriseGuard],
+  },
+  {
+    path: 'devices',
+    data: {
+      title: 'Dispositivos',
+    },
+    component: DevicesPage,
+    canActivate: [isLoggedGuard, hasEnterpriseGuard],
+  },
+  {
     path: 'groups/:groupId/devices',
     data: {
       title: 'Dispositivos',

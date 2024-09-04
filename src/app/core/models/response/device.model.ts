@@ -6,4 +6,5 @@ export interface Device {
   enrolled: boolean;
   geofenceId: number | null;
   remoteControlActive: boolean;
+  groupId: number;
 }

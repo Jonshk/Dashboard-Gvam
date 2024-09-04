@@ -26,6 +26,10 @@ export class DeviceService {
     return `${environment.apiUrl}/enterprises/${this.enterpriseId}/groups/${groupId}/devices${path ? '/' + path : ''}`;
   }
 
+  private urlAll(path: string | number | null = null) {
+    return `${environment.apiUrl}/enterprises/${this.enterpriseId}/devices${path ? '/' + path : ''}`;
+  }
+
   constructor(
     private http: HttpClient,
     private enterpriseService: EnterpriseService,
@@ -63,6 +67,11 @@ export class DeviceService {
 
   list(groupId: number): Observable<Response<Device[]>> {
     return this.http.get<Response<Device[]>>(this.url(groupId));
+  }
+
+  
+  listAll(): Observable<Response<Device[]>> {
+    return this.http.get<Response<Device[]>>(this.urlAll());
   }
 
   find(groupId: number, deviceId: number): Observable<Response<DeviceDetail>> {
