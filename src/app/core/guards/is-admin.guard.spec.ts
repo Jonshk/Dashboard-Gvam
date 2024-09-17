@@ -3,9 +3,9 @@ import { CanActivateFn } from '@angular/router';
 
 import { hasEnterpriseGuard } from './has-enterprise.guard';
 
-describe('isAdminGuard', () => {
-  const executeGuard: CanActivateFn = (...guardParameters) =>
-    TestBed.runInInjectionContext(() => hasEnterpriseGuard(...guardParameters));
+describe('hasEnterpriseGuard', () => {
+  const executeGuard: CanActivateFn = (...guardParameters) => 
+      TestBed.runInInjectionContext(() => hasEnterpriseGuard(...guardParameters));
 
   beforeEach(() => {
     TestBed.configureTestingModule({});

@@ -1,6 +1,8 @@
-import { TokenResponse } from "./token-response.model";
+import { Role } from '../../enums/role';
+import { TokenResponse } from './token-response.model';
 
 export interface LoginResponse {
-    email: string;
-    tokens: TokenResponse
+  email: string;
+  role: Role;
+  tokens: TokenResponse;
 }

@@ -3,14 +3,14 @@
     {{ group().groupName }}
   </span>
   <div class="d-flex gap-2 flex-wrap justify-content-center">
-    <a class="btn btn-light btn-sm" [routerLink]="[group().groupId, 'users']"
-      >Ver usuarios</a
-    >
     <a
       class="btn btn-light btn-sm"
       [routerLink]="[group().groupId, 'policies']"
     >
       Ver políticas</a
+    >
+    <a class="btn btn-light btn-sm" [routerLink]="[group().groupId, 'users']"
+      >Ver usuarios</a
     >
     <a class="btn btn-light btn-sm" [routerLink]="[group().groupId, 'devices']"
       >Ver dispositivos</a

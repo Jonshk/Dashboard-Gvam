@@ -10,6 +10,8 @@ import { PoliciesPage } from './policies/policies.page';
 import { UsersPage } from './users/users.page';
 import { ApplicationsPage } from './applications/applications.page';
 import { GeofencesPages } from './geofences/geofences.pages';
+import { SystemUsersPage } from './system-users/system-users.page';
+import { isAdminGuard } from '../../core/guards/is-admin-guard';
 
 export const dashboardRoutes: Routes = [
   {
@@ -23,7 +25,7 @@ export const dashboardRoutes: Routes = [
       title: 'Empresas',
     },
     component: EnterprisePage,
-    canActivate: [isLoggedGuard, hasEnterpriseGuard],
+    canActivate: [isLoggedGuard, hasEnterpriseGuard, isAdminGuard],
   },
   {
     path: 'groups',
@@ -64,6 +66,14 @@ export const dashboardRoutes: Routes = [
     },
     component: DevicesPage,
     canActivate: [isLoggedGuard, hasEnterpriseGuard],
+  },
+  {
+    path: 'system-users',
+    data: {
+      title: 'Usuarios del sistema',
+    },
+    component: SystemUsersPage,
+    canActivate: [isLoggedGuard, hasEnterpriseGuard, isAdminGuard],
   },
   {
     path: 'groups/:groupId/devices',

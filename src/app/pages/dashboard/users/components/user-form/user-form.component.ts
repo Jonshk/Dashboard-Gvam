@@ -81,7 +81,6 @@ export class UserFormComponent {
 
   private policyValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      console.log('validating...');
       const group = control.value;
       if (group && group != -1) {
         this.updatePolicies(group);

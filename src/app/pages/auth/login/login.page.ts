@@ -49,6 +49,7 @@ export class LoginPage {
     this.authService.login(loginRequest).subscribe({
       next: ({ data }: Response<LoginResponse>) => {
         this.storeService.save('email', data.email);
+        this.storeService.save('role', data.role);
         this.authService.saveTokens(data.tokens);
 
         this.enterpriseService.list().subscribe({
