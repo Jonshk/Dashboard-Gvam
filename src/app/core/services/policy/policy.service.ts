@@ -32,6 +32,10 @@ export class PolicyService {
     return this.http.post<Response<Policy>>(this.url(groupId), policy);
   }
 
+  createUnlinked(policy: Policy): Observable<Response<Policy>> {
+    return this.http.post<Response<Policy>>(this.urlAll("new"), policy);
+  }
+
   update(groupId: number, policy: Policy): Observable<Response<Policy>> {
     return this.http.patch<Response<Policy>>(this.url(groupId), policy);
   }

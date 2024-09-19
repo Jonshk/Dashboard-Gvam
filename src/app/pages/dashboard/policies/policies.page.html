@@ -3,6 +3,12 @@
     Crear nueva política
   </button>
 
+  @if (groupId()) {
+    <button class="btn btn-primary" style="margin-left: 2%" (click)="addMode()">
+      Añadir politica existente
+    </button>
+  }
+
   <app-dialog [open]="showFormDialog()" (openChange)="hideFormDialog()">
     <app-policy-form
       [groupId]="groupId()"
@@ -11,6 +17,19 @@
       [editPolicy]="policyToEdit"
       (policy)="addPolicy($event)"
     ></app-policy-form>
+  </app-dialog>
+
+ 
+  <app-dialog
+    [open]="showSelectionDialog()"
+    (openChange)="hideSelectionDialog()"
+  >
+    <app-policy-selection-form
+      [groupId]="groupId()"
+      [isVisible]="showSelectionDialog()"
+      [groupPolicies]="policies"
+      (user)="null"
+    ></app-policy-selection-form>
   </app-dialog>
 
   <app-delete-dialog

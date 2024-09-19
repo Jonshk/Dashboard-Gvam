@@ -202,17 +202,34 @@ export class PolicyFormComponent {
   private createPolicy(newPolicy: Policy) {
     const groupId = this.groupId() ?? this.policyForm.value.group;
 
-    this.policyService.create(groupId, newPolicy).subscribe({
-      next: ({ data }: Response<Policy>) => {
-        this.policy.emit(data);
-        this.resetForm();
-        this.loadingService.dismissLoading();
-      },
-      error: (err: any) => {
-        console.error('error:', err);
-        this.loadingService.dismissLoading();
-      },
-    });
+    if(this.groupId()){
+      this.policyService.create(groupId, newPolicy).subscribe({
+        next: ({ data }: Response<Policy>) => {
+          this.policy.emit(data);
+          this.resetForm();
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });  
+    }else{
+      this.policyService.createUnlinked(newPolicy).subscribe({
+        next: ({ data }: Response<Policy>) => {
+          this.policy.emit(data);
+          this.resetForm();
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });
+  
+    }
+
+
   }
 
   private editCurrentPolicy(editedPolicy: Policy) {

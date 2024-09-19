@@ -4,6 +4,7 @@ import { PolicyService } from '../../../core/services/policy/policy.service';
 import { Response } from '../../../core/models/response/response.model';
 import { PolicyFormComponent } from './components/policy-form/policy-form.component';
 import { PolicyListItemComponent } from './components/policy-list-item/policy-list-item.component';
+import { PolicySelectionFormComponent } from './components/policy-selection-form/policy-selection-form.component';
 import { LoadingService } from '../../../core/services/loading/loading.service';
 import { SuccessResponse } from '../../../core/models/response/success-response.model';
 import { DeleteDialogComponent } from '../../../shared/component/delete-dialog/delete-dialog.component';
@@ -18,6 +19,7 @@ import { forkJoin } from 'rxjs';
   imports: [
     PolicyFormComponent,
     PolicyListItemComponent,
+    PolicySelectionFormComponent,
     DialogComponent,
     DeleteDialogComponent,
   ],
@@ -35,6 +37,9 @@ export class PoliciesPage {
 
   private _showFormDialog = signal(false);
   showFormDialog = this._showFormDialog.asReadonly();
+
+  private _showSelectionDialog = signal(false);
+  showSelectionDialog = this._showSelectionDialog.asReadonly();
 
   private _showDeleteDialog = signal(false);
   showDeleteDialog = this._showDeleteDialog.asReadonly();
@@ -78,12 +83,22 @@ export class PoliciesPage {
     this.policyToEdit = null;
   }
 
+  hideSelectionDialog() {
+    this._showSelectionDialog.set(false);
+    this.policyToEdit = null;
+  }
+
   hideDeleteDialog() {
     this._showDeleteDialog.set(false);
   }
+  
 
   createMode() {
     this._showFormDialog.set(true);
+  }
+
+  addMode() {
+    this._showSelectionDialog.set(true);
   }
 
   editPolicy(editPolicy: Policy) {
