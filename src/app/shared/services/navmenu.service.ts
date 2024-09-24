@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { StoreService } from '../../core/services/store/store.service';
+import { Role } from '../../core/enums/role';
 
 export interface Menu {
   headTitle1?: string;
@@ -25,7 +27,20 @@ export class NavmenuService {
   public isShow: boolean = false;
   public closeSidebar: boolean = false;
 
-  constructor() {}
+  constructor(private storeService: StoreService) {
+    const role = this.storeService.get('role');
+    if (role === Role.ADMIN) {
+      this.MENUITEMS.push({
+        level: 1,
+        id: 6,
+        path: '/system-users',
+        bookmark: true,
+        title: 'Usuarios del sistema',
+        icon: 'user',
+        type: 'link',
+      });
+    }
+  }
 
   MENUITEMS: Menu[] = [
     {
