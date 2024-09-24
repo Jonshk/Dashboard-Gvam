@@ -17,17 +17,17 @@
     >
       Eliminar
     </button>
+    @if (groupId()) {
     <button
-      class="btn btn-warning btn-sm"
-      [disabled]="loadingService.isLoading()"
-      (click)="applyPolicyToGroup()"
-    >
+        class="btn btn-warning btn-sm"
+        [disabled]="loadingService.isLoading()"
+        (click)="applyPolicyToGroup()"
+      >
       Aplicar al grupo
-      @if (!groupId()) {
-        <span>
-          {{ getGroupName(policy().groupId) }}
-        </span>
-      }
+      <span>
+        {{ getGroupName(policy().groupId) }}
+      </span>
     </button>
+  }
   </div>
 </div>
