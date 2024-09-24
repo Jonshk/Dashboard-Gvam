@@ -30,7 +30,7 @@ export class PolicySelectionFormComponent {
   users: DeviceUser[] = [];
   
   
-  user = output<DeviceUser>();
+  policy = output<Policy>();
 
   private userService = inject(UserService);
   private policyService = inject(PolicyService);
@@ -91,25 +91,23 @@ export class PolicySelectionFormComponent {
     if (this.policyForm.invalid) return;
 
     this.loadingService.showLoading();
-    //We get the selected user
-    //const userToAdd = this.users.find((el: DeviceUser) => el.email === this.policyForm.value.user);
+    //We get the selected policy
+    const policyToAdd = this.policies.find((el: Policy) => el.name === this.policyForm.value.policy);
 
-    //console.log(userToAdd);
+    console.log(policyToAdd);
 
-    //this.AddDeviceUser(this.userForm.value.user)
-  }
-
-  private AddDeviceUser(newDeviceUser: CreateDeviceUserRequest) {
-    this.userService.create(this.groupId(), newDeviceUser).subscribe({
-      next: ({ data }: Response<DeviceUser>) => {
-        this.user.emit(data);
-        this.resetForm();
-        this.loadingService.dismissLoading();
-      },
-      error: (err: any) => {
-        console.error('error:', err);
-        this.loadingService.dismissLoading();
-      },
-    });
+    if(policyToAdd !== undefined){
+      this.policyService.linkToGroup(this.groupId(), policyToAdd).subscribe({
+        next: ({ data }: Response<Policy>) => {
+          this.policy.emit(data);
+          this.resetForm();
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });    
+    }
   }
 }

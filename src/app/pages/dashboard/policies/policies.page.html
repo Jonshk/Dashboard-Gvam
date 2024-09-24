@@ -28,7 +28,7 @@
       [groupId]="groupId()"
       [isVisible]="showSelectionDialog()"
       [groupPolicies]="policies"
-      (user)="null"
+      (policy)="addPolicy($event)"
     ></app-policy-selection-form>
   </app-dialog>
 

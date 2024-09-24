@@ -59,6 +59,7 @@ export class PoliciesPage {
 
   private list() {
     this.loadingService.setLoading();
+    this.policies = []
 
     const $groups = this.groupService.list();
     const $policies = this.groupId()
@@ -116,6 +117,7 @@ export class PoliciesPage {
     if (index !== -1) {
       this.policies[index] = policy;
       this.hideFormDialog();
+      this.hideSelectionDialog();
       return;
     }
 
@@ -132,7 +134,11 @@ export class PoliciesPage {
     if (!shouldDelete || !this.policyToDelete) return;
 
     this.loadingService.setLoading();
-    const groupId = this.groupId() ?? this.policyToDelete.groupId;
+    var groupId = this.groupId() ?? this.policyToDelete.groupId;
+    if(groupId===undefined){
+      groupId = -1
+    }
+    console.log(groupId)
     this.policyService.delete(groupId, this.policyToDelete.name).subscribe({
       next: ({ data }: Response<SuccessResponse>) => {
         if (data) {
