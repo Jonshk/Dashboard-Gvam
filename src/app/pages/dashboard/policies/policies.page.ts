@@ -34,6 +34,7 @@ export class PoliciesPage {
 
   policyToEdit: Policy | null = null;
   policyToDelete: Policy | null = null;
+  policyToUnlink: Policy | null = null;
 
   private _showFormDialog = signal(false);
   showFormDialog = this._showFormDialog.asReadonly();
@@ -43,6 +44,9 @@ export class PoliciesPage {
 
   private _showDeleteDialog = signal(false);
   showDeleteDialog = this._showDeleteDialog.asReadonly();
+
+  private _showUnlinkDialog = signal(false);
+  showUnlinkDialog = this._showUnlinkDialog.asReadonly();
 
   constructor(
     private policyService: PolicyService,
@@ -92,7 +96,10 @@ export class PoliciesPage {
   hideDeleteDialog() {
     this._showDeleteDialog.set(false);
   }
-  
+
+  hideUnlinkDialog() {
+    this._showUnlinkDialog.set(false);
+  }
 
   createMode() {
     this._showFormDialog.set(true);
@@ -111,9 +118,7 @@ export class PoliciesPage {
     if (policy.isDefault) {
       this.policies.forEach((p) => (p.isDefault = false));
     }
-
     const index = this.policies.findIndex((p) => p.name === policy.name);
-
     if (index !== -1) {
       this.policies[index] = policy;
       this.hideFormDialog();
@@ -128,6 +133,11 @@ export class PoliciesPage {
   deletePolicy(policy: Policy) {
     this.policyToDelete = policy;
     this._showDeleteDialog.set(true);
+  }
+
+  unlinkPolicy(policy: Policy) {
+    this.policyToUnlink = policy;
+    this._showUnlinkDialog.set(true);
   }
 
   onDeleteConfirm(shouldDelete: boolean) {
@@ -156,4 +166,28 @@ export class PoliciesPage {
       },
     });
   }
+
+  onUnlinkConfirm(shouldUnlink: boolean) {
+    if (!shouldUnlink || !this.policyToUnlink) return;
+
+    this.loadingService.setLoading();
+    var groupId = this.groupId() ?? this.policyToUnlink.groupId;
+    this.policyService.unlinkFromGroup(groupId, this.policyToUnlink).subscribe({
+      next: ({ data }: Response<Policy>) => {
+        if (data) {
+          this.policies = this.policies.filter(
+            (policy) => policy.name !== this.policyToUnlink!.name,
+          );
+          this.policyToUnlink = null;
+          this.hideUnlinkDialog();
+        }
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
+  }
+
 }

@@ -10,13 +10,25 @@
     >
       Editar
     </button>
-    <button
-      class="btn btn-danger btn-sm"
-      [disabled]="loadingService.isLoading()"
-      (click)="deletePolicy()"
-    >
-      Eliminar
-    </button>
+    
+    @if (!groupId()) {
+      <button
+        class="btn btn-danger btn-sm"
+        [disabled]="loadingService.isLoading()"
+        (click)="deletePolicy()"
+      >
+        Eliminar
+      </button>
+    }@else{
+      <button
+        class="btn btn-danger btn-sm"
+        [disabled]="loadingService.isLoading()"
+        (click)="unlinkPolicy()"
+      >
+        Desvincular
+      </button>
+    }
+
     @if (groupId()) {
     <button
         class="btn btn-warning btn-sm"

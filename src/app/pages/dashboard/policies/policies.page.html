@@ -40,6 +40,14 @@
   >
   </app-delete-dialog>
 
+  <app-delete-dialog
+  [open]="showUnlinkDialog()"
+  (openChange)="hideUnlinkDialog()"
+  [message]="'Desvincular la política ' + policyToUnlink?.name + '?'"
+  (onDelete)="onUnlinkConfirm($event)"
+>
+</app-delete-dialog>
+
   <ul class="list-group my-2">
     @for (policy of policies; track policy.name + policy.groupId) {
       <li class="list-group-item">
@@ -49,6 +57,7 @@
           [groups]="groups"
           (onEditPolicy)="editPolicy($event)"
           (onDeletePolicy)="deletePolicy($event)"
+          (onUnlinkPolicy)="unlinkPolicy($event)"
         ></app-policy-list-item>
       </li>
     }

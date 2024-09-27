@@ -27,12 +27,11 @@ export class PolicySelectionFormComponent {
   readonly groupPolicies = input.required<Policy[]>();
   readonly editUser = input<DeviceUser | null>(null);
   policies: Policy[] = [];
-  users: DeviceUser[] = [];
+  currentGroupPolicies: Policy[] = [];
   
   
   policy = output<Policy>();
 
-  private userService = inject(UserService);
   private policyService = inject(PolicyService);
   readonly loadingService = inject(LoadingService);
 
@@ -51,27 +50,34 @@ export class PolicySelectionFormComponent {
   private getPolicies = effect(async () => {
     //list all users
     await this.policyService.listAll().subscribe({
-      next: ({ data }: Response<Policy[]>) => {
+      next: async ({ data }: Response<Policy[]>) => {
         this.policies = data;
-        console.log(this.policies)
-        console.log(this.groupPolicies())
+        var groupPolicies = this.groupPolicies()
         //Exclude those that are already in the group
-        var newPolicies: Policy[] = [];  
-
-        
-        this.policies.forEach(policy => {
-          if(!this.groupPolicies().some(e => policy.name === e.name)){
-            newPolicies.push(policy)
-          }
-        });
-        
-        this.policies = newPolicies;
+        this.checkNewPolicies()
       },
       error: (err: any) => {
         console.error('error:', err);
       },
     });        
   });
+
+  private reloadGroupPolicies = effect(async () => {
+      this.currentGroupPolicies = this.groupPolicies();
+      console.log(this.currentGroupPolicies)
+      this.checkNewPolicies();
+  })
+
+  private checkNewPolicies(){
+    var newPolicies: Policy[] = [];          
+    this.policies.forEach(policy => {
+      if(!this.currentGroupPolicies.some(e => policy.name === e.name)){
+        newPolicies.push(policy)
+      }
+    });
+    
+    this.policies = newPolicies;
+  }
 
   private setUserForm = effect(() => {
     this.resetForm();
@@ -101,6 +107,8 @@ export class PolicySelectionFormComponent {
         next: ({ data }: Response<Policy>) => {
           this.policy.emit(data);
           this.resetForm();
+          //Delete the item from currentGroupPolicies
+          this.checkNewPolicies()
           this.loadingService.dismissLoading();
         },
         error: (err: any) => {

@@ -20,6 +20,7 @@ export class PolicyListItemComponent {
 
   readonly onEditPolicy = output<Policy>();
   readonly onDeletePolicy = output<Policy>();
+  readonly onUnlinkPolicy = output<Policy>();
 
   private policyService = inject(PolicyService);
   readonly loadingService = inject(LoadingService);
@@ -30,6 +31,10 @@ export class PolicyListItemComponent {
 
   deletePolicy() {
     this.onDeletePolicy.emit(this.policy());
+  }
+
+  unlinkPolicy() {
+    this.onUnlinkPolicy.emit(this.policy());
   }
 
   applyPolicyToGroup() {
