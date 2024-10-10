@@ -24,7 +24,6 @@ export class EnterprisePage {
   signUpUrl: string = '';
   private signUpUrlName: string = '';
   enterpriseRegisterForm = new FormGroup({
-    name: new FormControl('', [Validators.required]),
     token: new FormControl('', [Validators.required]),
   });
 
@@ -55,7 +54,6 @@ export class EnterprisePage {
     this.loadingService.setLoading();
 
     const createEnterprise: CreateEnterprise = {
-      enterpriseDisplayName: this.enterpriseRegisterForm.value.name!,
       signupUrlName: this.signUpUrlName,
       enterpriseToken: this.enterpriseRegisterForm.value.token!,
     };
