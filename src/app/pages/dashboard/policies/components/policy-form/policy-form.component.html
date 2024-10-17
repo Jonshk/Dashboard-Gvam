@@ -3,7 +3,7 @@
   [formGroup]="policyForm"
   (ngSubmit)="onSubmit()"
 >
-<!--
+  <!--
   @if (!groupId()) {
     <label>
       Grupo
@@ -192,7 +192,7 @@
         }
       </select>
     </label>
-    <label formArrayName="wifiSsids">
+    <label>
       SSID
       <button
         type="button"
@@ -202,7 +202,7 @@
         Añadir SSID
       </button>
     </label>
-    <div class="d-flex flex-column gap-2">
+    <div class="d-flex flex-column gap-2" formArrayName="wifiSsids">
       @for (ssid of wifiSsids.controls; track ssid; let j = $index) {
         <div class="d-flex flex-column">
           <div class="d-flex align-items-center gap-2">
