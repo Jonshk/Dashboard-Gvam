@@ -12,12 +12,8 @@
 </td>
 <td>
   <a
-    [className]="device().enrolled ? 'fw-bold text-underline' : ''"
-    [routerLink]="
-      device().enrolled
-        ? ['/groups', device().groupId, 'devices', device().deviceId]
-        : null
-    "
+    class="fw-bold text-underline"
+    [routerLink]="['/groups', device().groupId, 'devices', device().deviceId]"
     >{{ device().deviceName }}</a
   >
 </td>
