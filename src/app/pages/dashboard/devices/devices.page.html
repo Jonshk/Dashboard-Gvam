@@ -122,45 +122,47 @@
             Acciones
           </button>
           <ul class="dropdown-menu" ngbDropdownMenu>
-            <li>
-              <button
-                class="dropdown-item"
-                (click)="changeActionDialog('customCommand')"
-                ngbDropdownItem
-              >
-                Configurar
-              </button>
-            </li>
-            @if (groupId()) {
+            @if (showRegisteredDevices) {
               <li>
                 <button
                   class="dropdown-item"
-                  (click)="changeActionDialog('policies')"
+                  (click)="changeActionDialog('customCommand')"
                   ngbDropdownItem
                 >
-                  Cambiar política
+                  Configurar
                 </button>
               </li>
+              @if (groupId()) {
+                <li>
+                  <button
+                    class="dropdown-item"
+                    (click)="changeActionDialog('policies')"
+                    ngbDropdownItem
+                  >
+                    Cambiar política
+                  </button>
+                </li>
+              }
+              <li>
+                <button
+                  class="dropdown-item"
+                  (click)="changeActionDialog('command')"
+                  ngbDropdownItem
+                >
+                  Enviar comando
+                </button>
+              </li>
+              <li>
+                <button
+                  class="dropdown-item"
+                  (click)="changeActionDialog('migrate')"
+                  ngbDropdownItem
+                >
+                  Migrar de grupo
+                </button>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
             }
-            <li>
-              <button
-                class="dropdown-item"
-                (click)="changeActionDialog('command')"
-                ngbDropdownItem
-              >
-                Enviar comando
-              </button>
-            </li>
-            <li>
-              <button
-                class="dropdown-item"
-                (click)="changeActionDialog('migrate')"
-                ngbDropdownItem
-              >
-                Migrar de grupo
-              </button>
-            </li>
-            <li><hr class="dropdown-divider" /></li>
             <li>
               <button
                 class="dropdown-item text-danger"
