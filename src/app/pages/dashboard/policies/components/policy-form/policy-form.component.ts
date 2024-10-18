@@ -283,6 +283,8 @@ export class PolicyFormComponent {
     this.applicationPolicy.removeAt(index);
   }
 
+  readonly wifiState = this.policyForm.get('wifiState')!;
+
   readonly wifiSsids = this.policyForm
     .get('wifiSsidPolicy')!
     .get('wifiSsids') as FormArray;

@@ -39,17 +39,19 @@
     }
   </label>
 
-  <div class="form-check checkbox-checked">
-    <label class="form-check-label">
-      Establecer como política por defecto del grupo
-      <input
-        type="checkbox"
-        class="form-check-input"
-        name="isDefault"
-        formControlName="isDefault"
-      />
-    </label>
-  </div>
+  @if (groupId()) {
+    <div class="form-check checkbox-checked">
+      <label class="form-check-label">
+        Establecer como política por defecto del grupo
+        <input
+          type="checkbox"
+          class="form-check-input"
+          name="isDefault"
+          formControlName="isDefault"
+        />
+      </label>
+    </div>
+  }
 
   <div
     class="d-flex flex-column"
@@ -167,6 +169,12 @@
         </option>
       }
     </select>
+    @if (wifiState.value === WifiState.DISABLED) {
+      <small class="text-warning"
+        >Si deshabilitas el Wifi, asegúrate de tener conexión con datos <br />
+        móviles en los dispositivos en los que se aplique esta política.
+      </small>
+    }
   </label>
 
   <div
