@@ -69,9 +69,11 @@
     [open]="showDeleteDialog()"
     (openChange)="hideDeleteDialog()"
     [message]="
-      '¿Eliminar el dispositivo ' +
-      deviceToDelete?.deviceName +
-      '? El dispositivo será restablecido a estado de fábrica'
+      deviceToDelete?.enrolled
+        ? '¿Eliminar el dispositivo ' +
+          deviceToDelete?.deviceName +
+          '? El dispositivo será restablecido a estado de fábrica'
+        : '¿Eliminar el dispositivo ' + deviceToDelete?.deviceName + '?'
     "
     (onDelete)="onDeleteConfirm($event)"
   ></app-delete-dialog>
@@ -86,7 +88,7 @@
             [className]="showRegisteredDevices ? 'nav-link active' : 'nav-link'"
             (click)="toggleRegisteredDevices(true)"
           >
-            Dispositivos enrolados
+            Dispositivos registrados
           </button>
         </li>
         <li class="nav-item">
@@ -96,7 +98,7 @@
             "
             (click)="toggleRegisteredDevices(false)"
           >
-            Dispositivos no enrolados
+            Dispositivos no registrados
           </button>
         </li>
       </nav>
@@ -350,8 +352,12 @@
 <ng-template #deleteDevices>
   <div class="w-100">
     <p>
-      ¿Eliminar los dispositivos seleccionados? Los dispositivos serán
-      restablecidos a estado de fábrica
+      @if (showRegisteredDevices) {
+        ¿Eliminar los dispositivos seleccionados? Los dispositivos serán
+        restablecidos a estado de fábrica
+      } @else {
+        ¿Eliminar los dispositivos seleccionados?
+      }
     </p>
 
     <ng-container *ngTemplateOutlet="devicesCounter"></ng-container>

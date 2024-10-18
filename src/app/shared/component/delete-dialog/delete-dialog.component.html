@@ -5,6 +5,8 @@
     <button class="btn btn-outline-secondary" (click)="onDismiss()">
       Cancelar
     </button>
-    <button class="btn btn-danger" (click)="onDeleteClick()">Eliminar</button>
+    <button class="btn btn-danger" (click)="onDeleteClick()">
+      {{ deleteButtonText() }}
+    </button>
   </div>
 </app-dialog>

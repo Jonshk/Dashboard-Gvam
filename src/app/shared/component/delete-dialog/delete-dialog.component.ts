@@ -11,6 +11,7 @@ import { DialogComponent } from '../dialog/dialog.component';
 export class DeleteDialogComponent {
   readonly open = model.required<boolean>();
   message = input.required<string>();
+  deleteButtonText = input<string>('Eliminar');
 
   readonly onDelete = output<boolean>();
 
