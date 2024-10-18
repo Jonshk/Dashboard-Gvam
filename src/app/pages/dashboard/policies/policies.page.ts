@@ -163,6 +163,7 @@ export class PoliciesPage {
       error: (err: any) => {
         console.error('error:', err);
         this.loadingService.dismissLoading();
+        this.hideDeleteDialog();
       },
     });
   }
@@ -186,6 +187,7 @@ export class PoliciesPage {
       error: (err: any) => {
         console.error('error:', err);
         this.loadingService.dismissLoading();
+        this.hideUnlinkDialog();
       },
     });
   }

@@ -120,6 +120,7 @@ export class GeofencesPages {
         error: (err: any) => {
           console.error('error:', err);
           this.loadingService.dismissLoading();
+          this.hideDeleteDialog();
         },
       });
   }
