@@ -202,7 +202,7 @@ export class PolicyFormComponent {
   private createPolicy(newPolicy: Policy) {
     const groupId = this.groupId() ?? this.policyForm.value.group;
 
-    if(this.groupId()){
+    if (this.groupId()) {
       this.policyService.create(groupId, newPolicy).subscribe({
         next: ({ data }: Response<Policy>) => {
           this.policy.emit(data);
@@ -213,8 +213,8 @@ export class PolicyFormComponent {
           console.error('error:', err);
           this.loadingService.dismissLoading();
         },
-      });  
-    }else{
+      });
+    } else {
       this.policyService.createUnlinked(newPolicy).subscribe({
         next: ({ data }: Response<Policy>) => {
           this.policy.emit(data);
@@ -226,25 +226,35 @@ export class PolicyFormComponent {
           this.loadingService.dismissLoading();
         },
       });
-  
     }
-
-
   }
 
   private editCurrentPolicy(editedPolicy: Policy) {
     const groupId = this.groupId() ?? this.editPolicy()?.groupId;
 
-    this.policyService.update(groupId, editedPolicy).subscribe({
-      next: ({ data }: Response<Policy>) => {
-        this.policy.emit(data);
-        this.loadingService.dismissLoading();
-      },
-      error: (err: any) => {
-        console.error('error:', err);
-        this.loadingService.dismissLoading();
-      },
-    });
+    if (this.groupId()) {
+      this.policyService.update(groupId, editedPolicy).subscribe({
+        next: ({ data }: Response<Policy>) => {
+          this.policy.emit(data);
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });
+    } else {
+      this.policyService.updateUnlinked(editedPolicy).subscribe({
+        next: ({ data }: Response<Policy>) => {
+          this.policy.emit(data);
+          this.loadingService.dismissLoading();
+        },
+        error: (err: any) => {
+          console.error('error:', err);
+          this.loadingService.dismissLoading();
+        },
+      });
+    }
   }
 
   get policyName() {

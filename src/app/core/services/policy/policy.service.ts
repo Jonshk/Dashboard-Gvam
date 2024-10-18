@@ -33,15 +33,25 @@ export class PolicyService {
   }
 
   createUnlinked(policy: Policy): Observable<Response<Policy>> {
-    return this.http.post<Response<Policy>>(this.urlAll("new"), policy);
+    return this.http.post<Response<Policy>>(this.urlAll(), policy);
+  }
+
+  updateUnlinked(policy: Policy): Observable<Response<Policy>> {
+    return this.http.patch<Response<Policy>>(this.urlAll(), policy);
   }
 
   linkToGroup(groupId: number, policy: Policy): Observable<Response<Policy>> {
-    return this.http.post<Response<Policy>>(this.url(groupId,"link"), policy);
+    return this.http.post<Response<Policy>>(this.url(groupId, 'link'), policy);
   }
 
-  unlinkFromGroup(groupId: number, policy: Policy): Observable<Response<Policy>> {
-    return this.http.post<Response<Policy>>(this.url(groupId,"unlink"), policy);
+  unlinkFromGroup(
+    groupId: number,
+    policy: Policy,
+  ): Observable<Response<Policy>> {
+    return this.http.post<Response<Policy>>(
+      this.url(groupId, 'unlink'),
+      policy,
+    );
   }
 
   update(groupId: number, policy: Policy): Observable<Response<Policy>> {
@@ -51,7 +61,7 @@ export class PolicyService {
   list(groupId: number): Observable<Response<Policy[]>> {
     return this.http.get<Response<Policy[]>>(this.url(groupId));
   }
-  
+
   listAll(): Observable<Response<Policy[]>> {
     return this.http.get<Response<Policy[]>>(this.urlAll());
   }

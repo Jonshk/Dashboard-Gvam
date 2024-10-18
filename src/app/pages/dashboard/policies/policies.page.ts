@@ -63,7 +63,7 @@ export class PoliciesPage {
 
   private list() {
     this.loadingService.setLoading();
-    this.policies = []
+    this.policies = [];
 
     const $groups = this.groupService.list();
     const $policies = this.groupId()
@@ -145,10 +145,9 @@ export class PoliciesPage {
 
     this.loadingService.setLoading();
     var groupId = this.groupId() ?? this.policyToDelete.groupId;
-    if(groupId===undefined){
-      groupId = -1
+    if (groupId === undefined) {
+      groupId = -1;
     }
-    console.log(groupId)
     this.policyService.delete(groupId, this.policyToDelete.name).subscribe({
       next: ({ data }: Response<SuccessResponse>) => {
         if (data) {
@@ -191,5 +190,4 @@ export class PoliciesPage {
       },
     });
   }
-
 }
