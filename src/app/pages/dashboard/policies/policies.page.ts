@@ -144,7 +144,7 @@ export class PoliciesPage {
     if (!shouldDelete || !this.policyToDelete) return;
 
     this.loadingService.setLoading();
-    var groupId = this.groupId() ?? this.policyToDelete.groupIds;
+    var groupId = this.groupId();
     if (groupId === undefined) {
       groupId = -1;
     }
@@ -171,7 +171,7 @@ export class PoliciesPage {
     if (!shouldUnlink || !this.policyToUnlink) return;
 
     this.loadingService.setLoading();
-    var groupId = this.groupId() ?? this.policyToUnlink.groupIds;
+    var groupId = this.groupId();
     this.policyService.unlinkFromGroup(groupId, this.policyToUnlink).subscribe({
       next: ({ data }: Response<Policy>) => {
         if (data) {

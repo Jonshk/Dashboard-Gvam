@@ -226,9 +226,9 @@ export class PolicyFormComponent {
   }
 
   private createPolicy(newPolicy: Policy) {
-    const groupId = this.groupId() ?? this.policyForm.value.group;
+    const groupId = this.groupId();
 
-    if (this.groupId()) {
+    if (groupId) {
       this.policyService.create(groupId, newPolicy).subscribe({
         next: ({ data }: Response<Policy>) => {
           this.policy.emit(data);
@@ -256,9 +256,9 @@ export class PolicyFormComponent {
   }
 
   private editCurrentPolicy(editedPolicy: Policy) {
-    const groupId = this.groupId() ?? this.editPolicy()?.groupIds;
+    const groupId = this.groupId();
 
-    if (this.groupId()) {
+    if (groupId) {
       this.policyService.update(groupId, editedPolicy).subscribe({
         next: ({ data }: Response<Policy>) => {
           this.policy.emit(data);

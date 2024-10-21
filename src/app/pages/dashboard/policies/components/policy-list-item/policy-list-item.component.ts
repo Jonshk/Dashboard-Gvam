@@ -39,7 +39,7 @@ export class PolicyListItemComponent {
 
   applyPolicyToGroup() {
     this.loadingService.setLoading();
-    const groupId = this.groupId() ?? this.policy().groupIds;
+    const groupId = this.groupId();
     this.policyService
       .applyPolicyToGroup(groupId, this.policy().name)
       .subscribe({
