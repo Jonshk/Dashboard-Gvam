@@ -100,14 +100,14 @@ export class UserFormComponent {
     if (this.groupId()) return (this.groupPolicies = this.policies);
 
     if (this.editUser()) {
-      return (this.groupPolicies = this.policies.filter(
-        (u) => u.groupId === this.editUser()!.groupId,
+      return (this.groupPolicies = this.policies.filter((u) =>
+        u.groupIds?.some((g) => g === this.editUser()!.groupId),
       ));
     }
 
     if (group) {
-      return (this.groupPolicies = this.policies.filter(
-        (u) => u.groupId == group,
+      return (this.groupPolicies = this.policies.filter((u) =>
+        u.groupIds?.some((g) => g == group),
       ));
     }
 

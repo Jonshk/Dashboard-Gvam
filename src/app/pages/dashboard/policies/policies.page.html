@@ -49,7 +49,7 @@
   </app-delete-dialog>
 
   <ul class="list-group my-2">
-    @for (policy of policies; track policy.name + policy.groupId) {
+    @for (policy of policies; track policy.name) {
       <li class="list-group-item">
         <app-policy-list-item
           [groupId]="groupId()"

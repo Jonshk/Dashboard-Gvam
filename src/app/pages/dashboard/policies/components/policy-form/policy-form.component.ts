@@ -112,7 +112,9 @@ export class PolicyFormComponent {
   private setEditForm = effect(() => {
     this.resetForm();
     if (this.editPolicy()) {
-      this.policyForm.controls.group.setValue(this.editPolicy()!.groupId);
+      if (this.groupId()) {
+        this.policyForm.controls.group.setValue(this.groupId());
+      }
       this.policyForm.controls.group.disable();
 
       this.policyForm.controls.name.setValue(this.editPolicy()!.name);
@@ -254,7 +256,7 @@ export class PolicyFormComponent {
   }
 
   private editCurrentPolicy(editedPolicy: Policy) {
-    const groupId = this.groupId() ?? this.editPolicy()?.groupId;
+    const groupId = this.groupId() ?? this.editPolicy()?.groupIds;
 
     if (this.groupId()) {
       this.policyService.update(groupId, editedPolicy).subscribe({

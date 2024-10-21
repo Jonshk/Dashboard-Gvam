@@ -57,7 +57,9 @@ export class DeviceListItemComponent {
 
   groupPolicies = computed(() => {
     if (this.groupId()) return this.policies();
-    return this.policies().filter((p) => p.groupId === this.device().groupId);
+    return this.policies().filter((p) =>
+      p.groupIds?.some((g) => g === this.device().groupId),
+    );
   });
 
   applyPolicyForm = new FormGroup({
