@@ -4,3 +4,10 @@ export enum LocationMode {
   ENFORCED = 'LOCATION_ENFORCED',
   DISABLED = 'LOCATION_DISABLED',
 }
+
+export enum LocationModeDescription {
+  UNSPECIFIED = 'Sin especificar',
+  USER_CHOICE = 'Permitir elegir al usuario',
+  ENFORCED = 'Activada',
+  DISABLED = 'Desactivada',
+}

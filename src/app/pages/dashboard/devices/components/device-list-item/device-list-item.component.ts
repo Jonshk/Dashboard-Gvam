@@ -20,7 +20,10 @@ import { SuccessResponse } from '../../../../../core/models/response/success-res
 import { Response } from '../../../../../core/models/response/response.model';
 import { ApplyDevicePolicyRequest } from '../../../../../core/models/request/apply-device-policy-request.model';
 import { LoadingService } from '../../../../../core/services/loading/loading.service';
-import { DeviceCommand } from '../../../../../core/enums/device-command';
+import {
+  DeviceCommand,
+  DeviceCommandDescription,
+} from '../../../../../core/enums/device-command';
 import { DeviceCommandRequest } from '../../../../../core/models/request/device-command-request.model';
 import { RouterModule } from '@angular/router';
 import { Group } from '../../../../../core/models/response/group.model';
@@ -62,9 +65,11 @@ export class DeviceListItemComponent {
   });
 
   readonly DeviceCommand = DeviceCommand;
+  readonly DeviceCommandDescription = DeviceCommandDescription;
   readonly deviceCommandKeys = Object.keys(DeviceCommand) as [
     keyof typeof DeviceCommand,
   ];
+
   sendCommandForm = new FormGroup({
     command: new FormControl(DeviceCommand.LOCK, [Validators.required]),
   });

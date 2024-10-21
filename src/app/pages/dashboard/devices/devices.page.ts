@@ -24,13 +24,19 @@ import {
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { DeviceCommand } from '../../../core/enums/device-command';
+import {
+  DeviceCommand,
+  DeviceCommandDescription,
+} from '../../../core/enums/device-command';
 import { ApplyDevicePolicyRequest } from '../../../core/models/request/apply-device-policy-request.model';
 import { DeviceCommandRequest } from '../../../core/models/request/device-command-request.model';
 import { MigrateDeviceRequest } from '../../../core/models/request/migrate-device-request';
 import { NgTemplateOutlet } from '@angular/common';
 import { DeviceCustomCommandFormComponent } from './components/device-custom-command-form/device-custom-command-form.component';
-import { DeviceCustomCommand } from '../../../core/enums/device-custom-command';
+import {
+  DeviceCustomCommand,
+  DeviceCustomCommandDescription,
+} from '../../../core/enums/device-custom-command';
 import { Geofence } from '../../../core/models/response/geofence.model';
 import { GeofenceService } from '../../../core/services/geofence/geofence.service';
 import { DeviceCustomCommandRequest } from '../../../core/models/request/device-custom-command-request.model';
@@ -82,6 +88,7 @@ export class DevicesPage {
   });
 
   readonly DeviceCommand = DeviceCommand;
+  readonly DeviceCommandDescription = DeviceCommandDescription;
   readonly deviceCommandKeys = Object.keys(DeviceCommand) as [
     keyof typeof DeviceCommand,
   ];
@@ -95,6 +102,7 @@ export class DevicesPage {
   });
 
   readonly DeviceCustomCommand = DeviceCustomCommand;
+  readonly DeviceCustomCommandDescription = DeviceCustomCommandDescription;
   readonly deviceCustomCommandKeys = Object.keys(DeviceCustomCommand) as [
     keyof typeof DeviceCustomCommand,
   ];

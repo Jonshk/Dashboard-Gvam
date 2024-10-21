@@ -5,14 +5,38 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { InstallType } from '../../../../../core/enums/install-type';
-import { PermissionPolicy } from '../../../../../core/enums/permission-policy';
-import { AutoUpdateMode } from '../../../../../core/enums/auto-update-mode';
-import { WifiState } from '../../../../../core/enums/wifi-state';
-import { LocationMode } from '../../../../../core/enums/location-mode';
-import { PowerButtonAction } from '../../../../../core/enums/power-button-action';
-import { UsbDataAccess } from '../../../../../core/enums/usb-data-access';
-import { WifiSsidPolicyType } from '../../../../../core/enums/wifi-ssid-policy-type';
+import {
+  InstallType,
+  InstallTypeDescription,
+} from '../../../../../core/enums/install-type';
+import {
+  PermissionPolicy,
+  PermissionPolicyDescription,
+} from '../../../../../core/enums/permission-policy';
+import {
+  AutoUpdateMode,
+  AutoUpdateModeDescription,
+} from '../../../../../core/enums/auto-update-mode';
+import {
+  WifiState,
+  WifiStateDescription,
+} from '../../../../../core/enums/wifi-state';
+import {
+  LocationMode,
+  LocationModeDescription,
+} from '../../../../../core/enums/location-mode';
+import {
+  PowerButtonAction,
+  PowerButtonActionDescription,
+} from '../../../../../core/enums/power-button-action';
+import {
+  UsbDataAccess,
+  UsbDataAccessDescription,
+} from '../../../../../core/enums/usb-data-access';
+import {
+  WifiSsidPolicyType,
+  WifiSsidPolicyTypeDescription,
+} from '../../../../../core/enums/wifi-ssid-policy-type';
 import { PolicyService } from '../../../../../core/services/policy/policy.service';
 import { Policy } from '../../../../../core/models/response/policy.model';
 import { Response } from '../../../../../core/models/response/response.model';
@@ -300,39 +324,47 @@ export class PolicyFormComponent {
   }
 
   readonly InstallType = InstallType;
+  readonly InstallTypeDescription = InstallTypeDescription;
   readonly installTypeKeys = Object.keys(InstallType) as [
     keyof typeof InstallType,
   ];
 
   readonly PermissionPolicy = PermissionPolicy;
+  readonly PermissionPolicyDescription = PermissionPolicyDescription;
   readonly permissionPolicyKeys = Object.keys(PermissionPolicy) as [
     keyof typeof PermissionPolicy,
   ];
 
   readonly AutoUpdateMode = AutoUpdateMode;
+  readonly AutoUpdateModeDescription = AutoUpdateModeDescription;
   readonly autoUpdateModeKeys = Object.keys(AutoUpdateMode) as [
     keyof typeof AutoUpdateMode,
   ];
 
   readonly WifiState = WifiState;
+  readonly WifiStateDescription = WifiStateDescription;
   readonly wifiStateKeys = Object.keys(WifiState) as [keyof typeof WifiState];
 
   readonly WifiSsidPolicyType = WifiSsidPolicyType;
+  readonly WifiSsidPolicyTypeDescription = WifiSsidPolicyTypeDescription;
   readonly wifiSsidPolicyTypeKeys = Object.keys(WifiSsidPolicyType) as [
     keyof typeof WifiSsidPolicyType,
   ];
 
   readonly LocationMode = LocationMode;
+  readonly LocationModeDescription = LocationModeDescription;
   readonly locationModeKeys = Object.keys(LocationMode) as [
     keyof typeof LocationMode,
   ];
 
   readonly PowerButtonAction = PowerButtonAction;
+  readonly PowerButtonActionDescription = PowerButtonActionDescription;
   readonly powerButtonActionKeys = Object.keys(PowerButtonAction) as [
     keyof typeof PowerButtonAction,
   ];
 
   readonly UsbDataAccess = UsbDataAccess;
+  readonly UsbDataAccessDescription = UsbDataAccessDescription;
   readonly usbDataAccesKeys = Object.keys(UsbDataAccess) as [
     keyof typeof UsbDataAccess,
   ];

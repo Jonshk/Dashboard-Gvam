@@ -99,7 +99,7 @@
           >
             @for (installType of installTypeKeys; track installType) {
               <option [value]="InstallType[installType]">
-                {{ installType }}
+                {{ InstallTypeDescription[installType] }}
               </option>
             }
           </select>
@@ -117,7 +117,7 @@
               track permissionPolicy
             ) {
               <option [value]="PermissionPolicy[permissionPolicy]">
-                {{ permissionPolicy }}
+                {{ PermissionPolicyDescription[permissionPolicy] }}
               </option>
             }
           </select>
@@ -144,7 +144,7 @@
           >
             @for (autoUpdateMode of autoUpdateModeKeys; track autoUpdateMode) {
               <option [value]="AutoUpdateMode[autoUpdateMode]">
-                {{ autoUpdateMode }}
+                {{ AutoUpdateModeDescription[autoUpdateMode] }}
               </option>
             }
           </select>
@@ -165,7 +165,7 @@
     <select class="form-select" name="wifiState" formControlName="wifiState">
       @for (wifiState of wifiStateKeys; track wifiState) {
         <option [value]="WifiState[wifiState]">
-          {{ wifiState }}
+          {{ WifiStateDescription[wifiState] }}
         </option>
       }
     </select>
@@ -195,7 +195,7 @@
           track wifiSsidPolicyType
         ) {
           <option [value]="WifiSsidPolicyType[wifiSsidPolicyType]">
-            {{ wifiSsidPolicyType }}
+            {{ WifiSsidPolicyTypeDescription[wifiSsidPolicyType] }}
           </option>
         }
       </select>
@@ -247,7 +247,7 @@
     >
       @for (locationMode of locationModeKeys; track locationMode) {
         <option [value]="LocationMode[locationMode]">
-          {{ locationMode }}
+          {{ LocationModeDescription[locationMode] }}
         </option>
       }
     </select>
@@ -289,7 +289,7 @@
         track powerButtonAction
       ) {
         <option [value]="PowerButtonAction[powerButtonAction]">
-          {{ powerButtonAction }}
+          {{ PowerButtonActionDescription[powerButtonAction] }}
         </option>
       }
     </select>
@@ -304,7 +304,7 @@
     >
       @for (usbDataAccess of usbDataAccesKeys; track usbDataAccess) {
         <option [value]="UsbDataAccess[usbDataAccess]">
-          {{ usbDataAccess }}
+          {{ UsbDataAccessDescription[usbDataAccess] }}
         </option>
       }
     </select>

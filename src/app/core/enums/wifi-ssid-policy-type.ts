@@ -3,3 +3,9 @@ export enum WifiSsidPolicyType {
   DENYLIST = 'WIFI_SSID_DENYLIST',
   ALLOWLIST = 'WIFI_SSID_ALLOWLIST',
 }
+
+export enum WifiSsidPolicyTypeDescription {
+  UNSPECIFIED = 'Sin especificar',
+  DENYLIST = 'Lista de bloqueados',
+  ALLOWLIST = 'Lista de permitidos',
+}

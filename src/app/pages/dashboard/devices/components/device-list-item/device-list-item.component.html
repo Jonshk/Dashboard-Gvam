@@ -76,7 +76,7 @@
       <select class="form-select" name="command" formControlName="command">
         @for (deviceCommand of deviceCommandKeys; track deviceCommand) {
           <option [value]="DeviceCommand[deviceCommand]">
-            {{ deviceCommand }}
+            {{ DeviceCommandDescription[deviceCommand] }}
           </option>
         }
       </select>

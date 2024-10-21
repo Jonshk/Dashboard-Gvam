@@ -4,3 +4,10 @@ export enum AutoUpdateMode {
   POSTPONED = 'AUTO_UPDATE_POSTPONED',
   HIGH_PRIORITY = 'AUTO_UPDATE_HIGH_PRIORITY',
 }
+
+export enum AutoUpdateModeDescription {
+  UNSPECIFIED = 'Sin especificar',
+  DEFAULT = 'Por defecto',
+  POSTPONED = 'Posponer',
+  HIGH_PRIORITY = 'Prioritario',
+}

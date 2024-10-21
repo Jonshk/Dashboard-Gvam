@@ -6,3 +6,12 @@ export enum DeviceCustomCommand {
   ACTIVATE_REMOTE_CONTROL = 'ACTIVATE_REMOTE_CONTROL',
   DEACTIVATE_REMOTE_CONTROL = 'DEACTIVATE_REMOTE_CONTROL',
 }
+
+export enum DeviceCustomCommandDescription {
+  ADJUST_BRIGHTNESS = 'Ajustar brillo',
+  ADJUST_VOLUME = 'Ajustar volumen',
+  ACTIVATE_GEOFENCE = 'Activar geovalla',
+  DEACTIVATE_GEOFENCE = 'Desactivar geovalla',
+  ACTIVATE_REMOTE_CONTROL = 'Activar control remoto',
+  DEACTIVATE_REMOTE_CONTROL = 'Desactivar control remoto',
+}

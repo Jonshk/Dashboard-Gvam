@@ -4,3 +4,10 @@ export enum WifiState {
   ENABLED = 'WIFI_ENABLED',
   DISABLED = 'WIFI_DISABLED',
 }
+
+export enum WifiStateDescription {
+  UNSPECIFIED = 'Sin especificar',
+  USER_CHOICE = 'Permitir elegir al usuario',
+  ENABLED = 'Activado',
+  DISABLED = 'Desactivado',
+}

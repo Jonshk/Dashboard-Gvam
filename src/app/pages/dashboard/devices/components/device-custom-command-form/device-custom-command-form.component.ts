@@ -6,7 +6,10 @@ import {
   Validators,
 } from '@angular/forms';
 import { LoadingService } from '../../../../../core/services/loading/loading.service';
-import { DeviceCustomCommand } from '../../../../../core/enums/device-custom-command';
+import {
+  DeviceCustomCommand,
+  DeviceCustomCommandDescription,
+} from '../../../../../core/enums/device-custom-command';
 import { DeviceService } from '../../../../../core/services/device/device.service';
 import { DeviceCustomCommandRequest } from '../../../../../core/models/request/device-custom-command-request.model';
 import { SuccessResponse } from '../../../../../core/models/response/success-response.model';
@@ -130,6 +133,7 @@ export class DeviceCustomCommandFormComponent {
   }
 
   readonly DeviceCustomCommand = DeviceCustomCommand;
+  readonly DeviceCustomCommandDescription = DeviceCustomCommandDescription;
   readonly deviceCustomCommandKeys = Object.keys(DeviceCustomCommand) as [
     keyof typeof DeviceCustomCommand,
   ];
