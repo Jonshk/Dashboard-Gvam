@@ -3,7 +3,7 @@
     Crear nuevo dispositivo
   </button>
   <button
-    class="btn btn-outline-secondary"
+    class="btn btn-light"
     [disabled]="loadingService.isLoading()"
     (click)="registerDevices()"
   >
@@ -82,32 +82,34 @@
     <div
       class="card-header card-no-border d-flex justify-content-between align-items-center flex-wrap gap-2"
     >
-      <nav class="nav nav-pills">
-        <li class="nav-item me-2">
-          <button
-            [className]="showRegisteredDevices ? 'nav-link active' : 'nav-link'"
-            (click)="toggleRegisteredDevices(true)"
-          >
-            Dispositivos registrados
-          </button>
-        </li>
-        <li class="nav-item">
-          <button
-            [className]="
-              !showRegisteredDevices ? 'nav-link active' : 'nav-link'
-            "
-            (click)="toggleRegisteredDevices(false)"
-          >
-            Dispositivos no registrados
-          </button>
-        </li>
-      </nav>
+      <div class="d-flex align-items-center gap-2">
+        <button
+          [className]="
+            showRegisteredDevices
+              ? 'btn btn-primary'
+              : 'btn btn-outline-primary'
+          "
+          (click)="toggleRegisteredDevices(true)"
+        >
+          Dispositivos registrados
+        </button>
+        <button
+          [className]="
+            !showRegisteredDevices
+              ? 'btn btn-primary'
+              : 'btn btn-outline-primary'
+          "
+          (click)="toggleRegisteredDevices(false)"
+        >
+          Dispositivos no registrados
+        </button>
+      </div>
 
       <div class="d-flex align-items-center flex-wrap gap-2">
-        <button class="btn btn-outline-secondary" (click)="selectAll()">
+        <button class="btn btn-light" (click)="selectAll()">
           Seleccionar todos
         </button>
-        <button class="btn btn-outline-secondary" (click)="unselectAll()">
+        <button class="btn btn-light" (click)="unselectAll()">
           Deseleccionar todos
         </button>
 

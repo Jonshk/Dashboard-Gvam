@@ -28,7 +28,7 @@
   <div class="d-flex gap-2 flex-wrap justify-content-center">
     @if (device().enrolled) {
       <button
-        class="btn btn-outline-secondary btn-sm"
+        class="btn btn-light btn-sm"
         [disabled]="loadingService.isLoading()"
         (click)="configDevice()"
       >
@@ -36,7 +36,7 @@
       </button>
     }
     <button
-      class="btn btn-outline-secondary btn-sm"
+      class="btn btn-light btn-sm"
       [disabled]="loadingService.isLoading()"
       (click)="editDevice()"
     >
