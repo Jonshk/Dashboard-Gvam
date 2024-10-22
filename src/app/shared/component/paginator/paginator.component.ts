@@ -1,5 +1,9 @@
 import { Component, inject, output } from '@angular/core';
-import { DEFAULT_PAGINATION, Pagination } from '../../util/pagination';
+import {
+  DEFAULT_PAGINATION,
+  INITIAL_PAGE,
+  Pagination,
+} from '../../util/pagination';
 import { LoadingService } from '../../../core/services/loading/loading.service';
 
 @Component({
@@ -32,7 +36,7 @@ export class PaginatorComponent {
   updateState({ hasMoreItems, hasLessItems }: UpdatePaginationState) {
     if (hasMoreItems !== undefined) {
       this.hasMoreItems = hasMoreItems;
-      if (!this.hasMoreItems) {
+      if (!this.hasMoreItems && this._pagination.currentPage !== INITIAL_PAGE) {
         this._pagination.currentPage--;
       }
     }
