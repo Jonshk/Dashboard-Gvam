@@ -19,6 +19,7 @@ import {
   getPaginationParams,
   Pagination,
 } from '../../../shared/util/pagination';
+import { DeviceFilter } from '../../enums/device-filter';
 
 @Injectable({
   providedIn: 'root',
@@ -71,16 +72,20 @@ export class DeviceService {
 
   list(
     groupId: number,
+    filter: DeviceFilter,
     pagination: Pagination,
   ): Observable<Response<Device[]>> {
     return this.http.get<Response<Device[]>>(this.url(groupId), {
-      params: getPaginationParams(pagination),
+      params: { ...getPaginationParams(pagination), filter: filter },
     });
   }
 
-  listAll(pagination: Pagination): Observable<Response<Device[]>> {
+  listAll(
+    filter: DeviceFilter,
+    pagination: Pagination,
+  ): Observable<Response<Device[]>> {
     return this.http.get<Response<Device[]>>(this.urlAll(), {
-      params: getPaginationParams(pagination),
+      params: { ...getPaginationParams(pagination), filter: filter },
     });
   }
 

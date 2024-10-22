@@ -56,6 +56,7 @@ import {
   Pagination,
 } from '../../../shared/util/pagination';
 import { PaginatorComponent } from '../../../shared/component/paginator/paginator.component';
+import { DeviceFilter } from '../../../core/enums/device-filter';
 
 @Component({
   selector: 'app-devices',
@@ -77,7 +78,10 @@ import { PaginatorComponent } from '../../../shared/component/paginator/paginato
 export class DevicesPage {
   groupId = input.required<number>();
 
-  paginator = viewChild(PaginatorComponent);
+  registeredPaginator = viewChild<PaginatorComponent>('registeredPaginator');
+  unregisteredPaginator = viewChild<PaginatorComponent>(
+    'unregisteredPaginator',
+  );
 
   deviceToEdit: Device | null = null;
   deviceToConfig: Device | null = null;
@@ -91,7 +95,19 @@ export class DevicesPage {
 
   selectedDevices = computed(() => this.devices().filter((d) => d.selected));
 
-  showRegisteredDevices: boolean = true;
+  showRegisteredDevices = signal(true);
+  private deviceFilter = computed(() =>
+    this.showRegisteredDevices()
+      ? DeviceFilter.REGISTERED
+      : DeviceFilter.UNREGISTERED,
+  );
+
+  private paginator = computed(() =>
+    this.showRegisteredDevices()
+      ? this.registeredPaginator()
+      : this.unregisteredPaginator(),
+  );
+
   newDevices?: RegisterDevice;
   policies: Policy[] = [];
   deviceUsers: DeviceUser[] = [];
@@ -164,7 +180,11 @@ export class DevicesPage {
       : DEFAULT_PAGINATION;
 
     if (this.groupId()) {
-      const $devices = this.deviceService.list(this.groupId(), pagination);
+      const $devices = this.deviceService.list(
+        this.groupId(),
+        this.deviceFilter(),
+        pagination,
+      );
       const $policies = this.policyService.list(this.groupId());
       const $deviceUsers = this.userService.list(this.groupId());
       const $groups = this.groupService.list();
@@ -201,7 +221,10 @@ export class DevicesPage {
         },
       });
     } else {
-      const $devices = this.deviceService.listAll(pagination);
+      const $devices = this.deviceService.listAll(
+        this.deviceFilter(),
+        pagination,
+      );
       const $policies = this.policyService.listAll();
       const $deviceUsers = this.userService.listAll();
       const $groups = this.groupService.list();
@@ -240,8 +263,8 @@ export class DevicesPage {
   loadPaginatedDevices(pagination: Pagination) {
     this.loadingService.setLoading();
     const $devices = this.groupId()
-      ? this.deviceService.list(this.groupId(), pagination)
-      : this.deviceService.listAll(pagination);
+      ? this.deviceService.list(this.groupId(), this.deviceFilter(), pagination)
+      : this.deviceService.listAll(this.deviceFilter(), pagination);
 
     $devices.subscribe({
       next: ({ data }: Response<Device[]>) => {
@@ -267,18 +290,20 @@ export class DevicesPage {
     const pagination = this.paginator()!.pagination;
 
     if (this.groupId()) {
-      this.deviceService.list(this.groupId(), pagination).subscribe({
-        next: ({ data }: Response<Device[]>) => {
-          this.devices.set(data);
-          this.loadingService.dismissLoading();
-        },
-        error: (err: any) => {
-          console.error('error:', err);
-          this.loadingService.dismissLoading();
-        },
-      });
+      this.deviceService
+        .list(this.groupId(), this.deviceFilter(), pagination)
+        .subscribe({
+          next: ({ data }: Response<Device[]>) => {
+            this.devices.set(data);
+            this.loadingService.dismissLoading();
+          },
+          error: (err: any) => {
+            console.error('error:', err);
+            this.loadingService.dismissLoading();
+          },
+        });
     } else {
-      this.deviceService.listAll(pagination).subscribe({
+      this.deviceService.listAll(this.deviceFilter(), pagination).subscribe({
         next: ({ data }: Response<Device[]>) => {
           this.devices.set(data);
           this.loadingService.dismissLoading();
@@ -385,15 +410,15 @@ export class DevicesPage {
   }
 
   toggleRegisteredDevices(show: boolean) {
-    if (show !== this.showRegisteredDevices) {
+    if (show !== this.showRegisteredDevices()) {
       this.unselectAll();
     }
-    this.showRegisteredDevices = show;
+    this.showRegisteredDevices.set(show);
   }
 
   selectAll() {
     this.devices.update((devices) => {
-      if (this.showRegisteredDevices) {
+      if (this.showRegisteredDevices()) {
         return devices.map((device) => {
           if (device.enrolled) {
             return { ...device, selected: true };

@@ -85,7 +85,7 @@
       <div class="d-flex align-items-center gap-2">
         <button
           [className]="
-            showRegisteredDevices
+            showRegisteredDevices()
               ? 'btn btn-primary'
               : 'btn btn-outline-primary'
           "
@@ -95,7 +95,7 @@
         </button>
         <button
           [className]="
-            !showRegisteredDevices
+            !showRegisteredDevices()
               ? 'btn btn-primary'
               : 'btn btn-outline-primary'
           "
@@ -124,7 +124,7 @@
             Acciones
           </button>
           <ul class="dropdown-menu" ngbDropdownMenu>
-            @if (showRegisteredDevices) {
+            @if (showRegisteredDevices()) {
               <li>
                 <button
                   class="dropdown-item"
@@ -182,7 +182,7 @@
     <div class="card-body">
       <div class="table-responsive">
         <table class="tranaction-table w-100">
-          @if (showRegisteredDevices) {
+          @if (showRegisteredDevices()) {
             <thead>
               <tr>
                 <th scope="col">-</th>
@@ -214,6 +214,13 @@
                 ></tr>
               }
             </tbody>
+
+            <tfoot class="d-flex gap-2 w-100">
+              <app-paginator
+                #registeredPaginator
+                (onPageChange)="loadPaginatedDevices($event)"
+              ></app-paginator>
+            </tfoot>
           } @else {
             <thead>
               <tr>
@@ -241,12 +248,13 @@
                 ></tr>
               }
             </tbody>
+            <tfoot class="d-flex gap-2 w-100">
+              <app-paginator
+                #unregisteredPaginator
+                (onPageChange)="loadPaginatedDevices($event)"
+              ></app-paginator>
+            </tfoot>
           }
-          <tfoot class="d-flex gap-2 w-100">
-            <app-paginator
-              (onPageChange)="loadPaginatedDevices($event)"
-            ></app-paginator>
-          </tfoot>
         </table>
       </div>
     </div>
@@ -361,7 +369,7 @@
 <ng-template #deleteDevices>
   <div class="w-100">
     <p>
-      @if (showRegisteredDevices) {
+      @if (showRegisteredDevices()) {
         ¿Eliminar los dispositivos seleccionados? Los dispositivos serán
         restablecidos a estado de fábrica
       } @else {
