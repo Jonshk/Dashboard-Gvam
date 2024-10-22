@@ -6,6 +6,11 @@ import { Policy } from '../../models/response/policy.model';
 import { Observable } from 'rxjs';
 import { EnterpriseService } from '../enterprise/enterprise.service';
 import { SuccessResponse } from '../../models/response/success-response.model';
+import {
+  getPaginationParams,
+  NO_PAGINATION,
+  Pagination,
+} from '../../../shared/util/pagination';
 
 @Injectable({
   providedIn: 'root',
@@ -58,12 +63,21 @@ export class PolicyService {
     return this.http.patch<Response<Policy>>(this.url(groupId), policy);
   }
 
-  list(groupId: number): Observable<Response<Policy[]>> {
-    return this.http.get<Response<Policy[]>>(this.url(groupId));
+  list(
+    groupId: number,
+    pagination: Pagination = NO_PAGINATION,
+  ): Observable<Response<Policy[]>> {
+    return this.http.get<Response<Policy[]>>(this.url(groupId), {
+      params: getPaginationParams(pagination),
+    });
   }
 
-  listAll(): Observable<Response<Policy[]>> {
-    return this.http.get<Response<Policy[]>>(this.urlAll());
+  listAll(
+    pagination: Pagination = NO_PAGINATION,
+  ): Observable<Response<Policy[]>> {
+    return this.http.get<Response<Policy[]>>(this.urlAll(), {
+      params: getPaginationParams(pagination),
+    });
   }
 
   find(groupId: number, policyName: string): Observable<Response<Policy>> {

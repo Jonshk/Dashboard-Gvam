@@ -1,4 +1,4 @@
-import { Component, effect, input, signal } from '@angular/core';
+import { Component, effect, input, signal, viewChild } from '@angular/core';
 import { GeofenceFormComponent } from './components/geofence-form/geofence-form.component';
 import { GeofenceService } from '../../../core/services/geofence/geofence.service';
 import { Geofence } from '../../../core/models/response/geofence.model';
@@ -8,6 +8,12 @@ import { GeofenceListItemComponent } from './components/geofence-list-item/geofe
 import { SuccessResponse } from '../../../core/models/response/success-response.model';
 import { DeleteDialogComponent } from '../../../shared/component/delete-dialog/delete-dialog.component';
 import { DialogComponent } from '../../../shared/component/dialog/dialog.component';
+import { PaginatorComponent } from '../../../shared/component/paginator/paginator.component';
+import {
+  DEFAULT_PAGINATION,
+  INITIAL_PAGE,
+  Pagination,
+} from '../../../shared/util/pagination';
 
 @Component({
   selector: 'app-geofences',
@@ -17,12 +23,15 @@ import { DialogComponent } from '../../../shared/component/dialog/dialog.compone
     GeofenceFormComponent,
     GeofenceListItemComponent,
     DeleteDialogComponent,
+    PaginatorComponent,
   ],
   templateUrl: './geofences.pages.html',
   styleUrl: './geofences.pages.scss',
 })
 export class GeofencesPages {
   readonly groupId = input.required<number>();
+
+  paginator = viewChild(PaginatorComponent);
 
   geofences: Geofence[] = [];
 
@@ -49,9 +58,44 @@ export class GeofencesPages {
 
   private list() {
     this.loadingService.setLoading();
-    this.geofenceService.list(this.groupId()).subscribe({
+
+    const pagination: Pagination = this.paginator()
+      ? this.paginator()!.pagination
+      : DEFAULT_PAGINATION;
+
+    this.geofenceService.list(this.groupId(), pagination).subscribe({
       next: ({ data }: Response<Geofence[]>) => {
+        this.paginator()?.updateState({
+          hasMoreItems: data.length === pagination.pageSize,
+        });
+
         this.geofences = data;
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
+  }
+
+  loadPaginatedGeofences(pagination: Pagination) {
+    this.loadingService.setLoading();
+    const $geofences = this.groupId()
+      ? this.geofenceService.list(this.groupId(), pagination)
+      : this.geofenceService.listAll(pagination);
+
+    $geofences.subscribe({
+      next: ({ data }: Response<Geofence[]>) => {
+        if (data.length > 0) {
+          this.geofences = data;
+        }
+
+        this.paginator()?.updateState({
+          hasMoreItems: data.length === pagination.pageSize,
+          hasLessItems: pagination.currentPage !== INITIAL_PAGE,
+        });
+
         this.loadingService.dismissLoading();
       },
       error: (err: any) => {

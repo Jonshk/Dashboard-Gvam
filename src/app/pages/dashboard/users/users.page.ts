@@ -1,4 +1,4 @@
-import { Component, effect, input, signal } from '@angular/core';
+import { Component, effect, input, signal, viewChild } from '@angular/core';
 import { UserFormComponent } from './components/user-form/user-form.component';
 import { UserSelectionFormComponent } from './components/user-selection-form/user-selection-form.component';
 import { UserListItemComponent } from './components/user-list-item/user-list-item.component';
@@ -12,6 +12,12 @@ import { DialogComponent } from '../../../shared/component/dialog/dialog.compone
 import { Group } from '../../../core/models/response/group.model';
 import { GroupService } from '../../../core/services/group/group.service';
 import { forkJoin } from 'rxjs';
+import {
+  Pagination,
+  INITIAL_PAGE,
+  DEFAULT_PAGINATION,
+} from '../../../shared/util/pagination';
+import { PaginatorComponent } from '../../../shared/component/paginator/paginator.component';
 
 @Component({
   selector: 'app-users',
@@ -22,12 +28,15 @@ import { forkJoin } from 'rxjs';
     UserSelectionFormComponent,
     UserListItemComponent,
     DeleteDialogComponent,
+    PaginatorComponent,
   ],
   templateUrl: './users.page.html',
   styleUrl: './users.page.scss',
 })
 export class UsersPage {
   readonly groupId = input.required<number>();
+
+  paginator = viewChild(PaginatorComponent);
 
   users: DeviceUser[] = [];
   isAll: boolean = true;
@@ -61,15 +70,49 @@ export class UsersPage {
   private list() {
     this.loadingService.setLoading();
 
+    const pagination: Pagination = this.paginator()
+      ? this.paginator()!.pagination
+      : DEFAULT_PAGINATION;
+
     const $groups = this.groupService.list();
     const $users = this.groupId()
-      ? this.userService.list(this.groupId())
-      : this.userService.listAll();
+      ? this.userService.list(this.groupId(), pagination)
+      : this.userService.listAll(pagination);
 
     forkJoin([$groups, $users]).subscribe({
       next: ([{ data: groups }, { data: users }]) => {
+        this.paginator()?.updateState({
+          hasMoreItems: users.length === pagination.pageSize,
+        });
+
         this.groups = groups;
         this.users = users;
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
+  }
+
+  loadPaginatedUsers(pagination: Pagination) {
+    this.loadingService.setLoading();
+    const $users = this.groupId()
+      ? this.userService.list(this.groupId(), pagination)
+      : this.userService.listAll(pagination);
+
+    $users.subscribe({
+      next: ({ data }: Response<DeviceUser[]>) => {
+        if (data.length > 0) {
+          this.users = data;
+        }
+
+        this.paginator()?.updateState({
+          hasMoreItems: data.length === pagination.pageSize,
+          hasLessItems: pagination.currentPage !== INITIAL_PAGE,
+        });
+
         this.loadingService.dismissLoading();
       },
       error: (err: any) => {

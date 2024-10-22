@@ -7,6 +7,11 @@ import { Response } from '../../models/response/response.model';
 import { SuccessResponse } from '../../models/response/success-response.model';
 import { CreateGeofence } from '../../models/request/create-geofence.model';
 import { Geofence } from '../../models/response/geofence.model';
+import {
+  getPaginationParams,
+  NO_PAGINATION,
+  Pagination,
+} from '../../../shared/util/pagination';
 
 @Injectable({
   providedIn: 'root',
@@ -50,12 +55,21 @@ export class GeofenceService {
     );
   }
 
-  listAll(): Observable<Response<Geofence[]>> {
-    return this.http.get<Response<Geofence[]>>(this.urlAll());
+  listAll(
+    pagination: Pagination = NO_PAGINATION,
+  ): Observable<Response<Geofence[]>> {
+    return this.http.get<Response<Geofence[]>>(this.urlAll(), {
+      params: getPaginationParams(pagination),
+    });
   }
 
-  list(groupId: number): Observable<Response<Geofence[]>> {
-    return this.http.get<Response<Geofence[]>>(this.url(groupId));
+  list(
+    groupId: number,
+    pagination: Pagination = NO_PAGINATION,
+  ): Observable<Response<Geofence[]>> {
+    return this.http.get<Response<Geofence[]>>(this.url(groupId), {
+      params: getPaginationParams(pagination),
+    });
   }
 
   find(groupId: number, geofenceId: number): Observable<Response<Geofence>> {

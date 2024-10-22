@@ -242,6 +242,11 @@
               }
             </tbody>
           }
+          <tfoot class="d-flex gap-2 w-100">
+            <app-paginator
+              (onPageChange)="loadPaginatedDevices($event)"
+            ></app-paginator>
+          </tfoot>
         </table>
       </div>
     </div>

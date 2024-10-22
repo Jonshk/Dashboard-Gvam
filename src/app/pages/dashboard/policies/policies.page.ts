@@ -1,4 +1,4 @@
-import { Component, effect, input, signal } from '@angular/core';
+import { Component, effect, input, signal, viewChild } from '@angular/core';
 import { Policy } from '../../../core/models/response/policy.model';
 import { PolicyService } from '../../../core/services/policy/policy.service';
 import { Response } from '../../../core/models/response/response.model';
@@ -12,6 +12,12 @@ import { DialogComponent } from '../../../shared/component/dialog/dialog.compone
 import { Group } from '../../../core/models/response/group.model';
 import { GroupService } from '../../../core/services/group/group.service';
 import { forkJoin } from 'rxjs';
+import { PaginatorComponent } from '../../../shared/component/paginator/paginator.component';
+import {
+  DEFAULT_PAGINATION,
+  INITIAL_PAGE,
+  Pagination,
+} from '../../../shared/util/pagination';
 
 @Component({
   selector: 'app-policies',
@@ -22,12 +28,15 @@ import { forkJoin } from 'rxjs';
     PolicySelectionFormComponent,
     DialogComponent,
     DeleteDialogComponent,
+    PaginatorComponent,
   ],
   templateUrl: './policies.page.html',
   styleUrl: './policies.page.scss',
 })
 export class PoliciesPage {
   readonly groupId = input.required<number>();
+
+  paginator = viewChild(PaginatorComponent);
 
   policies: Policy[] = [];
   groups: Group[] = [];
@@ -65,15 +74,49 @@ export class PoliciesPage {
     this.loadingService.setLoading();
     this.policies = [];
 
+    const pagination: Pagination = this.paginator()
+      ? this.paginator()!.pagination
+      : DEFAULT_PAGINATION;
+
     const $groups = this.groupService.list();
     const $policies = this.groupId()
-      ? this.policyService.list(this.groupId())
-      : this.policyService.listAll();
+      ? this.policyService.list(this.groupId(), pagination)
+      : this.policyService.listAll(pagination);
 
     forkJoin([$groups, $policies]).subscribe({
       next: ([{ data: groups }, { data: policies }]) => {
+        this.paginator()?.updateState({
+          hasMoreItems: policies.length === pagination.pageSize,
+        });
+
         this.groups = groups;
         this.policies = policies;
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
+  }
+
+  loadPaginatedPolicies(pagination: Pagination) {
+    this.loadingService.setLoading();
+    const $policies = this.groupId()
+      ? this.policyService.list(this.groupId(), pagination)
+      : this.policyService.listAll(pagination);
+
+    $policies.subscribe({
+      next: ({ data }: Response<Policy[]>) => {
+        if (data.length > 0) {
+          this.policies = data;
+        }
+
+        this.paginator()?.updateState({
+          hasMoreItems: data.length === pagination.pageSize,
+          hasLessItems: pagination.currentPage !== INITIAL_PAGE,
+        });
+
         this.loadingService.dismissLoading();
       },
       error: (err: any) => {

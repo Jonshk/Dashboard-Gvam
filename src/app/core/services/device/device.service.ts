@@ -15,6 +15,10 @@ import { DeviceCommandRequest } from '../../models/request/device-command-reques
 import { MigrateDeviceRequest } from '../../models/request/migrate-device-request';
 import { DeviceCustomCommandRequest } from '../../models/request/device-custom-command-request.model';
 import { CobrowseToken } from '../../models/response/cobrowse-token.model';
+import {
+  getPaginationParams,
+  Pagination,
+} from '../../../shared/util/pagination';
 
 @Injectable({
   providedIn: 'root',
@@ -65,13 +69,19 @@ export class DeviceService {
     );
   }
 
-  list(groupId: number): Observable<Response<Device[]>> {
-    return this.http.get<Response<Device[]>>(this.url(groupId));
+  list(
+    groupId: number,
+    pagination: Pagination,
+  ): Observable<Response<Device[]>> {
+    return this.http.get<Response<Device[]>>(this.url(groupId), {
+      params: getPaginationParams(pagination),
+    });
   }
 
-  
-  listAll(): Observable<Response<Device[]>> {
-    return this.http.get<Response<Device[]>>(this.urlAll());
+  listAll(pagination: Pagination): Observable<Response<Device[]>> {
+    return this.http.get<Response<Device[]>>(this.urlAll(), {
+      params: getPaginationParams(pagination),
+    });
   }
 
   find(groupId: number, deviceId: number): Observable<Response<DeviceDetail>> {

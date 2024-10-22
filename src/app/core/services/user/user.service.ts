@@ -7,6 +7,11 @@ import { Response } from '../../models/response/response.model';
 import { Observable } from 'rxjs';
 import { CreateDeviceUserRequest } from '../../models/request/create-device-user-request.model';
 import { DeviceUser } from '../../models/response/device-user.model';
+import {
+  getPaginationParams,
+  NO_PAGINATION,
+  Pagination,
+} from '../../../shared/util/pagination';
 
 @Injectable({
   providedIn: 'root',
@@ -50,15 +55,22 @@ export class UserService {
     );
   }
 
-  listAll(): Observable<Response<DeviceUser[]>> {
-    return this.http.get<Response<DeviceUser[]>>(this.urlAll());
+  listAll(
+    pagination: Pagination = NO_PAGINATION,
+  ): Observable<Response<DeviceUser[]>> {
+    return this.http.get<Response<DeviceUser[]>>(this.urlAll(), {
+      params: getPaginationParams(pagination),
+    });
   }
 
-  list(groupId: number): Observable<Response<DeviceUser[]>> {
-    return this.http.get<Response<DeviceUser[]>>(this.url(groupId));
+  list(
+    groupId: number,
+    pagination: Pagination = NO_PAGINATION,
+  ): Observable<Response<DeviceUser[]>> {
+    return this.http.get<Response<DeviceUser[]>>(this.url(groupId), {
+      params: getPaginationParams(pagination),
+    });
   }
-
-
 
   delete(
     groupId: number,

@@ -31,4 +31,9 @@
       </li>
     }
   </ul>
+  <footer>
+    <app-paginator
+      (onPageChange)="loadPaginatedGeofences($event)"
+    ></app-paginator>
+  </footer>
 </main>

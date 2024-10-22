@@ -1,4 +1,11 @@
-import { Component, computed, effect, input, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { DeviceService } from '../../../core/services/device/device.service';
 import { Response } from '../../../core/models/response/response.model';
 import { RegisterDevice } from '../../../core/models/response/register-device.model';
@@ -43,6 +50,12 @@ import { DeviceCustomCommandRequest } from '../../../core/models/request/device-
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { DeleteDialogComponent } from '../../../shared/component/delete-dialog/delete-dialog.component';
 import { DialogComponent } from '../../../shared/component/dialog/dialog.component';
+import {
+  DEFAULT_PAGINATION,
+  INITIAL_PAGE,
+  Pagination,
+} from '../../../shared/util/pagination';
+import { PaginatorComponent } from '../../../shared/component/paginator/paginator.component';
 
 @Component({
   selector: 'app-devices',
@@ -56,12 +69,15 @@ import { DialogComponent } from '../../../shared/component/dialog/dialog.compone
     NgTemplateOutlet,
     DeviceCustomCommandFormComponent,
     NgbDropdownModule,
+    PaginatorComponent,
   ],
   templateUrl: './devices.page.html',
   styleUrl: './devices.page.scss',
 })
 export class DevicesPage {
   groupId = input.required<number>();
+
+  paginator = viewChild(PaginatorComponent);
 
   deviceToEdit: Device | null = null;
   deviceToConfig: Device | null = null;
@@ -142,8 +158,13 @@ export class DevicesPage {
 
   private listDevicesAndPolicies() {
     this.loadingService.setLoading();
+
+    const pagination: Pagination = this.paginator()
+      ? this.paginator()!.pagination
+      : DEFAULT_PAGINATION;
+
     if (this.groupId()) {
-      const $devices = this.deviceService.list(this.groupId());
+      const $devices = this.deviceService.list(this.groupId(), pagination);
       const $policies = this.policyService.list(this.groupId());
       const $deviceUsers = this.userService.list(this.groupId());
       const $groups = this.groupService.list();
@@ -163,6 +184,9 @@ export class DevicesPage {
           { data: groups },
           { data: geofences },
         ]) => {
+          this.paginator()?.updateState({
+            hasMoreItems: devices.length === pagination.pageSize,
+          });
           this.devices.set(devices);
           this.policies = policies;
           this.deviceUsers = deviceUsers;
@@ -177,7 +201,7 @@ export class DevicesPage {
         },
       });
     } else {
-      const $devices = this.deviceService.listAll();
+      const $devices = this.deviceService.listAll(pagination);
       const $policies = this.policyService.listAll();
       const $deviceUsers = this.userService.listAll();
       const $groups = this.groupService.list();
@@ -213,9 +237,37 @@ export class DevicesPage {
     }
   }
 
-  private listDevices() {
+  loadPaginatedDevices(pagination: Pagination) {
+    this.loadingService.setLoading();
+    const $devices = this.groupId()
+      ? this.deviceService.list(this.groupId(), pagination)
+      : this.deviceService.listAll(pagination);
+
+    $devices.subscribe({
+      next: ({ data }: Response<Device[]>) => {
+        if (data.length > 0) {
+          this.devices.set(data);
+        }
+
+        this.paginator()?.updateState({
+          hasMoreItems: data.length === pagination.pageSize,
+          hasLessItems: pagination.currentPage !== INITIAL_PAGE,
+        });
+
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
+  }
+
+  private refreshDevices() {
+    const pagination = this.paginator()!.pagination;
+
     if (this.groupId()) {
-      this.deviceService.list(this.groupId()).subscribe({
+      this.deviceService.list(this.groupId(), pagination).subscribe({
         next: ({ data }: Response<Device[]>) => {
           this.devices.set(data);
           this.loadingService.dismissLoading();
@@ -226,7 +278,7 @@ export class DevicesPage {
         },
       });
     } else {
-      this.deviceService.listAll().subscribe({
+      this.deviceService.listAll(pagination).subscribe({
         next: ({ data }: Response<Device[]>) => {
           this.devices.set(data);
           this.loadingService.dismissLoading();
@@ -245,7 +297,7 @@ export class DevicesPage {
 
   onDeviceCreated(created: boolean) {
     if (created) {
-      this.listDevices();
+      this.refreshDevices();
     }
   }
 
@@ -273,7 +325,7 @@ export class DevicesPage {
       this.deviceService.register(this.groupId()).subscribe({
         next: ({ data }: Response<RegisterDevice>) => {
           if (data.registeredDevices > 0) {
-            this.listDevices();
+            this.refreshDevices();
           } else {
             this.loadingService.dismissLoading();
           }
@@ -298,7 +350,7 @@ export class DevicesPage {
       forkJoin($registerRequests).subscribe({
         next: (data) => {
           if (data.some((d) => d.data.registeredDevices > 0)) {
-            this.listDevices();
+            this.refreshDevices();
           } else {
             this.loadingService.dismissLoading();
           }

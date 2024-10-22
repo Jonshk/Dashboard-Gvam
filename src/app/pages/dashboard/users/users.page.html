@@ -35,7 +35,7 @@
     ></app-user-selection-form>
   </app-dialog>
   -->
-  
+
   <app-delete-dialog
     [open]="showDeleteDialog()"
     (openChange)="hideDeleteDialog()"
@@ -57,4 +57,8 @@
       </li>
     }
   </ul>
+
+  <footer>
+    <app-paginator (onPageChange)="loadPaginatedUsers($event)"></app-paginator>
+  </footer>
 </main>
