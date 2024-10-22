@@ -7,6 +7,10 @@ import { EnterpriseService } from '../enterprise/enterprise.service';
 import { Response } from '../../models/response/response.model';
 import { CreateSystemUserRequest } from '../../models/request/create-system-user-request.model';
 import { SystemUser } from '../../models/response/system-user.model';
+import {
+  getPaginationParams,
+  Pagination,
+} from '../../../shared/util/pagination';
 
 @Injectable({
   providedIn: 'root',
@@ -41,8 +45,10 @@ export class SystemUserService {
     );
   }
 
-  list(): Observable<Response<SystemUser[]>> {
-    return this.http.get<Response<SystemUser[]>>(this.url());
+  list(pagination: Pagination): Observable<Response<SystemUser[]>> {
+    return this.http.get<Response<SystemUser[]>>(this.url(), {
+      params: getPaginationParams(pagination),
+    });
   }
 
   delete(deviceUserId: number): Observable<Response<SuccessResponse>> {

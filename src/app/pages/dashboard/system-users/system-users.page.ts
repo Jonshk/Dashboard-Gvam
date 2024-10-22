@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, viewChild } from '@angular/core';
 import { SystemUserService } from '../../../core/services/system-user/system-user.service';
 import { Response } from '../../../core/models/response/response.model';
 import { SystemUser } from '../../../core/models/response/system-user.model';
@@ -8,6 +8,12 @@ import { DeleteDialogComponent } from '../../../shared/component/delete-dialog/d
 import { SystemUsersListItemComponent } from './system-users-list-item/system-users-list-item.component';
 import { SuccessResponse } from '../../../core/models/response/success-response.model';
 import { LoadingService } from '../../../core/services/loading/loading.service';
+import { PaginatorComponent } from '../../../shared/component/paginator/paginator.component';
+import {
+  DEFAULT_PAGINATION,
+  INITIAL_PAGE,
+  Pagination,
+} from '../../../shared/util/pagination';
 
 @Component({
   selector: 'app-system-users',
@@ -17,11 +23,14 @@ import { LoadingService } from '../../../core/services/loading/loading.service';
     SystemUsersFormComponent,
     DeleteDialogComponent,
     SystemUsersListItemComponent,
+    PaginatorComponent,
   ],
   templateUrl: './system-users.page.html',
   styleUrl: './system-users.page.scss',
 })
 export class SystemUsersPage {
+  paginator = viewChild(PaginatorComponent);
+
   users: SystemUser[] = [];
 
   userToEdit: SystemUser | null = null;
@@ -43,11 +52,22 @@ export class SystemUsersPage {
     this.list();
   }
 
-  private list() {
+  list() {
     this.loadingService.setLoading();
-    this.systemUserService.list().subscribe({
+
+    const pagination: Pagination = this.paginator()
+      ? this.paginator()!.pagination
+      : DEFAULT_PAGINATION;
+
+    this.systemUserService.list(pagination).subscribe({
       next: ({ data }: Response<SystemUser[]>) => {
-        this.users = data;
+        if (data.length > 0) {
+          this.users = data;
+        }
+        this.paginator()?.updateState({
+          hasMoreItems: data.length === pagination.pageSize,
+          hasLessItems: pagination.currentPage !== INITIAL_PAGE,
+        });
         this.loadingService.dismissLoading();
       },
       error: (err: any) => {
