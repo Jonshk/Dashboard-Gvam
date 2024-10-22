@@ -7,6 +7,11 @@ import { Group } from '../../models/response/group.model';
 import { Observable } from 'rxjs';
 import { SuccessResponse } from '../../models/response/success-response.model';
 import { EnterpriseService } from '../enterprise/enterprise.service';
+import {
+  getPaginationParams,
+  NO_PAGINATION,
+  Pagination,
+} from '../../../shared/util/pagination';
 
 @Injectable({
   providedIn: 'root',
@@ -36,8 +41,10 @@ export class GroupService {
     return this.http.patch<Response<Group>>(this.url(groupId), updateGroup);
   }
 
-  list(): Observable<Response<Group[]>> {
-    return this.http.get<Response<Group[]>>(this.url());
+  list(pagination: Pagination = NO_PAGINATION): Observable<Response<Group[]>> {
+    return this.http.get<Response<Group[]>>(this.url(), {
+      params: getPaginationParams(pagination),
+    });
   }
 
   find(groupId: number): Observable<Response<Group>> {

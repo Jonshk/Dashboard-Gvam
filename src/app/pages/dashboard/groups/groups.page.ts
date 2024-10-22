@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, viewChild } from '@angular/core';
 import { Group } from '../../../core/models/response/group.model';
 import { GroupService } from '../../../core/services/group/group.service';
 import { Response } from '../../../core/models/response/response.model';
@@ -9,6 +9,12 @@ import { LoadingService } from '../../../core/services/loading/loading.service';
 import { SuccessResponse } from '../../../core/models/response/success-response.model';
 import { DeleteDialogComponent } from '../../../shared/component/delete-dialog/delete-dialog.component';
 import { DialogComponent } from '../../../shared/component/dialog/dialog.component';
+import { PaginatorComponent } from '../../../shared/component/paginator/paginator.component';
+import {
+  DEFAULT_PAGINATION,
+  INITIAL_PAGE,
+  Pagination,
+} from '../../../shared/util/pagination';
 
 @Component({
   selector: 'app-groups',
@@ -19,11 +25,14 @@ import { DialogComponent } from '../../../shared/component/dialog/dialog.compone
     GroupListItemComponent,
     DialogComponent,
     DeleteDialogComponent,
+    PaginatorComponent,
   ],
   templateUrl: './groups.page.html',
   styleUrl: './groups.page.scss',
 })
 export class GroupsPage {
+  paginator = viewChild(PaginatorComponent);
+
   groupToEdit: Group | null = null;
   groupToDelete: Group | null = null;
 
@@ -45,11 +54,22 @@ export class GroupsPage {
     this.list();
   }
 
-  private list() {
+  list() {
     this.loadingService.setLoading();
-    this.groupService.list().subscribe({
+
+    const pagination: Pagination = this.paginator()
+      ? this.paginator()!.pagination
+      : DEFAULT_PAGINATION;
+
+    this.groupService.list(pagination).subscribe({
       next: ({ data }: Response<Group[]>) => {
-        this.groups = data;
+        if (data.length > 0) {
+          this.groups = data;
+        }
+        this.paginator()?.updateState({
+          hasMoreItems: data.length === pagination.pageSize,
+          hasLessItems: pagination.currentPage !== INITIAL_PAGE,
+        });
         this.loadingService.dismissLoading();
       },
       error: (err: any) => {

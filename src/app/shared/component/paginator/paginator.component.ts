@@ -32,6 +32,9 @@ export class PaginatorComponent {
   updateState({ hasMoreItems, hasLessItems }: UpdatePaginationState) {
     if (hasMoreItems !== undefined) {
       this.hasMoreItems = hasMoreItems;
+      if (!this.hasMoreItems) {
+        this._pagination.currentPage--;
+      }
     }
     if (hasLessItems !== undefined) {
       this.hasLessItems = hasLessItems;
