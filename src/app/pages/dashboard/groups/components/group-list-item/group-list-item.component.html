@@ -13,8 +13,11 @@
       >Ver usuarios</a
     >
     <a class="btn btn-light btn-sm" [routerLink]="[group().groupId, 'devices']"
-      >Ver dispositivos</a
-    >
+      >Ver dispositivos
+      @if (numberOfDevices > 0) {
+        ({{ numberOfDevices }})
+      }
+    </a>
     <a
       class="btn btn-light btn-sm"
       [routerLink]="[group().groupId, 'geofences']"
