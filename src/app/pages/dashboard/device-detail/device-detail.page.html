@@ -5,6 +5,14 @@
         <p>Nombre: {{ device.deviceName }}</p>
         <p>Pin de registro en app: {{ device.pin }}</p>
 
+        @if (device.deviceManufacturer) {
+          <p>Marca del dispositivo: {{ device.deviceManufacturer }}</p>
+        }
+
+        @if (device.deviceModel) {
+          <p>Modelo del dispositivo: {{ device.deviceModel }}</p>
+        }
+
         @if (device.androidVersion) {
           <p>Version de android: {{ device.androidVersion }}</p>
         }
