@@ -32,8 +32,8 @@
         }
 
         @if (device.installedApps && device.installedApps.length > 0) {
-          <p>Aplicaciones instaladas:</p>
-          <ul>
+          <p>Aplicaciones instaladas ({{ device.installedApps.length }}):</p>
+          <ul class="app-list">
             @for (installedApp of device.installedApps; track installedApp) {
               <li>{{ installedApp }}</li>
             }
