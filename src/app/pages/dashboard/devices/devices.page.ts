@@ -244,6 +244,9 @@ export class DevicesPage {
           { data: groups },
           { data: geofences },
         ]) => {
+          this.paginator()?.updateState({
+            hasMoreItems: devices.length === pagination.pageSize,
+          });
           this.devices.set(devices);
           this.policies = policies;
           this.deviceUsers = deviceUsers;
