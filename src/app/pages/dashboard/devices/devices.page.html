@@ -1,7 +1,9 @@
 <main class="container-fluid">
-  <button class="btn btn-primary me-2" (click)="createMode()">
-    Crear nuevo dispositivo
-  </button>
+  @if (groupId()) {
+    <button class="btn btn-primary me-2" (click)="createMode()">
+      Crear nuevo dispositivo
+    </button>
+  }
   <button
     class="btn btn-light"
     [disabled]="loadingService.isLoading()"
