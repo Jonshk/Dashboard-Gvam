@@ -18,6 +18,10 @@
   >
 </td>
 
+@if (device().enrolled) {
+  <td>{{ device().imei ?? "-" }}</td>
+}
+
 <td>{{ deviceUser()?.email ?? "-" }}</td>
 
 @if (!groupId()) {
@@ -25,7 +29,9 @@
 }
 
 <td>
-  <div class="d-flex gap-2 flex-wrap justify-content-center">
+  <div
+    class="d-flex flex-column gap-2 flex-wrap justify-content-center align-items-center"
+  >
     @if (device().enrolled) {
       <button
         class="btn btn-light btn-sm"

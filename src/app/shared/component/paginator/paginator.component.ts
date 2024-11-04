@@ -29,8 +29,14 @@ export class PaginatorComponent {
   }
 
   previousPage() {
-    this._pagination.currentPage--;
+    if (this._pagination.currentPage != 1) this._pagination.currentPage--;
     this.onPageChange.emit(this._pagination);
+  }
+
+  resetPagination() {
+    this._pagination = { ...DEFAULT_PAGINATION };
+    this.hasMoreItems = true;
+    this.hasLessItems = false;
   }
 
   updateState({ hasMoreItems, hasLessItems }: UpdatePaginationState) {

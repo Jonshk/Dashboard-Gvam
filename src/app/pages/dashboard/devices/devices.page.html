@@ -181,6 +181,18 @@
       </div>
     </div>
 
+    @if (showRegisteredDevices()) {
+      <div class="card-header card-no-border w-50">
+        <input
+          type="text"
+          [(ngModel)]="imeiQuery"
+          placeholder="Buscar dispositivos por imei"
+          class="form-control"
+          name="imeiQuery"
+        />
+      </div>
+    }
+
     <div class="card-body">
       <div class="table-responsive">
         <table class="tranaction-table w-100">
@@ -189,6 +201,7 @@
               <tr>
                 <th scope="col">-</th>
                 <th scope="col">Nombre del dispositivo</th>
+                <th scope="col">IMEI</th>
                 <th scope="col">Usuario</th>
                 @if (!groupId()) {
                   <th scope="col">Grupo</th>

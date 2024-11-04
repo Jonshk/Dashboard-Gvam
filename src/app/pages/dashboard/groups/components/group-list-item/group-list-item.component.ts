@@ -28,7 +28,7 @@ export class GroupListItemComponent implements OnInit {
 
   ngOnInit(): void {
     this.deviceService
-      .list(this.group().groupId, DeviceFilter.ALL, DEFAULT_PAGINATION)
+      .list(this.group().groupId, DeviceFilter.ALL, '', DEFAULT_PAGINATION)
       .subscribe({
         next: ({ data }: Response<Device[]>) => {
           this.numberOfDevices = data.length;

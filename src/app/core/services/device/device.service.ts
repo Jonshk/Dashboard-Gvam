@@ -73,19 +73,29 @@ export class DeviceService {
   list(
     groupId: number,
     filter: DeviceFilter,
+    imeiQuery: string,
     pagination: Pagination,
   ): Observable<Response<Device[]>> {
     return this.http.get<Response<Device[]>>(this.url(groupId), {
-      params: { ...getPaginationParams(pagination), filter: filter },
+      params: {
+        ...getPaginationParams(pagination),
+        filter: filter,
+        imeiQuery: imeiQuery !== undefined ? imeiQuery : '',
+      },
     });
   }
 
   listAll(
     filter: DeviceFilter,
+    imeiQuery: string,
     pagination: Pagination,
   ): Observable<Response<Device[]>> {
     return this.http.get<Response<Device[]>>(this.urlAll(), {
-      params: { ...getPaginationParams(pagination), filter: filter },
+      params: {
+        ...getPaginationParams(pagination),
+        filter: filter,
+        imeiQuery: imeiQuery !== undefined ? imeiQuery : '',
+      },
     });
   }
 

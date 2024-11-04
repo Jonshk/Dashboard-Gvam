@@ -3,6 +3,7 @@ import {
   computed,
   effect,
   input,
+  model,
   signal,
   viewChild,
 } from '@angular/core';
@@ -30,6 +31,7 @@ import {
   FormControl,
   Validators,
   ReactiveFormsModule,
+  FormsModule,
 } from '@angular/forms';
 import {
   DeviceCommand,
@@ -66,6 +68,7 @@ import { DeviceFilter } from '../../../core/enums/device-filter';
     DeviceListItemComponent,
     DialogComponent,
     DeleteDialogComponent,
+    FormsModule,
     ReactiveFormsModule,
     NgTemplateOutlet,
     DeviceCustomCommandFormComponent,
@@ -94,6 +97,53 @@ export class DevicesPage {
   );
 
   selectedDevices = computed(() => this.devices().filter((d) => d.selected));
+
+  imeiQuery = model<string>('');
+  private imeiQueryTimeout: any = null;
+  private imeiQueryChange = effect(() => {
+    if (this.imeiQuery() !== undefined) {
+      clearTimeout(this.imeiQueryTimeout);
+      this.imeiQueryTimeout = setTimeout(() => {
+        this.paginator()?.resetPagination();
+        this.searchDevice();
+      }, 500);
+    }
+  });
+
+  private searchDevice() {
+    const pagination = this.paginator()!.pagination;
+
+    if (this.groupId()) {
+      this.deviceService
+        .list(this.groupId(), this.deviceFilter(), this.imeiQuery(), pagination)
+        .subscribe({
+          next: ({ data }: Response<Device[]>) => {
+            this.paginator()?.updateState({
+              hasMoreItems: data.length === pagination.pageSize,
+            });
+            this.devices.set(data);
+            this.loadingService.dismissLoading();
+          },
+          error: (err: any) => {
+            console.error('error:', err);
+            this.loadingService.dismissLoading();
+          },
+        });
+    } else {
+      this.deviceService
+        .listAll(this.deviceFilter(), this.imeiQuery(), pagination)
+        .subscribe({
+          next: ({ data }: Response<Device[]>) => {
+            this.devices.set(data);
+            this.loadingService.dismissLoading();
+          },
+          error: (err: any) => {
+            console.error('error:', err);
+            this.loadingService.dismissLoading();
+          },
+        });
+    }
+  }
 
   showRegisteredDevices = signal(true);
   private deviceFilter = computed(() =>
@@ -183,6 +233,7 @@ export class DevicesPage {
       const $devices = this.deviceService.list(
         this.groupId(),
         this.deviceFilter(),
+        '',
         pagination,
       );
       const $policies = this.policyService.list(this.groupId());
@@ -223,6 +274,7 @@ export class DevicesPage {
     } else {
       const $devices = this.deviceService.listAll(
         this.deviceFilter(),
+        '',
         pagination,
       );
       const $policies = this.policyService.listAll();
@@ -266,8 +318,17 @@ export class DevicesPage {
   loadPaginatedDevices(pagination: Pagination) {
     this.loadingService.setLoading();
     const $devices = this.groupId()
-      ? this.deviceService.list(this.groupId(), this.deviceFilter(), pagination)
-      : this.deviceService.listAll(this.deviceFilter(), pagination);
+      ? this.deviceService.list(
+          this.groupId(),
+          this.deviceFilter(),
+          this.imeiQuery(),
+          pagination,
+        )
+      : this.deviceService.listAll(
+          this.deviceFilter(),
+          this.imeiQuery(),
+          pagination,
+        );
 
     $devices.subscribe({
       next: ({ data }: Response<Device[]>) => {
@@ -294,7 +355,7 @@ export class DevicesPage {
 
     if (this.groupId()) {
       this.deviceService
-        .list(this.groupId(), this.deviceFilter(), pagination)
+        .list(this.groupId(), this.deviceFilter(), this.imeiQuery(), pagination)
         .subscribe({
           next: ({ data }: Response<Device[]>) => {
             this.devices.set(data);
@@ -306,16 +367,18 @@ export class DevicesPage {
           },
         });
     } else {
-      this.deviceService.listAll(this.deviceFilter(), pagination).subscribe({
-        next: ({ data }: Response<Device[]>) => {
-          this.devices.set(data);
-          this.loadingService.dismissLoading();
-        },
-        error: (err: any) => {
-          console.error('error:', err);
-          this.loadingService.dismissLoading();
-        },
-      });
+      this.deviceService
+        .listAll(this.deviceFilter(), this.imeiQuery(), pagination)
+        .subscribe({
+          next: ({ data }: Response<Device[]>) => {
+            this.devices.set(data);
+            this.loadingService.dismissLoading();
+          },
+          error: (err: any) => {
+            console.error('error:', err);
+            this.loadingService.dismissLoading();
+          },
+        });
     }
   }
 
