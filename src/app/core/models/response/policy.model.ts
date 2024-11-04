@@ -1,4 +1,5 @@
 import { AutoUpdateMode } from '../../enums/auto-update-mode';
+import { DeveloperSettings } from '../../enums/developer-settings';
 import { InstallType } from '../../enums/install-type';
 import { LocationMode } from '../../enums/location-mode';
 import { PermissionPolicy } from '../../enums/permission-policy';
@@ -21,6 +22,7 @@ export interface Policy {
   installAppsDisabled?: boolean;
   isDefault?: boolean;
   groupIds?: number[];
+  developerSettings: DeveloperSettings;
 }
 export interface WifiSsidPolicy {
   wifiSsidPolicyType: WifiSsidPolicyType;

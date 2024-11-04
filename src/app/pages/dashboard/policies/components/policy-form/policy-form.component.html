@@ -334,6 +334,24 @@
     </label>
   </div>
 
+  <label>
+    Opciones de desarrollador
+    <select
+      class="form-select"
+      name="developerSettings"
+      formControlName="developerSettings"
+    >
+      @for (
+        developerSettings of developerSettingsKeys;
+        track developerSettings
+      ) {
+        <option [value]="DeveloperSettings[developerSettings]">
+          {{ DeveloperSettingsDescription[developerSettings] }}
+        </option>
+      }
+    </select>
+  </label>
+
   <button
     type="submit"
     class="btn btn-primary w-100"

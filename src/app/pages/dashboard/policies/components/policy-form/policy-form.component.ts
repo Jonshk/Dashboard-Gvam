@@ -42,6 +42,10 @@ import { Policy } from '../../../../../core/models/response/policy.model';
 import { Response } from '../../../../../core/models/response/response.model';
 import { LoadingService } from '../../../../../core/services/loading/loading.service';
 import { Group } from '../../../../../core/models/response/group.model';
+import {
+  DeveloperSettings,
+  DeveloperSettingsDescription,
+} from '../../../../../core/enums/developer-settings';
 
 @Component({
   selector: 'app-policy-form',
@@ -79,6 +83,7 @@ export class PolicyFormComponent {
     usbDataAccess: UsbDataAccess.UNSPECIFIED,
     factoryResetDisabled: false,
     installAppsDisabled: false,
+    developerSettings: DeveloperSettings.UNSPECIFIED,
   };
 
   policyForm = this.formBuilder.group({
@@ -107,6 +112,7 @@ export class PolicyFormComponent {
     usbDataAccess: [this.defaultFormValues.usbDataAccess],
     factoryResetDisabled: [this.defaultFormValues.factoryResetDisabled],
     installAppsDisabled: [this.defaultFormValues.installAppsDisabled],
+    developerSettings: [this.defaultFormValues.developerSettings],
   });
 
   private setEditForm = effect(() => {
@@ -191,6 +197,11 @@ export class PolicyFormComponent {
       this.policyForm.controls.installAppsDisabled.setValue(
         this.editPolicy()!.installAppsDisabled ??
           this.defaultFormValues.installAppsDisabled,
+      );
+
+      this.policyForm.controls.developerSettings.setValue(
+        this.editPolicy()!.developerSettings ??
+          this.defaultFormValues.developerSettings,
       );
     }
   });
@@ -369,5 +380,11 @@ export class PolicyFormComponent {
   readonly UsbDataAccessDescription = UsbDataAccessDescription;
   readonly usbDataAccesKeys = Object.keys(UsbDataAccess) as [
     keyof typeof UsbDataAccess,
+  ];
+
+  readonly DeveloperSettings = DeveloperSettings;
+  readonly DeveloperSettingsDescription = DeveloperSettingsDescription;
+  readonly developerSettingsKeys = Object.keys(DeveloperSettings) as [
+    keyof typeof DeveloperSettings,
   ];
 }
