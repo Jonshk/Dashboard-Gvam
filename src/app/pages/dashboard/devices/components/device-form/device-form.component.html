@@ -30,7 +30,7 @@
     <label>
       Usuario del dispositivo
       <select class="form-select" name="user" formControlName="user">
-        @for (deviceUser of groupDeviceUsers; track deviceUser.deviceUserId) {
+        @for (deviceUser of deviceUsers(); track deviceUser.deviceUserId) {
           <option [value]="deviceUser.deviceUserId">
             {{ deviceUser.email }}
           </option>

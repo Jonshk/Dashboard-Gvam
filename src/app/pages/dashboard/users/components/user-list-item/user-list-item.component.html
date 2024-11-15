@@ -6,15 +6,6 @@
     <span class="col">
       {{ user().email }}
     </span>
-    <span class="col">
-      {{ user().policyName }}
-    </span>
-
-    @if (!groupId()) {
-      <span class="col">
-        {{ getGroupName(user().groupId) }}
-      </span>
-    }
 
     <div class="col-3 d-flex gap-2 flex-wrap justify-content-center">
       <button

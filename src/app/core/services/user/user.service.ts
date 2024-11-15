@@ -19,11 +19,7 @@ import {
 export class UserService {
   private enterpriseId: string;
 
-  private url(groupId: number, path: number | null = null) {
-    return `${environment.apiUrl}/enterprises/${this.enterpriseId}/groups/${groupId}/users${path ? '/' + path : ''}`;
-  }
-
-  private urlAll(path: number | null = null) {
+  private url(path: number | null = null) {
     return `${environment.apiUrl}/enterprises/${this.enterpriseId}/users${path ? '/' + path : ''}`;
   }
 
@@ -35,49 +31,30 @@ export class UserService {
   }
 
   create(
-    groupId: number,
     createDeviceUser: CreateDeviceUserRequest,
   ): Observable<Response<DeviceUser>> {
-    return this.http.post<Response<DeviceUser>>(
-      this.url(groupId),
-      createDeviceUser,
-    );
+    return this.http.post<Response<DeviceUser>>(this.url(), createDeviceUser);
   }
 
   patch(
-    groupId: number,
     deviceUserId: number,
     createDeviceUser: CreateDeviceUserRequest,
   ): Observable<Response<DeviceUser>> {
     return this.http.patch<Response<DeviceUser>>(
-      this.url(groupId, deviceUserId),
+      this.url(deviceUserId),
       createDeviceUser,
     );
   }
 
-  listAll(
-    pagination: Pagination = NO_PAGINATION,
-  ): Observable<Response<DeviceUser[]>> {
-    return this.http.get<Response<DeviceUser[]>>(this.urlAll(), {
-      params: getPaginationParams(pagination),
-    });
-  }
-
   list(
-    groupId: number,
     pagination: Pagination = NO_PAGINATION,
   ): Observable<Response<DeviceUser[]>> {
-    return this.http.get<Response<DeviceUser[]>>(this.url(groupId), {
+    return this.http.get<Response<DeviceUser[]>>(this.url(), {
       params: getPaginationParams(pagination),
     });
   }
 
-  delete(
-    groupId: number,
-    deviceUserId: number,
-  ): Observable<Response<SuccessResponse>> {
-    return this.http.delete<Response<SuccessResponse>>(
-      this.url(groupId, deviceUserId),
-    );
+  delete(deviceUserId: number): Observable<Response<SuccessResponse>> {
+    return this.http.delete<Response<SuccessResponse>>(this.url(deviceUserId));
   }
 }

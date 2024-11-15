@@ -237,7 +237,7 @@ export class DevicesPage {
         pagination,
       );
       const $policies = this.policyService.list(this.groupId());
-      const $deviceUsers = this.userService.list(this.groupId());
+      const $deviceUsers = this.userService.list();
       const $groups = this.groupService.list();
       const $geofences = this.geofenceService.list(this.groupId());
 
@@ -278,7 +278,7 @@ export class DevicesPage {
         pagination,
       );
       const $policies = this.policyService.listAll();
-      const $deviceUsers = this.userService.listAll();
+      const $deviceUsers = this.userService.list();
       const $groups = this.groupService.list();
       const $geofences = this.geofenceService.listAll();
 

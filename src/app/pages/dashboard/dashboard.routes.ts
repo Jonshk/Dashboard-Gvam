@@ -106,16 +106,6 @@ export const dashboardRoutes: Routes = [
     canActivate: [isLoggedGuard, hasEnterpriseGuard],
   },
   {
-    path: 'groups/:groupId/users',
-    data: {
-      title: 'Usuarios',
-      breadcrumb: 'Usuarios',
-    },
-    component: UsersPage,
-    canMatch: [isIdNumberGuard(1)],
-    canActivate: [isLoggedGuard, hasEnterpriseGuard],
-  },
-  {
     path: 'groups/:groupId/geofences',
     data: {
       title: 'Geovallas',

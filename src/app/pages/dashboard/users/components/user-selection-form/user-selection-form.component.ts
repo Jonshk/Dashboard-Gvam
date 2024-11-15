@@ -8,7 +8,6 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { CustomValidators } from '../../../../../shared/util/custom-validators';
 import { CreateDeviceUserRequest } from '../../../../../core/models/request/create-device-user-request.model';
 import { Response } from '../../../../../core/models/response/response.model';
 import { PolicyService } from '../../../../../core/services/policy/policy.service';
@@ -28,8 +27,7 @@ export class UserSelectionFormComponent {
   readonly editUser = input<DeviceUser | null>(null);
   policies: Policy[] = [];
   users: DeviceUser[] = [];
-  
-  
+
   user = output<DeviceUser>();
 
   private userService = inject(UserService);
@@ -40,36 +38,34 @@ export class UserSelectionFormComponent {
     user: '',
   };
 
-  userForm = new FormGroup(
-    {
-      user: new FormControl(this.defaultFormValues.user, [
-        Validators.required,
-      ]),
-    },
-  );
+  userForm = new FormGroup({
+    user: new FormControl(this.defaultFormValues.user, [Validators.required]),
+  });
 
   private getUsers = effect(async () => {
     //list all users
-    await this.userService.listAll().subscribe({
+    await this.userService.list().subscribe({
       next: ({ data }: Response<DeviceUser[]>) => {
         this.users = data;
-        console.log(this.users)
-        console.log(this.groupUsers())
+        console.log(this.users);
+        console.log(this.groupUsers());
         //Exclude those that are already in the group
-        var newUsers: DeviceUser[] = [];  
+        var newUsers: DeviceUser[] = [];
 
-        this.users.forEach(user => {
-          if(!this.groupUsers().some(e => user.deviceUserId === e.deviceUserId)){
-            newUsers.push(user)
+        this.users.forEach((user) => {
+          if (
+            !this.groupUsers().some((e) => user.deviceUserId === e.deviceUserId)
+          ) {
+            newUsers.push(user);
           }
         });
-        
+
         this.users = newUsers;
       },
       error: (err: any) => {
         console.error('error:', err);
       },
-    });        
+    });
   });
 
   private setUserForm = effect(() => {
@@ -91,7 +87,9 @@ export class UserSelectionFormComponent {
 
     this.loadingService.showLoading();
     //We get the selected user
-    const userToAdd = this.users.find((el: DeviceUser) => el.email === this.userForm.value.user);
+    const userToAdd = this.users.find(
+      (el: DeviceUser) => el.email === this.userForm.value.user,
+    );
 
     console.log(userToAdd);
 
@@ -99,7 +97,7 @@ export class UserSelectionFormComponent {
   }
 
   private AddDeviceUser(newDeviceUser: CreateDeviceUserRequest) {
-    this.userService.create(this.groupId(), newDeviceUser).subscribe({
+    this.userService.create(newDeviceUser).subscribe({
       next: ({ data }: Response<DeviceUser>) => {
         this.user.emit(data);
         this.resetForm();

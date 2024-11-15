@@ -42,7 +42,6 @@ export class DeviceFormComponent {
   deviceName: string = '';
   pin: string | null = null;
   registerQr: SafeResourceUrl = '';
-  groupDeviceUsers: DeviceUser[] = [];
 
   deviceForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
@@ -63,35 +62,12 @@ export class DeviceFormComponent {
     return (control: AbstractControl): ValidationErrors | null => {
       const group = control.value;
       if (group && group != -1) {
-        this.updateDeviceUsers(group);
         this.deviceForm.controls.user.setValue(
-          this.groupDeviceUsers[0]?.deviceUserId ?? -1,
+          this.deviceUsers()[0]?.deviceUserId ?? -1,
         );
       }
       return null;
     };
-  }
-
-  private initializeDeviceUsers = effect(() => {
-    this.updateDeviceUsers();
-  });
-
-  private updateDeviceUsers(group?: number) {
-    if (this.groupId()) return (this.groupDeviceUsers = this.deviceUsers());
-
-    if (this.editDevice()) {
-      return (this.groupDeviceUsers = this.deviceUsers().filter(
-        (u) => u.groupId === this.editDevice()!.groupId,
-      ));
-    }
-
-    if (group) {
-      return (this.groupDeviceUsers = this.deviceUsers().filter(
-        (u) => u.groupId == group,
-      ));
-    }
-
-    return (this.groupDeviceUsers = []);
   }
 
   private clearView = effect(() => {

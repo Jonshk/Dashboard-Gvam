@@ -1,6 +1,5 @@
-import { Component, effect, input, signal, viewChild } from '@angular/core';
+import { Component, effect, signal, viewChild } from '@angular/core';
 import { UserFormComponent } from './components/user-form/user-form.component';
-import { UserSelectionFormComponent } from './components/user-selection-form/user-selection-form.component';
 import { UserListItemComponent } from './components/user-list-item/user-list-item.component';
 import { DeviceUser } from '../../../core/models/response/device-user.model';
 import { UserService } from '../../../core/services/user/user.service';
@@ -25,7 +24,6 @@ import { PaginatorComponent } from '../../../shared/component/paginator/paginato
   imports: [
     DialogComponent,
     UserFormComponent,
-    UserSelectionFormComponent,
     UserListItemComponent,
     DeleteDialogComponent,
     PaginatorComponent,
@@ -34,8 +32,6 @@ import { PaginatorComponent } from '../../../shared/component/paginator/paginato
   styleUrl: './users.page.scss',
 })
 export class UsersPage {
-  readonly groupId = input.required<number>();
-
   paginator = viewChild(PaginatorComponent);
 
   users: DeviceUser[] = [];
@@ -75,9 +71,7 @@ export class UsersPage {
       : DEFAULT_PAGINATION;
 
     const $groups = this.groupService.list();
-    const $users = this.groupId()
-      ? this.userService.list(this.groupId(), pagination)
-      : this.userService.listAll(pagination);
+    const $users = this.userService.list(pagination);
 
     forkJoin([$groups, $users]).subscribe({
       next: ([{ data: groups }, { data: users }]) => {
@@ -98,9 +92,7 @@ export class UsersPage {
 
   loadPaginatedUsers(pagination: Pagination) {
     this.loadingService.setLoading();
-    const $users = this.groupId()
-      ? this.userService.list(this.groupId(), pagination)
-      : this.userService.listAll(pagination);
+    const $users = this.userService.list(pagination);
 
     $users.subscribe({
       next: ({ data }: Response<DeviceUser[]>) => {
@@ -174,24 +166,21 @@ export class UsersPage {
     if (!shouldDelete || !this.userToDelete) return;
 
     this.loadingService.setLoading();
-    const groupId = this.groupId() ?? this.userToDelete.groupId;
-    this.userService
-      .delete(groupId, this.userToDelete!.deviceUserId)
-      .subscribe({
-        next: ({ data }: Response<SuccessResponse>) => {
-          if (data.success) {
-            this.users = this.users.filter(
-              (u) => u.deviceUserId !== this.userToDelete!.deviceUserId,
-            );
-            this.hideDeleteDialog();
-          }
-          this.loadingService.dismissLoading();
-        },
-        error: (err: any) => {
-          console.error('error:', err);
-          this.loadingService.dismissLoading();
+    this.userService.delete(this.userToDelete!.deviceUserId).subscribe({
+      next: ({ data }: Response<SuccessResponse>) => {
+        if (data.success) {
+          this.users = this.users.filter(
+            (u) => u.deviceUserId !== this.userToDelete!.deviceUserId,
+          );
           this.hideDeleteDialog();
-        },
-      });
+        }
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+        this.hideDeleteDialog();
+      },
+    });
   }
 }

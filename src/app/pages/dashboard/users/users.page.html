@@ -14,8 +14,6 @@
 
   <app-dialog [open]="showDialog()" (openChange)="hideDialog()">
     <app-user-form
-      [groupId]="groupId()"
-      [groups]="groups"
       [isVisible]="showDialog()"
       [editUser]="userToEdit"
       (user)="addUser($event)"
@@ -48,8 +46,6 @@
     @for (user of users; track user.deviceUserId) {
       <li class="list-group-item">
         <app-user-list-item
-          [groupId]="groupId()"
-          [groups]="groups"
           [user]="user"
           (onEditUser)="editUser($event)"
           (onDeleteUser)="deleteUser($event)"

@@ -2,6 +2,4 @@ export interface DeviceUser {
   deviceUserId: number;
   name: string;
   email: string;
-  policyName: string;
-  groupId: number;
 }
