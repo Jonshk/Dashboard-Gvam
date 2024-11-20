@@ -13,7 +13,11 @@
 <td>
   <a
     class="fw-bold text-underline"
-    [routerLink]="['/groups', device().groupId, 'devices', device().deviceId]"
+    [routerLink]="
+      device().groupId
+        ? ['/groups', device().groupId, 'devices', device().deviceId]
+        : [device().deviceId]
+    "
     >{{ device().deviceName }}</a
   >
 </td>
@@ -25,7 +29,13 @@
 <td>{{ deviceUser()?.email ?? "-" }}</td>
 
 @if (!groupId()) {
-  <td>{{ getGroupName(device().groupId) }}</td>
+  <td>
+    @if (device().groupId) {
+      {{ getGroupName(device().groupId) }}
+    } @else {
+      -
+    }
+  </td>
 }
 
 <td>
@@ -60,22 +70,26 @@
 
 @if (device().enrolled) {
   <td>
-    <form [formGroup]="applyPolicyForm" (ngSubmit)="applyPolicy()">
-      <select class="form-select" name="name" formControlName="name">
-        @for (policy of groupPolicies(); track policy.name) {
-          <option [value]="policy.name">
-            {{ policy.name }}
-          </option>
-        }
-      </select>
-      <button
-        class="btn btn-warning btn-sm"
-        type="submit"
-        [disabled]="loadingService.isLoading()"
-      >
-        Aplicar política
-      </button>
-    </form>
+    @if (device().groupId) {
+      <form [formGroup]="applyPolicyForm" (ngSubmit)="applyPolicy()">
+        <select class="form-select" name="name" formControlName="name">
+          @for (policy of groupPolicies(); track policy.name) {
+            <option [value]="policy.name">
+              {{ policy.name }}
+            </option>
+          }
+        </select>
+        <button
+          class="btn btn-warning btn-sm"
+          type="submit"
+          [disabled]="loadingService.isLoading()"
+        >
+          Aplicar política
+        </button>
+      </form>
+    } @else {
+      -
+    }
   </td>
   <td>
     <form [formGroup]="sendCommandForm" (ngSubmit)="sendCommand()">

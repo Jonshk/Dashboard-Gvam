@@ -16,7 +16,7 @@
 
     @if (!groupId() && !editDevice()) {
       <label>
-        Grupo
+        Grupo (Opcional)
         <select class="form-select" name="group" formControlName="group">
           @for (group of groups(); track group.groupId) {
             <option [value]="group.groupId">
@@ -28,7 +28,7 @@
     }
 
     <label>
-      Usuario del dispositivo
+      Usuario del dispositivo (Opcional)
       <select class="form-select" name="user" formControlName="user">
         @for (deviceUser of deviceUsers(); track deviceUser.deviceUserId) {
           <option [value]="deviceUser.deviceUserId">
@@ -63,5 +63,8 @@
       día.
     </small>
     <small>El PIN podrá ser consultado en los detalles del dispositivo.</small>
+    <button class="btn btn-primary w-75 mt-2" (click)="createNewDevice()">
+      Crear nuevo dispositivo
+    </button>
   </div>
 }

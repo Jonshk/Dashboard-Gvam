@@ -1,8 +1,8 @@
 import { Component, effect, inject, input } from '@angular/core';
-import { DeviceService } from '../../../core/services/device/device.service';
-import { LoadingService } from '../../../core/services/loading/loading.service';
 import { DeviceDetail } from '../../../core/models/response/device-detail.model';
 import { Response } from '../../../core/models/response/response.model';
+import { DeviceService } from '../../../core/services/device/device.service';
+import { LoadingService } from '../../../core/services/loading/loading.service';
 
 @Component({
   selector: 'app-device-detail',
@@ -12,7 +12,7 @@ import { Response } from '../../../core/models/response/response.model';
   styleUrl: './device-detail.page.scss',
 })
 export class DeviceDetailPage {
-  readonly groupId = input.required<number>();
+  readonly groupId = input<number>();
   readonly deviceId = input.required<number>();
 
   private deviceService = inject(DeviceService);
@@ -23,7 +23,7 @@ export class DeviceDetailPage {
   private getDevice = effect(
     () => {
       this.loadingService.setLoading();
-      this.deviceService.find(this.groupId(), this.deviceId()).subscribe({
+      this.deviceService.find(this.deviceId()).subscribe({
         next: ({ data }: Response<DeviceDetail>) => {
           this.device = data;
           this.loadingService.dismissLoading();

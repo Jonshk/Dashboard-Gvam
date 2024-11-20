@@ -1,25 +1,25 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../../environments/environment';
-import { Response } from '../../models/response/response.model';
-import { DeviceDetail } from '../../models/response/device-detail.model';
 import { Observable } from 'rxjs';
-import { EnterpriseService } from '../enterprise/enterprise.service';
-import { EnrollDeviceRequest } from '../../models/request/enroll-device.model';
-import { EnrollDeviceResponse } from '../../models/response/enroll-device-response.model';
-import { RegisterDevice } from '../../models/response/register-device.model';
-import { SuccessResponse } from '../../models/response/success-response.model';
-import { ApplyDevicePolicyRequest } from '../../models/request/apply-device-policy-request.model';
-import { Device } from '../../models/response/device.model';
-import { DeviceCommandRequest } from '../../models/request/device-command-request.model';
-import { MigrateDeviceRequest } from '../../models/request/migrate-device-request';
-import { DeviceCustomCommandRequest } from '../../models/request/device-custom-command-request.model';
-import { CobrowseToken } from '../../models/response/cobrowse-token.model';
+import { environment } from '../../../../environments/environment';
 import {
   getPaginationParams,
   Pagination,
 } from '../../../shared/util/pagination';
 import { DeviceFilter } from '../../enums/device-filter';
+import { ApplyDevicePolicyRequest } from '../../models/request/apply-device-policy-request.model';
+import { DeviceCommandRequest } from '../../models/request/device-command-request.model';
+import { DeviceCustomCommandRequest } from '../../models/request/device-custom-command-request.model';
+import { EnrollDeviceRequest } from '../../models/request/enroll-device.model';
+import { MigrateDeviceRequest } from '../../models/request/migrate-device-request';
+import { CobrowseToken } from '../../models/response/cobrowse-token.model';
+import { DeviceDetail } from '../../models/response/device-detail.model';
+import { Device } from '../../models/response/device.model';
+import { EnrollDeviceResponse } from '../../models/response/enroll-device-response.model';
+import { RegisterDevice } from '../../models/response/register-device.model';
+import { Response } from '../../models/response/response.model';
+import { SuccessResponse } from '../../models/response/success-response.model';
+import { EnterpriseService } from '../enterprise/enterprise.service';
 
 @Injectable({
   providedIn: 'root',
@@ -43,31 +43,30 @@ export class DeviceService {
   }
 
   enroll(
-    groupId: number,
     registerDevice: EnrollDeviceRequest,
   ): Observable<Response<EnrollDeviceResponse>> {
     return this.http.post<Response<EnrollDeviceResponse>>(
-      this.url(groupId, 'enroll'),
+      this.urlAll('enroll'),
       registerDevice,
     );
   }
 
   update(
-    groupId: number,
     deviceId: number,
     registerDevice: EnrollDeviceRequest,
   ): Observable<Response<Device>> {
     return this.http.patch<Response<Device>>(
-      this.url(groupId, deviceId),
+      this.urlAll(deviceId),
       registerDevice,
     );
   }
 
-  register(groupId: number): Observable<Response<RegisterDevice>> {
-    return this.http.post<Response<RegisterDevice>>(
-      this.url(groupId, 'register'),
-      {},
-    );
+  register(groupId: number | undefined): Observable<Response<RegisterDevice>> {
+    const url =
+      groupId !== undefined
+        ? this.url(groupId, 'register')
+        : this.urlAll('register');
+    return this.http.post<Response<RegisterDevice>>(url, {});
   }
 
   list(
@@ -99,19 +98,17 @@ export class DeviceService {
     });
   }
 
-  find(groupId: number, deviceId: number): Observable<Response<DeviceDetail>> {
-    return this.http.get<Response<DeviceDetail>>(this.url(groupId, deviceId));
+  find(deviceId: number): Observable<Response<DeviceDetail>> {
+    return this.http.get<Response<DeviceDetail>>(this.urlAll(deviceId));
   }
 
   delete(
-    groupId: number,
     deviceId: number,
     enrolled: boolean,
   ): Observable<Response<SuccessResponse>> {
-    return this.http.delete<Response<SuccessResponse>>(
-      this.url(groupId, deviceId),
-      { params: { enrolled } },
-    );
+    return this.http.delete<Response<SuccessResponse>>(this.urlAll(deviceId), {
+      params: { enrolled },
+    });
   }
 
   applyPolicy(
@@ -126,44 +123,38 @@ export class DeviceService {
   }
 
   sendCommand(
-    groupId: number,
     deviceId: number,
     deviceCommandRequest: DeviceCommandRequest,
   ): Observable<Response<SuccessResponse>> {
     return this.http.post<Response<SuccessResponse>>(
-      this.url(groupId, deviceId + '/command'),
+      this.urlAll(deviceId + '/command'),
       deviceCommandRequest,
     );
   }
 
   sendCustomCommand(
-    groupId: number,
     deviceId: number,
     deviceCustomCommandRequest: DeviceCustomCommandRequest,
   ): Observable<Response<SuccessResponse>> {
     return this.http.post<Response<SuccessResponse>>(
-      this.url(groupId, deviceId + '/command/custom'),
+      this.urlAll(deviceId + '/command/custom'),
       deviceCustomCommandRequest,
     );
   }
 
   migrate(
-    groupId: number,
     deviceId: number,
     migrateDeviceRequest: MigrateDeviceRequest,
   ): Observable<Response<SuccessResponse>> {
     return this.http.post<Response<SuccessResponse>>(
-      this.url(groupId, deviceId + '/migrate'),
+      this.urlAll(deviceId + '/migrate'),
       migrateDeviceRequest,
     );
   }
 
-  getCowbroseToken(
-    groupId: number,
-    deviceId: number,
-  ): Observable<Response<CobrowseToken>> {
+  getCowbroseToken(deviceId: number): Observable<Response<CobrowseToken>> {
     return this.http.get<Response<CobrowseToken>>(
-      this.url(groupId, deviceId + '/remote-control/token'),
+      this.urlAll(deviceId + '/remote-control/token'),
     );
   }
 }

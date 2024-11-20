@@ -1,17 +1,17 @@
 import { Routes } from '@angular/router';
 import { isLoggedGuard } from '../../core/guards/auth.guard';
 import { hasEnterpriseGuard } from '../../core/guards/has-enterprise.guard';
+import { isAdminGuard } from '../../core/guards/is-admin-guard';
 import { isIdNumberGuard } from '../../core/guards/is-id-number.guard';
+import { ApplicationsPage } from './applications/applications.page';
 import { DeviceDetailPage } from './device-detail/device-detail.page';
 import { DevicesPage } from './devices/devices.page';
 import { EnterprisePage } from './enterprise/enterprise.page';
+import { GeofencesPages } from './geofences/geofences.pages';
 import { GroupsPage } from './groups/groups.page';
 import { PoliciesPage } from './policies/policies.page';
-import { UsersPage } from './users/users.page';
-import { ApplicationsPage } from './applications/applications.page';
-import { GeofencesPages } from './geofences/geofences.pages';
 import { SystemUsersPage } from './system-users/system-users.page';
-import { isAdminGuard } from '../../core/guards/is-admin-guard';
+import { UsersPage } from './users/users.page';
 
 export const dashboardRoutes: Routes = [
   {
@@ -65,6 +65,16 @@ export const dashboardRoutes: Routes = [
       title: 'Dispositivos',
     },
     component: DevicesPage,
+    canActivate: [isLoggedGuard, hasEnterpriseGuard],
+  },
+  {
+    path: 'devices/:deviceId',
+    data: {
+      title: 'Detalle del dispositivo',
+      breadcrumb: 'Detalle del dispositivo',
+    },
+    component: DeviceDetailPage,
+    canMatch: [isIdNumberGuard(1)],
     canActivate: [isLoggedGuard, hasEnterpriseGuard],
   },
   {

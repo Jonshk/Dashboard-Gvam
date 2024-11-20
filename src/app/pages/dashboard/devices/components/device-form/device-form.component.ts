@@ -1,22 +1,19 @@
 import { Component, effect, inject, input, output } from '@angular/core';
 import {
-  AbstractControl,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { EnrollDeviceRequest } from '../../../../../core/models/request/enroll-device.model';
-import { Device } from '../../../../../core/models/response/device.model';
-import { DeviceService } from '../../../../../core/services/device/device.service';
-import { Response } from '../../../../../core/models/response/response.model';
-import { EnrollDeviceResponse } from '../../../../../core/models/response/enroll-device-response.model';
-import { LoadingService } from '../../../../../core/services/loading/loading.service';
 import { DeviceUser } from '../../../../../core/models/response/device-user.model';
+import { Device } from '../../../../../core/models/response/device.model';
+import { EnrollDeviceResponse } from '../../../../../core/models/response/enroll-device-response.model';
 import { Group } from '../../../../../core/models/response/group.model';
+import { Response } from '../../../../../core/models/response/response.model';
+import { DeviceService } from '../../../../../core/services/device/device.service';
+import { LoadingService } from '../../../../../core/services/loading/loading.service';
 
 @Component({
   selector: 'app-device-form',
@@ -45,30 +42,9 @@ export class DeviceFormComponent {
 
   deviceForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
-    user: new FormControl(-1, [Validators.required, Validators.min(0)]),
+    user: new FormControl(-1),
     group: new FormControl(-1),
   });
-
-  private updateFormValidator = effect(() => {
-    const validators = [Validators.required, this.deviceUsersValidator()];
-    if (this.groupId() || this.editDevice()) {
-      this.deviceForm.controls.group.removeValidators(validators);
-    } else {
-      this.deviceForm.controls.group.addValidators(validators);
-    }
-  });
-
-  private deviceUsersValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const group = control.value;
-      if (group && group != -1) {
-        this.deviceForm.controls.user.setValue(
-          this.deviceUsers()[0]?.deviceUserId ?? -1,
-        );
-      }
-      return null;
-    };
-  }
 
   private clearView = effect(() => {
     if (this.visible()) {
@@ -106,7 +82,19 @@ export class DeviceFormComponent {
 
     const device: EnrollDeviceRequest = {
       deviceName: this.deviceForm.value.name!,
-      deviceUserId: Number(this.deviceForm.value.user),
+      deviceUserId:
+        this.deviceForm.value.user !== undefined &&
+        this.deviceForm.value.user !== null &&
+        this.deviceForm.value.user > -1
+          ? Number(this.deviceForm.value.user)
+          : null,
+      groupId: this.groupId()
+        ? this.groupId()
+        : this.deviceForm.value.group !== undefined &&
+            this.deviceForm.value.group !== null &&
+            this.deviceForm.value.group > -1
+          ? Number(this.deviceForm.value.group)
+          : null,
     };
 
     this.deviceName = device.deviceName;
@@ -120,9 +108,7 @@ export class DeviceFormComponent {
   }
 
   private enrollDevice(registerDevice: EnrollDeviceRequest) {
-    const groupId = this.groupId() ?? this.deviceForm.value.group;
-
-    this.deviceService.enroll(groupId, registerDevice).subscribe({
+    this.deviceService.enroll(registerDevice).subscribe({
       next: ({ data }: Response<EnrollDeviceResponse>) => {
         this.pin = data.pin;
         this.registerQr = this.domSanitizer.bypassSecurityTrustResourceUrl(
@@ -147,10 +133,8 @@ export class DeviceFormComponent {
   }
 
   private editCurrentDevice(editedDevice: EnrollDeviceRequest) {
-    const groupId = this.groupId() ?? this.deviceForm.value.group;
-
     this.deviceService
-      .update(groupId, this.editDevice()!.deviceId, editedDevice)
+      .update(this.editDevice()!.deviceId, editedDevice)
       .subscribe({
         next: ({ data }: Response<Device>) => {
           this.editedDevice.emit(data);
@@ -161,5 +145,12 @@ export class DeviceFormComponent {
           this.loadingService.dismissLoading();
         },
       });
+  }
+
+  protected createNewDevice() {
+    this.resetForm();
+    this.pin = null;
+    this.deviceName = '';
+    this.registerQr = '';
   }
 }

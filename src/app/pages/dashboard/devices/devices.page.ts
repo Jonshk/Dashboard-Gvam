@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   computed,
@@ -7,58 +8,57 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { DeviceService } from '../../../core/services/device/device.service';
-import { Response } from '../../../core/models/response/response.model';
-import { RegisterDevice } from '../../../core/models/response/register-device.model';
-import { PolicyService } from '../../../core/services/policy/policy.service';
-import { Policy } from '../../../core/models/response/policy.model';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { forkJoin, Observable } from 'rxjs';
+import {
+  DeviceCommand,
+  DeviceCommandDescription,
+} from '../../../core/enums/device-command';
+import {
+  DeviceCustomCommand,
+  DeviceCustomCommandDescription,
+} from '../../../core/enums/device-custom-command';
+import { DeviceFilter } from '../../../core/enums/device-filter';
+import { ApplyDevicePolicyRequest } from '../../../core/models/request/apply-device-policy-request.model';
+import { DeviceCommandRequest } from '../../../core/models/request/device-command-request.model';
+import { DeviceCustomCommandRequest } from '../../../core/models/request/device-custom-command-request.model';
+import { MigrateDeviceRequest } from '../../../core/models/request/migrate-device-request';
+import { DeviceUser } from '../../../core/models/response/device-user.model';
 import { Device } from '../../../core/models/response/device.model';
+import { Geofence } from '../../../core/models/response/geofence.model';
+import { Group } from '../../../core/models/response/group.model';
+import { Policy } from '../../../core/models/response/policy.model';
+import { RegisterDevice } from '../../../core/models/response/register-device.model';
+import { Response } from '../../../core/models/response/response.model';
+import { SuccessResponse } from '../../../core/models/response/success-response.model';
+import { DeviceService } from '../../../core/services/device/device.service';
+import { GeofenceService } from '../../../core/services/geofence/geofence.service';
+import { GroupService } from '../../../core/services/group/group.service';
+import { LoadingService } from '../../../core/services/loading/loading.service';
+import { PolicyService } from '../../../core/services/policy/policy.service';
+import { UserService } from '../../../core/services/user/user.service';
+import { DeleteDialogComponent } from '../../../shared/component/delete-dialog/delete-dialog.component';
+import { DialogComponent } from '../../../shared/component/dialog/dialog.component';
+import { PaginatorComponent } from '../../../shared/component/paginator/paginator.component';
+import {
+  DEFAULT_PAGINATION,
+  INITIAL_PAGE,
+  Pagination,
+} from '../../../shared/util/pagination';
+import { DeviceCustomCommandFormComponent } from './components/device-custom-command-form/device-custom-command-form.component';
 import { DeviceFormComponent } from './components/device-form/device-form.component';
 import {
   DeleteDevice,
   DeviceListItemComponent,
   SelectableDevice,
 } from './components/device-list-item/device-list-item.component';
-import { LoadingService } from '../../../core/services/loading/loading.service';
-import { forkJoin, Observable } from 'rxjs';
-import { SuccessResponse } from '../../../core/models/response/success-response.model';
-import { DeviceUser } from '../../../core/models/response/device-user.model';
-import { UserService } from '../../../core/services/user/user.service';
-import { GroupService } from '../../../core/services/group/group.service';
-import { Group } from '../../../core/models/response/group.model';
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  ReactiveFormsModule,
-  FormsModule,
-} from '@angular/forms';
-import {
-  DeviceCommand,
-  DeviceCommandDescription,
-} from '../../../core/enums/device-command';
-import { ApplyDevicePolicyRequest } from '../../../core/models/request/apply-device-policy-request.model';
-import { DeviceCommandRequest } from '../../../core/models/request/device-command-request.model';
-import { MigrateDeviceRequest } from '../../../core/models/request/migrate-device-request';
-import { NgTemplateOutlet } from '@angular/common';
-import { DeviceCustomCommandFormComponent } from './components/device-custom-command-form/device-custom-command-form.component';
-import {
-  DeviceCustomCommand,
-  DeviceCustomCommandDescription,
-} from '../../../core/enums/device-custom-command';
-import { Geofence } from '../../../core/models/response/geofence.model';
-import { GeofenceService } from '../../../core/services/geofence/geofence.service';
-import { DeviceCustomCommandRequest } from '../../../core/models/request/device-custom-command-request.model';
-import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { DeleteDialogComponent } from '../../../shared/component/delete-dialog/delete-dialog.component';
-import { DialogComponent } from '../../../shared/component/dialog/dialog.component';
-import {
-  DEFAULT_PAGINATION,
-  INITIAL_PAGE,
-  Pagination,
-} from '../../../shared/util/pagination';
-import { PaginatorComponent } from '../../../shared/component/paginator/paginator.component';
-import { DeviceFilter } from '../../../core/enums/device-filter';
 
 @Component({
   selector: 'app-devices',
@@ -412,53 +412,20 @@ export class DevicesPage {
 
   registerDevices() {
     this.loadingService.setLoading();
-    if (this.groupId()) {
-      this.deviceService.register(this.groupId()).subscribe({
-        next: ({ data }: Response<RegisterDevice>) => {
-          if (data.registeredDevices > 0) {
-            this.refreshDevices();
-          } else {
-            this.loadingService.dismissLoading();
-          }
-          this.newDevices = data;
-        },
-        error: (err: any) => {
-          console.error('error:', err);
+    this.deviceService.register(this.groupId()).subscribe({
+      next: ({ data }: Response<RegisterDevice>) => {
+        if (data.registeredDevices > 0) {
+          this.refreshDevices();
+        } else {
           this.loadingService.dismissLoading();
-        },
-      });
-    } else {
-      const $registerRequests = this.groups
-        .map((g) => {
-          if (this.devices().some((d) => d.groupId === g.groupId)) {
-            return this.deviceService.register(g.groupId);
-          }
-
-          return null;
-        })
-        .filter((r) => r !== null) as Observable<Response<RegisterDevice>>[];
-
-      forkJoin($registerRequests).subscribe({
-        next: (data) => {
-          if (data.some((d) => d.data.registeredDevices > 0)) {
-            this.refreshDevices();
-          } else {
-            this.loadingService.dismissLoading();
-          }
-          let newDevicesCount = 0;
-          data.forEach((d) => (newDevicesCount += d.data.registeredDevices));
-
-          const newDevices: RegisterDevice = {
-            registeredDevices: newDevicesCount,
-          };
-          this.newDevices = newDevices;
-        },
-        error: (err: any) => {
-          console.error('error:', err);
-          this.loadingService.dismissLoading();
-        },
-      });
-    }
+        }
+        this.newDevices = data;
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
   }
 
   selectDevice(selectableDevice: SelectableDevice) {
@@ -561,13 +528,8 @@ export class DevicesPage {
     if (!shouldDelete || !this.deviceToDelete) return;
 
     this.loadingService.setLoading();
-    const groupId = this.groupId() ?? this.deviceToDelete.groupId;
     this.deviceService
-      .delete(
-        groupId,
-        this.deviceToDelete.deviceId,
-        this.deviceToDelete.enrolled,
-      )
+      .delete(this.deviceToDelete.deviceId, this.deviceToDelete.enrolled)
       .subscribe({
         next: ({ data }: Response<SuccessResponse>) => {
           if (data.success) {
@@ -659,12 +621,7 @@ export class DevicesPage {
     };
 
     const $commandRequests = this.selectedDevices().map((d) => {
-      const groupId = this.groupId() ?? d.groupId;
-      return this.deviceService.sendCommand(
-        groupId,
-        d.deviceId,
-        deviceCommandRequest,
-      );
+      return this.deviceService.sendCommand(d.deviceId, deviceCommandRequest);
     });
 
     forkJoin($commandRequests).subscribe({
@@ -694,19 +651,25 @@ export class DevicesPage {
     };
 
     const $migrateRequests = this.selectedDevices().map((d) => {
-      const groupId = this.groupId() ?? d.groupId;
-      return this.deviceService.migrate(
-        groupId,
-        d.deviceId,
-        migrateDeviceRequest,
-      );
+      return this.deviceService.migrate(d.deviceId, migrateDeviceRequest);
     });
 
     forkJoin($migrateRequests).subscribe({
       next: (_: Response<SuccessResponse>[]) => {
-        this.devices.update((devices) =>
-          devices.filter((d) => !this.selectedDevices().includes(d)),
-        );
+        this.devices.update((devices) => {
+          if (this.groupId()) {
+            return devices.filter((d) => !this.selectedDevices().includes(d));
+          }
+
+          return devices.map((d) => {
+            if (this.selectedDevices().includes(d)) {
+              d.groupId = migrateDeviceRequest.groupId;
+              return { ...d };
+            }
+
+            return d;
+          });
+        });
         this.hideActionDialog();
         this.loadingService.dismissLoading();
       },
@@ -726,8 +689,7 @@ export class DevicesPage {
     this.loadingService.setLoading();
 
     const $deleteRequests = this.selectedDevices().map((d) => {
-      const groupId = this.groupId() ?? d.groupId;
-      return this.deviceService.delete(groupId, d.deviceId, d.enrolled);
+      return this.deviceService.delete(d.deviceId, d.enrolled);
     });
 
     forkJoin($deleteRequests).subscribe({
@@ -762,13 +724,11 @@ export class DevicesPage {
 
     const $customCommandRequests = this.selectedDevices()
       .map((d) => {
-        const groupId = this.groupId() ?? d.groupId;
         if (
           deviceCustomCommandRequest.deviceCustomCommand !==
           DeviceCustomCommand.DEACTIVATE_GEOFENCE
         ) {
           return this.deviceService.sendCustomCommand(
-            groupId,
             d.deviceId,
             deviceCustomCommandRequest,
           );
@@ -778,7 +738,6 @@ export class DevicesPage {
           deviceCustomCommandRequest.value = d.geofenceId!;
 
           return this.deviceService.sendCustomCommand(
-            groupId,
             d.deviceId,
             deviceCustomCommandRequest,
           );

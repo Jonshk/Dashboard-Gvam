@@ -149,9 +149,8 @@ export class DeviceListItemComponent {
       deviceCommand: this.sendCommandForm.value.command!,
     };
 
-    const groupId = this.groupId() ?? this.device().groupId;
     this.deviceService
-      .sendCommand(groupId, this.device().deviceId, deviceCommandRequest)
+      .sendCommand(this.device().deviceId, deviceCommandRequest)
       .subscribe({
         next: ({ data }: Response<SuccessResponse>) => {
           if (data.success) {
@@ -179,12 +178,19 @@ export class DeviceListItemComponent {
     };
 
     this.deviceService
-      .migrate(groupId, this.device().deviceId, migrateDeviceRequest)
+      .migrate(this.device().deviceId, migrateDeviceRequest)
       .subscribe({
         next: ({ data }: Response<SuccessResponse>) => {
           if (data.success) {
             console.log('Dispositivo migrado');
-            this.deleteDevice(false);
+            if (this.groupId()) {
+              this.deleteDevice(false);
+            } else {
+              this.device.update((d) => {
+                d.groupId = migrateDeviceRequest.groupId;
+                return d;
+              });
+            }
           }
           this.loadingService.dismissLoading();
         },
@@ -208,37 +214,34 @@ export class DeviceListItemComponent {
 
   async connect() {
     this.loadingService.setLoading();
-    const groupId = this.groupId() ?? this.device().groupId;
-    this.deviceService
-      .getCowbroseToken(groupId, this.device().deviceId)
-      .subscribe({
-        next: async ({ data }: Response<CobrowseToken>) => {
-          try {
-            const cobrowse = new CobrowseAPI();
-            cobrowse.token = data.token;
-            const devices = await cobrowse.devices.list();
-            const device = devices.find(
-              (d) => d.custom_data['device_id'] === this.device().deviceId,
-            );
+    this.deviceService.getCowbroseToken(this.device().deviceId).subscribe({
+      next: async ({ data }: Response<CobrowseToken>) => {
+        try {
+          const cobrowse = new CobrowseAPI();
+          cobrowse.token = data.token;
+          const devices = await cobrowse.devices.list();
+          const device = devices.find(
+            (d) => d.custom_data['device_id'] === this.device().deviceId,
+          );
 
-            if (device) {
-              window.open(
-                `${cobrowse.api}/connect/device/${device.id}?token=${cobrowse.token}&end_action=none`,
-              );
-            }
-          } catch (error) {
-            this.errorService.setError(
-              'Ha ocurrido un error al conectarse con Cobrowse, inténtelo de nuevo más tarde.',
+          if (device) {
+            window.open(
+              `${cobrowse.api}/connect/device/${device.id}?token=${cobrowse.token}&end_action=none`,
             );
-          } finally {
-            this.loadingService.dismissLoading();
           }
-        },
-        error: (err: any) => {
-          console.error('error:', err);
+        } catch (error) {
+          this.errorService.setError(
+            'Ha ocurrido un error al conectarse con Cobrowse, inténtelo de nuevo más tarde.',
+          );
+        } finally {
           this.loadingService.dismissLoading();
-        },
-      });
+        }
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
   }
 }
 

@@ -1,15 +1,14 @@
 <main class="container-fluid">
-  @if (groupId()) {
-    <button class="btn btn-primary me-2" (click)="createMode()">
-      Crear nuevo dispositivo
-    </button>
-  }
+  <button class="btn btn-primary me-2" (click)="createMode()">
+    Crear nuevo dispositivo
+  </button>
+
   <button
     class="btn btn-light"
     [disabled]="loadingService.isLoading()"
     (click)="registerDevices()"
   >
-    Registrar dispositivos
+    Actualizar listado de dispositivos
   </button>
   @if (newDevices) {
     <p>Nuevos dispositivos registrados: {{ newDevices.registeredDevices }}</p>

@@ -67,13 +67,8 @@ export class DeviceCustomCommandFormComponent {
       deviceCustomCommandRequest.value = this.device()!.geofenceId!;
     }
 
-    const groupId = this.groupId() ?? this.device()!.groupId;
     this.deviceService
-      .sendCustomCommand(
-        groupId,
-        this.device()!.deviceId,
-        deviceCustomCommandRequest,
-      )
+      .sendCustomCommand(this.device()!.deviceId, deviceCustomCommandRequest)
       .subscribe({
         next: ({ data }: Response<SuccessResponse>) => {
           if (data.success) {
