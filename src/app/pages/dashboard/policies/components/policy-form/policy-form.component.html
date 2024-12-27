@@ -23,7 +23,6 @@
       type="text"
       class="form-control"
       name="name"
-      name="name"
       formControlName="name"
     />
     @if (policyName?.invalid && (policyName?.dirty || policyName?.touched)) {
@@ -350,6 +349,117 @@
         </option>
       }
     </select>
+  </label>
+
+  <div
+    class="d-flex flex-column gap-3"
+    name="displaySettings"
+    formGroupName="displaySettings"
+  >
+    Configuración de pantalla
+
+    <div
+      class="d-flex flex-column gap-2"
+      name="screenBrightnessSettings"
+      formGroupName="screenBrightnessSettings"
+    >
+      Configuración de brillo
+      <label>
+        Modo de configuración
+        <select
+          class="form-select"
+          name="screenBrightnessMode"
+          formControlName="screenBrightnessMode"
+        >
+          @for (
+            screenBrightnessMode of screenBrightnessModeKeys;
+            track screenBrightnessMode
+          ) {
+            <option [value]="ScreenBrightnessMode[screenBrightnessMode]">
+              {{ ScreenBrightnessModeDescription[screenBrightnessMode] }}
+            </option>
+          }
+        </select>
+      </label>
+      @if (
+        policyForm.value.displaySettings?.screenBrightnessSettings
+          ?.screenBrightnessMode === ScreenBrightnessMode.AUTOMATIC ||
+        policyForm.value.displaySettings?.screenBrightnessSettings
+          ?.screenBrightnessMode === ScreenBrightnessMode.FIXED
+      ) {
+        <label>
+          Nivel de brillo:
+          {{
+            policyForm.value.displaySettings?.screenBrightnessSettings
+              ?.screenBrightness
+          }}
+          <input
+            type="range"
+            name="screenBrightness"
+            formControlName="screenBrightness"
+            class="form-range"
+            min="0"
+            max="255"
+          />
+          <small>El valor 0 significa que no se establece brillo</small>
+        </label>
+      }
+    </div>
+
+    <div
+      class="d-flex flex-column gap-2"
+      name="screenTimeoutSettings"
+      formGroupName="screenTimeoutSettings"
+    >
+      Configuración tiempo de pantalla
+      <label>
+        Modo de configuración
+        <select
+          class="form-select"
+          name="screenTimeoutMode"
+          formControlName="screenTimeoutMode"
+        >
+          @for (
+            screenTimeoutMode of screenTimeoutModeKeys;
+            track screenTimeoutMode
+          ) {
+            <option [value]="ScreenTimeoutMode[screenTimeoutMode]">
+              {{ ScreenTimeoutModeDescription[screenTimeoutMode] }}
+            </option>
+          }
+        </select>
+      </label>
+
+      @if (
+        policyForm.value.displaySettings?.screenTimeoutSettings
+          ?.screenTimeoutMode === ScreenTimeoutMode.ENFORCED
+      ) {
+        <label>
+          Tiempo de espera (segundos)
+          <input
+            type="number"
+            class="form-control"
+            name="screenTimeout"
+            formControlName="screenTimeout"
+          />
+          <small
+            >El tiempo de espera ha de ser menor que el tiempo máximo de bloqueo
+            en caso de establecer un valor</small
+          >
+        </label>
+      }
+    </div>
+  </div>
+
+  <label>
+    Tiempo máximo de espera para el bloqueo (milisegundos)
+    <input
+      type="number"
+      class="form-control"
+      name="maximumTimeToLock"
+      formControlName="maximumTimeToLock"
+    />
+    <small>El valor 0 significa que no hay restricciones</small>
   </label>
 
   <button

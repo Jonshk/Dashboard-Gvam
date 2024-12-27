@@ -4,6 +4,8 @@ import { InstallType } from '../../enums/install-type';
 import { LocationMode } from '../../enums/location-mode';
 import { PermissionPolicy } from '../../enums/permission-policy';
 import { PowerButtonAction } from '../../enums/power-button-action';
+import { ScreenBrightnessMode } from '../../enums/screen-brightness-mode';
+import { ScreenTimeoutMode } from '../../enums/screen-timeout-mode';
 import { UsbDataAccess } from '../../enums/usb-data-access';
 import { WifiSsidPolicyType } from '../../enums/wifi-ssid-policy-type';
 import { WifiState } from '../../enums/wifi-state';
@@ -23,6 +25,8 @@ export interface Policy {
   isDefault?: boolean;
   groupIds?: number[];
   developerSettings: DeveloperSettings;
+  displaySettings?: DisplaySettings;
+  maximumTimeToLock?: number;
 }
 export interface WifiSsidPolicy {
   wifiSsidPolicyType: WifiSsidPolicyType;
@@ -34,4 +38,19 @@ export interface ApplicationPolicy {
   defaultPermissionPolicy?: PermissionPolicy;
   disabled?: boolean;
   autoUpdateMode?: AutoUpdateMode;
+}
+
+export interface DisplaySettings {
+  screenBrightnessSettings: ScreenBrightnessSettings;
+  screenTimeoutSettings: ScreenTimeoutSettings;
+}
+
+export interface ScreenBrightnessSettings {
+  screenBrightnessMode: ScreenBrightnessMode;
+  screenBrightness: number;
+}
+
+export interface ScreenTimeoutSettings {
+  screenTimeoutMode: ScreenTimeoutMode;
+  screenTimeout: number;
 }

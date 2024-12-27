@@ -46,6 +46,14 @@ import {
   DeveloperSettings,
   DeveloperSettingsDescription,
 } from '../../../../../core/enums/developer-settings';
+import {
+  ScreenBrightnessMode,
+  ScreenBrightnessModeDescription,
+} from '../../../../../core/enums/screen-brightness-mode';
+import {
+  ScreenTimeoutMode,
+  ScreenTimeoutModeDescription,
+} from '../../../../../core/enums/screen-timeout-mode';
 
 @Component({
   selector: 'app-policy-form',
@@ -84,6 +92,17 @@ export class PolicyFormComponent {
     factoryResetDisabled: false,
     installAppsDisabled: false,
     developerSettings: DeveloperSettings.UNSPECIFIED,
+    displaySettings: {
+      screenBrightnessSettings: {
+        screenBrightnessMode: ScreenBrightnessMode.UNSPECIFIED,
+        screenBrightness: 0,
+      },
+      screenTimeoutSettings: {
+        screenTimeoutMode: ScreenTimeoutMode.UNSPECIFIED,
+        screenTimeout: 60,
+      },
+    },
+    maximumTimeToLock: 0,
   };
 
   policyForm = this.formBuilder.group({
@@ -113,6 +132,29 @@ export class PolicyFormComponent {
     factoryResetDisabled: [this.defaultFormValues.factoryResetDisabled],
     installAppsDisabled: [this.defaultFormValues.installAppsDisabled],
     developerSettings: [this.defaultFormValues.developerSettings],
+    displaySettings: this.formBuilder.group({
+      screenBrightnessSettings: this.formBuilder.group({
+        screenBrightnessMode: [
+          this.defaultFormValues.displaySettings.screenBrightnessSettings
+            .screenBrightnessMode,
+        ],
+        screenBrightness: [
+          this.defaultFormValues.displaySettings.screenBrightnessSettings
+            .screenBrightness,
+        ],
+      }),
+      screenTimeoutSettings: this.formBuilder.group({
+        screenTimeoutMode: [
+          this.defaultFormValues.displaySettings.screenTimeoutSettings
+            .screenTimeoutMode,
+        ],
+        screenTimeout: [
+          this.defaultFormValues.displaySettings.screenTimeoutSettings
+            .screenTimeout,
+        ],
+      }),
+    }),
+    maximumTimeToLock: [this.defaultFormValues.maximumTimeToLock],
   });
 
   private setEditForm = effect(() => {
@@ -202,6 +244,39 @@ export class PolicyFormComponent {
       this.policyForm.controls.developerSettings.setValue(
         this.editPolicy()!.developerSettings ??
           this.defaultFormValues.developerSettings,
+      );
+
+      this.policyForm.controls.displaySettings.controls.screenBrightnessSettings.controls.screenBrightnessMode.setValue(
+        this.editPolicy()!.displaySettings?.screenBrightnessSettings
+          .screenBrightnessMode ??
+          this.defaultFormValues.displaySettings.screenBrightnessSettings
+            .screenBrightnessMode,
+      );
+
+      this.policyForm.controls.displaySettings.controls.screenBrightnessSettings.controls.screenBrightness.setValue(
+        this.editPolicy()!.displaySettings?.screenBrightnessSettings
+          .screenBrightness ??
+          this.defaultFormValues.displaySettings.screenBrightnessSettings
+            .screenBrightness,
+      );
+
+      this.policyForm.controls.displaySettings.controls.screenTimeoutSettings.controls.screenTimeoutMode.setValue(
+        this.editPolicy()!.displaySettings?.screenTimeoutSettings
+          .screenTimeoutMode ??
+          this.defaultFormValues.displaySettings.screenTimeoutSettings
+            .screenTimeoutMode,
+      );
+
+      this.policyForm.controls.displaySettings.controls.screenTimeoutSettings.controls.screenTimeout.setValue(
+        this.editPolicy()!.displaySettings?.screenTimeoutSettings
+          .screenTimeout ??
+          this.defaultFormValues.displaySettings.screenTimeoutSettings
+            .screenTimeout,
+      );
+
+      this.policyForm.controls.maximumTimeToLock.setValue(
+        this.editPolicy()!.maximumTimeToLock ??
+          this.defaultFormValues.maximumTimeToLock,
       );
     }
   });
@@ -386,5 +461,17 @@ export class PolicyFormComponent {
   readonly DeveloperSettingsDescription = DeveloperSettingsDescription;
   readonly developerSettingsKeys = Object.keys(DeveloperSettings) as [
     keyof typeof DeveloperSettings,
+  ];
+
+  readonly ScreenBrightnessMode = ScreenBrightnessMode;
+  readonly ScreenBrightnessModeDescription = ScreenBrightnessModeDescription;
+  readonly screenBrightnessModeKeys = Object.keys(ScreenBrightnessMode) as [
+    keyof typeof ScreenBrightnessMode,
+  ];
+
+  readonly ScreenTimeoutMode = ScreenTimeoutMode;
+  readonly ScreenTimeoutModeDescription = ScreenTimeoutModeDescription;
+  readonly screenTimeoutModeKeys = Object.keys(ScreenTimeoutMode) as [
+    keyof typeof ScreenTimeoutMode,
   ];
 }
