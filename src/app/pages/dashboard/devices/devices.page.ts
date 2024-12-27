@@ -98,12 +98,12 @@ export class DevicesPage {
 
   selectedDevices = computed(() => this.devices().filter((d) => d.selected));
 
-  imeiQuery = model<string>('');
-  private imeiQueryTimeout: any = null;
-  private imeiQueryChange = effect(() => {
-    if (this.imeiQuery() !== undefined) {
-      clearTimeout(this.imeiQueryTimeout);
-      this.imeiQueryTimeout = setTimeout(() => {
+  searchQuery = model<string>('');
+  private searchQueryTimeout: any = null;
+  private searchQueryChange = effect(() => {
+    if (this.searchQuery() !== undefined) {
+      clearTimeout(this.searchQueryTimeout);
+      this.searchQueryTimeout = setTimeout(() => {
         this.paginator()?.resetPagination();
         this.searchDevice();
       }, 500);
@@ -115,7 +115,12 @@ export class DevicesPage {
 
     if (this.groupId()) {
       this.deviceService
-        .list(this.groupId(), this.deviceFilter(), this.imeiQuery(), pagination)
+        .list(
+          this.groupId(),
+          this.deviceFilter(),
+          this.searchQuery(),
+          pagination,
+        )
         .subscribe({
           next: ({ data }: Response<Device[]>) => {
             this.paginator()?.updateState({
@@ -131,7 +136,7 @@ export class DevicesPage {
         });
     } else {
       this.deviceService
-        .listAll(this.deviceFilter(), this.imeiQuery(), pagination)
+        .listAll(this.deviceFilter(), this.searchQuery(), pagination)
         .subscribe({
           next: ({ data }: Response<Device[]>) => {
             this.devices.set(data);
@@ -321,12 +326,12 @@ export class DevicesPage {
       ? this.deviceService.list(
           this.groupId(),
           this.deviceFilter(),
-          this.imeiQuery(),
+          this.searchQuery(),
           pagination,
         )
       : this.deviceService.listAll(
           this.deviceFilter(),
-          this.imeiQuery(),
+          this.searchQuery(),
           pagination,
         );
 
@@ -355,7 +360,12 @@ export class DevicesPage {
 
     if (this.groupId()) {
       this.deviceService
-        .list(this.groupId(), this.deviceFilter(), this.imeiQuery(), pagination)
+        .list(
+          this.groupId(),
+          this.deviceFilter(),
+          this.searchQuery(),
+          pagination,
+        )
         .subscribe({
           next: ({ data }: Response<Device[]>) => {
             this.devices.set(data);
@@ -368,7 +378,7 @@ export class DevicesPage {
         });
     } else {
       this.deviceService
-        .listAll(this.deviceFilter(), this.imeiQuery(), pagination)
+        .listAll(this.deviceFilter(), this.searchQuery(), pagination)
         .subscribe({
           next: ({ data }: Response<Device[]>) => {
             this.devices.set(data);
