@@ -187,7 +187,7 @@
           [(ngModel)]="searchQuery"
           placeholder="Buscar por nombre de dispositivo o grupo (para filtrar)"
           class="form-control"
-          name="imeiQuery"
+          name="searchQuery"
         />
       </div>
     }
@@ -199,9 +199,49 @@
             <thead>
               <tr>
                 <th scope="col">-</th>
-                <th scope="col">Nombre del dispositivo</th>
+                <th scope="col">
+                  Nombre del dispositivo
+                  <div class="filter-column">
+                    <span
+                      ><app-feathericon
+                        icon="chevron-up"
+                        [class.active-filter]="
+                          activeFilter() === 'name-' + OrderFilter.ASC
+                        "
+                        (click)="filter('name', OrderFilter.ASC)"
+                      />
+                      <app-feathericon
+                        icon="chevron-down"
+                        [class.active-filter]="
+                          activeFilter() === 'name-' + OrderFilter.DESC
+                        "
+                        (click)="filter('name', OrderFilter.DESC)"
+                      />
+                    </span>
+                  </div>
+                </th>
                 @if (!groupId()) {
-                  <th scope="col">Grupo</th>
+                  <th scope="col">
+                    Grupo
+                    <div class="filter-column">
+                      <span
+                        ><app-feathericon
+                          icon="chevron-up"
+                          [class.active-filter]="
+                            activeFilter() === 'group-' + OrderFilter.ASC
+                          "
+                          (click)="filter('group', OrderFilter.ASC)"
+                        />
+                        <app-feathericon
+                          icon="chevron-down"
+                          [class.active-filter]="
+                            activeFilter() === 'group-' + OrderFilter.DESC
+                          "
+                          (click)="filter('group', OrderFilter.DESC)"
+                        />
+                      </span>
+                    </div>
+                  </th>
                 }
                 <th scope="col">Acciones</th>
                 <th scope="col">Política</th>
@@ -237,9 +277,49 @@
             <thead>
               <tr>
                 <th scope="col">-</th>
-                <th scope="col">Nombre del dispositivo</th>
+                <th scope="col">
+                  Nombre del dispositivo
+                  <div class="filter-column">
+                    <span
+                      ><app-feathericon
+                        icon="chevron-up"
+                        [class.active-filter]="
+                          activeFilter() === 'name-' + OrderFilter.ASC
+                        "
+                        (click)="filter('name', OrderFilter.ASC)"
+                      />
+                      <app-feathericon
+                        icon="chevron-down"
+                        [class.active-filter]="
+                          activeFilter() === 'name-' + OrderFilter.DESC
+                        "
+                        (click)="filter('name', OrderFilter.DESC)"
+                      />
+                    </span>
+                  </div>
+                </th>
                 @if (!groupId()) {
-                  <th scope="col">Grupo</th>
+                  <th scope="col">
+                    Grupo
+                    <div class="filter-column">
+                      <span
+                        ><app-feathericon
+                          icon="chevron-up"
+                          [class.active-filter]="
+                            activeFilter() === 'group-' + OrderFilter.DESC
+                          "
+                          (click)="filter('group', OrderFilter.ASC)"
+                        />
+                        <app-feathericon
+                          icon="chevron-down"
+                          [class.active-filter]="
+                            activeFilter() === 'group-' + OrderFilter.DESC
+                          "
+                          (click)="filter('group', OrderFilter.DESC)"
+                        />
+                      </span>
+                    </div>
+                  </th>
                 }
                 <th scope="col">Acciones</th>
               </tr>

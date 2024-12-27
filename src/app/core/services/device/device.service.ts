@@ -20,6 +20,7 @@ import { RegisterDevice } from '../../models/response/register-device.model';
 import { Response } from '../../models/response/response.model';
 import { SuccessResponse } from '../../models/response/success-response.model';
 import { EnterpriseService } from '../enterprise/enterprise.service';
+import { OrderFilter } from '../../enums/order-filter';
 
 @Injectable({
   providedIn: 'root',
@@ -74,12 +75,16 @@ export class DeviceService {
     filter: DeviceFilter,
     searchQuery: string,
     pagination: Pagination,
+    order: OrderFilter = OrderFilter.ASC,
+    orderBy: string = '',
   ): Observable<Response<Device[]>> {
     return this.http.get<Response<Device[]>>(this.url(groupId), {
       params: {
         ...getPaginationParams(pagination),
         filter: filter,
         searchQuery: searchQuery !== undefined ? searchQuery : '',
+        order: order,
+        orderBy: orderBy,
       },
     });
   }
@@ -88,12 +93,16 @@ export class DeviceService {
     filter: DeviceFilter,
     searchQuery: string,
     pagination: Pagination,
+    order: OrderFilter = OrderFilter.ASC,
+    orderBy: string = '',
   ): Observable<Response<Device[]>> {
     return this.http.get<Response<Device[]>>(this.urlAll(), {
       params: {
         ...getPaginationParams(pagination),
         filter: filter,
         searchQuery: searchQuery !== undefined ? searchQuery : '',
+        order: order,
+        orderBy: orderBy,
       },
     });
   }

@@ -59,6 +59,8 @@ import {
   DeviceListItemComponent,
   SelectableDevice,
 } from './components/device-list-item/device-list-item.component';
+import { FeathericonComponent } from '../../../shared/component/feathericon/feathericon.component';
+import { OrderFilter } from '../../../core/enums/order-filter';
 
 @Component({
   selector: 'app-devices',
@@ -74,6 +76,7 @@ import {
     DeviceCustomCommandFormComponent,
     NgbDropdownModule,
     PaginatorComponent,
+    FeathericonComponent,
   ],
   templateUrl: './devices.page.html',
   styleUrl: './devices.page.scss',
@@ -194,6 +197,10 @@ export class DevicesPage {
     keyof typeof DeviceCustomCommand,
   ];
 
+  readonly OrderFilter = OrderFilter;
+  private _activeFilter = signal('');
+  activeFilter = this._activeFilter.asReadonly();
+
   customCommandForm = new FormGroup({
     command: new FormControl(
       DeviceCustomCommand.ADJUST_VOLUME,
@@ -222,6 +229,7 @@ export class DevicesPage {
 
   private loadData = effect(
     () => {
+      console.log('loaddata effect');
       this.listDevicesAndPolicies();
     },
     { allowSignalWrites: true },
@@ -264,6 +272,7 @@ export class DevicesPage {
             hasMoreItems: devices.length === pagination.pageSize,
           });
           this.devices.set(devices);
+          this._activeFilter.set('');
           this.policies = policies;
           this.deviceUsers = deviceUsers;
           this.groups = groups;
@@ -305,6 +314,7 @@ export class DevicesPage {
             hasMoreItems: devices.length === pagination.pageSize,
           });
           this.devices.set(devices);
+          this._activeFilter.set('');
           this.policies = policies;
           this.deviceUsers = deviceUsers;
           this.groups = groups;
@@ -344,6 +354,44 @@ export class DevicesPage {
         this.paginator()?.updateState({
           hasMoreItems: data.length === pagination.pageSize,
           hasLessItems: pagination.currentPage !== INITIAL_PAGE,
+        });
+
+        this.loadingService.dismissLoading();
+      },
+      error: (err: any) => {
+        console.error('error:', err);
+        this.loadingService.dismissLoading();
+      },
+    });
+  }
+
+  filter(field: string, order: OrderFilter) {
+    this.loadingService.setLoading();
+    const $devices = this.groupId()
+      ? this.deviceService.list(
+          this.groupId(),
+          this.deviceFilter(),
+          this.searchQuery(),
+          this.paginator()!.pagination,
+        )
+      : this.deviceService.listAll(
+          this.deviceFilter(),
+          this.searchQuery(),
+          this.paginator()!.pagination,
+          order,
+          field,
+        );
+
+    $devices.subscribe({
+      next: ({ data }: Response<Device[]>) => {
+        if (data.length > 0) {
+          this.devices.set(data);
+          this._activeFilter.set(`${field}-${order}`);
+        }
+
+        this.paginator()?.updateState({
+          hasMoreItems: data.length === this.paginator()!.pageSize,
+          hasLessItems: this.paginator()!.currentPage !== INITIAL_PAGE,
         });
 
         this.loadingService.dismissLoading();

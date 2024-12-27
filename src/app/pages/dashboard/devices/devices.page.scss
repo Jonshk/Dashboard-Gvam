@@ -13,3 +13,12 @@ tr {
 th:first-child {
   width: 5px;
 }
+
+.filter-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.active-filter {
+  color: var(--bs-warning) !important;
+}
