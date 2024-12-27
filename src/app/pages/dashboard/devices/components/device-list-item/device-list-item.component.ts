@@ -32,11 +32,12 @@ import { DeviceUser } from '../../../../../core/models/response/device-user.mode
 import CobrowseAPI from 'cobrowse-agent-sdk';
 import { CobrowseToken } from '../../../../../core/models/response/cobrowse-token.model';
 import { ErrorService } from '../../../../../core/services/error/error.service';
+import { FeathericonComponent } from '../../../../../shared/component/feathericon/feathericon.component';
 
 @Component({
   selector: '[app-device-list-item]',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule],
+  imports: [ReactiveFormsModule, RouterModule, FeathericonComponent],
   templateUrl: './device-list-item.component.html',
   styleUrl: './device-list-item.component.scss',
 })

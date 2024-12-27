@@ -22,12 +22,6 @@
   >
 </td>
 
-@if (device().enrolled) {
-  <td>{{ device().imei ?? "-" }}</td>
-}
-
-<td>{{ deviceUser()?.email ?? "-" }}</td>
-
 @if (!groupId()) {
   <td>
     @if (device().groupId) {
@@ -39,31 +33,30 @@
 }
 
 <td>
-  <div
-    class="d-flex flex-column gap-2 flex-wrap justify-content-center align-items-center"
-  >
+  <div class="d-flex gap-2 justify-content-center align-items-center">
     @if (device().enrolled) {
       <button
-        class="btn btn-light btn-sm"
+        class="btn btn-light btn-sm icon-button"
         [disabled]="loadingService.isLoading()"
         (click)="configDevice()"
       >
-        Configurar
+        <app-feathericon icon="settings" />
       </button>
     }
+
     <button
-      class="btn btn-light btn-sm"
+      class="btn btn-light btn-sm icon-button"
       [disabled]="loadingService.isLoading()"
       (click)="editDevice()"
     >
-      Editar
+      <app-feathericon icon="edit" />
     </button>
     <button
-      class="btn btn-danger btn-sm"
+      class="btn btn-danger btn-sm icon-button"
       [disabled]="loadingService.isLoading()"
       (click)="deleteDevice()"
     >
-      Eliminar
+      <app-feathericon icon="x-circle" />
     </button>
   </div>
 </td>
@@ -71,7 +64,11 @@
 @if (device().enrolled) {
   <td>
     @if (device().groupId) {
-      <form [formGroup]="applyPolicyForm" (ngSubmit)="applyPolicy()">
+      <form
+        class="d-flex gap-2 justify-content-center align-items-center"
+        [formGroup]="applyPolicyForm"
+        (ngSubmit)="applyPolicy()"
+      >
         <select class="form-select" name="name" formControlName="name">
           @for (policy of groupPolicies(); track policy.name) {
             <option [value]="policy.name">
@@ -84,7 +81,7 @@
           type="submit"
           [disabled]="loadingService.isLoading()"
         >
-          Aplicar política
+          Aplicar
         </button>
       </form>
     } @else {
@@ -92,7 +89,11 @@
     }
   </td>
   <td>
-    <form [formGroup]="sendCommandForm" (ngSubmit)="sendCommand()">
+    <form
+      class="d-flex gap-2 justify-content-center align-items-center"
+      [formGroup]="sendCommandForm"
+      (ngSubmit)="sendCommand()"
+    >
       <select class="form-select" name="command" formControlName="command">
         @for (deviceCommand of deviceCommandKeys; track deviceCommand) {
           <option [value]="DeviceCommand[deviceCommand]">
@@ -105,12 +106,16 @@
         type="submit"
         [disabled]="loadingService.isLoading()"
       >
-        Enviar comando
+        Enviar
       </button>
     </form>
   </td>
   <td>
-    <form [formGroup]="migrateForm" (ngSubmit)="migrate()">
+    <form
+      class="d-flex gap-2 justify-content-center align-items-center"
+      [formGroup]="migrateForm"
+      (ngSubmit)="migrate()"
+    >
       <select class="form-select" name="groupId" formControlName="groupId">
         @for (group of groups(); track group.groupId) {
           <option [value]="group.groupId">
@@ -123,7 +128,7 @@
         type="submit"
         [disabled]="loadingService.isLoading()"
       >
-        Migrar dispositivo
+        Migrar
       </button>
     </form>
   </td>
