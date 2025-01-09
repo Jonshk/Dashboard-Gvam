@@ -95,7 +95,7 @@ export class PolicyFormComponent {
     displaySettings: {
       screenBrightnessSettings: {
         screenBrightnessMode: ScreenBrightnessMode.UNSPECIFIED,
-        screenBrightness: 0,
+        screenBrightness: 1,
       },
       screenTimeoutSettings: {
         screenTimeoutMode: ScreenTimeoutMode.UNSPECIFIED,
