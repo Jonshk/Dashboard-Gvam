@@ -28,8 +28,7 @@ export class PolicySelectionFormComponent {
   readonly editUser = input<DeviceUser | null>(null);
   policies: Policy[] = [];
   currentGroupPolicies: Policy[] = [];
-  
-  
+
   policy = output<Policy>();
 
   private policyService = inject(PolicyService);
@@ -39,43 +38,40 @@ export class PolicySelectionFormComponent {
     policy: '',
   };
 
-  policyForm = new FormGroup(
-    {
-      policy: new FormControl(this.defaultFormValues.policy, [
-        Validators.required,
-      ]),
-    },
-  );
+  policyForm = new FormGroup({
+    policy: new FormControl(this.defaultFormValues.policy, [
+      Validators.required,
+    ]),
+  });
 
   private getPolicies = effect(async () => {
     //list all users
     await this.policyService.listAll().subscribe({
       next: async ({ data }: Response<Policy[]>) => {
         this.policies = data;
-        var groupPolicies = this.groupPolicies()
+        var groupPolicies = this.groupPolicies();
         //Exclude those that are already in the group
-        this.checkNewPolicies()
+        this.checkNewPolicies();
       },
       error: (err: any) => {
         console.error('error:', err);
       },
-    });        
+    });
   });
 
   private reloadGroupPolicies = effect(async () => {
-      this.currentGroupPolicies = this.groupPolicies();
-      console.log(this.currentGroupPolicies)
-      this.checkNewPolicies();
-  })
+    this.currentGroupPolicies = this.groupPolicies();
+    this.checkNewPolicies();
+  });
 
-  private checkNewPolicies(){
-    var newPolicies: Policy[] = [];          
-    this.policies.forEach(policy => {
-      if(!this.currentGroupPolicies.some(e => policy.name === e.name)){
-        newPolicies.push(policy)
+  private checkNewPolicies() {
+    var newPolicies: Policy[] = [];
+    this.policies.forEach((policy) => {
+      if (!this.currentGroupPolicies.some((e) => policy.name === e.name)) {
+        newPolicies.push(policy);
       }
     });
-    
+
     this.policies = newPolicies;
   }
 
@@ -98,24 +94,24 @@ export class PolicySelectionFormComponent {
 
     this.loadingService.showLoading();
     //We get the selected policy
-    const policyToAdd = this.policies.find((el: Policy) => el.name === this.policyForm.value.policy);
+    const policyToAdd = this.policies.find(
+      (el: Policy) => el.name === this.policyForm.value.policy,
+    );
 
-    console.log(policyToAdd);
-
-    if(policyToAdd !== undefined){
+    if (policyToAdd !== undefined) {
       this.policyService.linkToGroup(this.groupId(), policyToAdd).subscribe({
         next: ({ data }: Response<Policy>) => {
           this.policy.emit(data);
           this.resetForm();
           //Delete the item from currentGroupPolicies
-          this.checkNewPolicies()
+          this.checkNewPolicies();
           this.loadingService.dismissLoading();
         },
         error: (err: any) => {
           console.error('error:', err);
           this.loadingService.dismissLoading();
         },
-      });    
+      });
     }
   }
 }

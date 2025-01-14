@@ -229,7 +229,6 @@ export class DevicesPage {
 
   private loadData = effect(
     () => {
-      console.log('loaddata effect');
       this.listDevicesAndPolicies();
     },
     { allowSignalWrites: true },

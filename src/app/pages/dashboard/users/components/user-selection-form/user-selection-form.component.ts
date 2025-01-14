@@ -47,8 +47,6 @@ export class UserSelectionFormComponent {
     await this.userService.list().subscribe({
       next: ({ data }: Response<DeviceUser[]>) => {
         this.users = data;
-        console.log(this.users);
-        console.log(this.groupUsers());
         //Exclude those that are already in the group
         var newUsers: DeviceUser[] = [];
 
@@ -90,8 +88,6 @@ export class UserSelectionFormComponent {
     const userToAdd = this.users.find(
       (el: DeviceUser) => el.email === this.userForm.value.user,
     );
-
-    console.log(userToAdd);
 
     //this.AddDeviceUser(this.userForm.value.user)
   }
