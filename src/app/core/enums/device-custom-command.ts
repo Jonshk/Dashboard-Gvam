@@ -1,4 +1,5 @@
 export enum DeviceCustomCommand {
+  ADJUST_BRIGHTNESS = 'ADJUST_BRIGHTNESS',
   ADJUST_VOLUME = 'ADJUST_VOLUME',
   ACTIVATE_GEOFENCE = 'ACTIVATE_GEOFENCE',
   DEACTIVATE_GEOFENCE = 'DEACTIVATE_GEOFENCE',
@@ -7,6 +8,7 @@ export enum DeviceCustomCommand {
 }
 
 export enum DeviceCustomCommandDescription {
+  ADJUST_BRIGHTNESS = 'Ajustar brillo',
   ADJUST_VOLUME = 'Ajustar volumen',
   ACTIVATE_GEOFENCE = 'Activar geovalla',
   DEACTIVATE_GEOFENCE = 'Desactivar geovalla',

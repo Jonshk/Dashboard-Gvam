@@ -203,7 +203,7 @@ export class DevicesPage {
 
   customCommandForm = new FormGroup({
     command: new FormControl(
-      DeviceCustomCommand.ADJUST_VOLUME,
+      DeviceCustomCommand.ADJUST_BRIGHTNESS,
       Validators.required,
     ),
     value: new FormControl(0, [Validators.min(0), Validators.required]),

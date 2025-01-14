@@ -18,6 +18,19 @@
   </label>
 
   @switch (customCommandForm.value.command) {
+    @case (DeviceCustomCommand.ADJUST_BRIGHTNESS) {
+      <label class="w-100">
+        Nivel de brillo: {{ customCommandForm.value.value }}
+        <input
+          type="range"
+          name="value"
+          formControlName="value"
+          class="form-range"
+          min="0"
+          max="255"
+        />
+      </label>
+    }
     @case (DeviceCustomCommand.ADJUST_VOLUME) {
       <label class="w-100">
         Nivel de volumen: {{ customCommandForm.value.value }}
