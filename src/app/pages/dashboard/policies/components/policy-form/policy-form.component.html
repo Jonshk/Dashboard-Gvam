@@ -383,7 +383,9 @@
       </label>
       @if (
         policyForm.value.displaySettings?.screenBrightnessSettings
-          ?.screenBrightnessMode === ScreenBrightnessMode.AUTOMATIC
+          ?.screenBrightnessMode === ScreenBrightnessMode.AUTOMATIC ||
+        policyForm.value.displaySettings?.screenBrightnessSettings
+          ?.screenBrightnessMode === ScreenBrightnessMode.FIXED
       ) {
         <label>
           Nivel de brillo:
