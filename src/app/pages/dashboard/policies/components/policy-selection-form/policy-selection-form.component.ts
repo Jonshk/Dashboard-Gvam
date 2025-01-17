@@ -1,6 +1,5 @@
 import { Component, effect, inject, input, output } from '@angular/core';
 import { DeviceUser } from '../../../../../core/models/response/device-user.model';
-import { UserService } from '../../../../../core/services/user/user.service';
 import { LoadingService } from '../../../../../core/services/loading/loading.service';
 import {
   FormControl,
@@ -8,8 +7,6 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { CustomValidators } from '../../../../../shared/util/custom-validators';
-import { CreateDeviceUserRequest } from '../../../../../core/models/request/create-device-user-request.model';
 import { Response } from '../../../../../core/models/response/response.model';
 import { PolicyService } from '../../../../../core/services/policy/policy.service';
 import { Policy } from '../../../../../core/models/response/policy.model';
@@ -49,7 +46,6 @@ export class PolicySelectionFormComponent {
     await this.policyService.listAll().subscribe({
       next: async ({ data }: Response<Policy[]>) => {
         this.policies = data;
-        var groupPolicies = this.groupPolicies();
         //Exclude those that are already in the group
         this.checkNewPolicies();
       },
@@ -73,6 +69,7 @@ export class PolicySelectionFormComponent {
     });
 
     this.policies = newPolicies;
+    this.policyForm.setValue({ policy: this.policies[0]?.name ?? '' });
   }
 
   private setUserForm = effect(() => {
