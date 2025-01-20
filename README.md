@@ -1,4 +1,4 @@
-# MDM Dashboard
+# GVAM MDM Front Dashboard
 
 ## Requisitos
 
@@ -11,10 +11,10 @@ Primero habrá que instalar las dependencias del proyecto, para ello ejecutamos:
 npm ci
 ```
 
-En el fichero `src/environments/environment.production.ts` habrá que poner la URL en la que se encuentra la API:
+En el fichero `src/environments/environment.production.ts` habrá que poner la URL en la que se encuentra el Back:
 
 ```
-apiUrl: '', // Dirección de la API
+apiUrl: '', // Dirección de la API del Back
 ```
 
 Una vez configurada la dirección de la API ya se podrá hacer el build, para ello ejecutamos:
