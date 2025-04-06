@@ -1,3 +1,3 @@
 export const environment = {
-  apiUrl: 'https://mdm.abamobile.com/api',
+ // apiUrl: 'https://mdm.abamobile.com/api',
 };
